@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
     name: "FoundationUI",
     platforms: [
-        .macOS(.v11)
+        .macOS(.v11),
+        .iOS(.v11)
     ],
     products: [
         .library(

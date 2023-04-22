@@ -122,7 +122,7 @@ extension FoundationUI {
         }
     }
 }
-// Modifiers:
+// TODO: Modifiers:
 // - Padding
 // - Rounded
 // - Offset
@@ -133,17 +133,10 @@ extension FoundationUI {
 // - Shadow
 // - Animation
 
-private struct FoundationRadiusKey: EnvironmentKey {
-    static let defaultValue: CGFloat = 0
-}
+// TODO: Preview Layout Template (look for inspiration on Figma and Sketch design system templates)
 
-extension EnvironmentValues {
-    public var foundationRadius: CGFloat {
-        get { self[FoundationRadiusKey.self] }
-        set { self[FoundationRadiusKey.self] = newValue }
-    }
-}
 
+// MARK: View.foundation() extension
 public enum FoundationValue {
     case padding(_ token: Token<CGFloat> = .base, _ edges: Edge.Set = .all)
     case radius(_ token: Token<CGFloat> = .base, clipContent: Bool = false)
@@ -165,5 +158,17 @@ extension View {
         case .clipContent:
             self.modifier(FoundationUI.ClipContent())
         }
+    }
+}
+
+// MARK: - Environment Values
+private struct FoundationRadiusKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 0
+}
+
+extension EnvironmentValues {
+    public var foundationRadius: CGFloat {
+        get { self[FoundationRadiusKey.self] }
+        set { self[FoundationRadiusKey.self] = newValue }
     }
 }
