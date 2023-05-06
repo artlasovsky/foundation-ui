@@ -9,8 +9,6 @@ import Foundation
 import SwiftUI
 import AppKit
 
-let customConfig = FoundationUIConfig(padding: .init(xs: 4, sm: 8, base: 12, lg: 16, xl: 20))
-
 public class FoundationUI:ObservableObject {
     @Published public var colorScheme: ColorScheme = .dark
     public private (set) var config = FoundationUIConfig()
@@ -61,6 +59,21 @@ extension FoundationUI {
         public func body(content: Content) -> some View {
             content
                 .padding(edges, padding)
+                .environment(\.foundationPadding, padding)
+        }
+    }
+    public struct NestedRadius: ViewModifier {
+        @Environment(\.foundationPadding) private var foundationPadding
+        @Environment(\.foundationRadius) private var foundationRadius
+        public init() {}
+        
+        private var radius: CGFloat {
+            foundationRadius - foundationPadding
+        }
+        
+        public func body(content: Content) -> some View {
+            content
+                .environment(\.foundationRadius, radius)
         }
     }
     public struct Radius: ViewModifier {
@@ -82,12 +95,14 @@ extension FoundationUI {
     }
     public struct Background: ViewModifier {
         private let color: Color
-        public init(_ color: Color) {
+        private let rounded: Token<CGFloat>
+        public init(_ color: Color, rounded: Token<CGFloat> = .none) {
             self.color = color
+            self.rounded = rounded
         }
         public func body(content: Content) -> some View {
             content
-                .background(color)
+                .background(color.foundation(.radius(rounded)))
         }
     }
     public struct ClipContent: ViewModifier {
@@ -137,26 +152,32 @@ extension FoundationUI {
 
 
 // MARK: View.foundation() extension
-public enum FoundationValue {
+public enum FoundationParam {
     case padding(_ token: Token<CGFloat> = .base, _ edges: Edge.Set = .all)
-    case radius(_ token: Token<CGFloat> = .base, clipContent: Bool = false)
-    case background(_ color: Color)
+    case radius(_ token: Token<CGFloat> = .base, clipContent: Bool = true)
+    case nestedRadius
+    case background(_ color: Color, rounded: Token<CGFloat> = .none)
     case clipContent
 }
 
 extension View {
     @ViewBuilder
-    public func foundation(_ param: FoundationValue) -> some View {
+    public func foundation(_ param: FoundationParam?) -> some View {
         switch param {
         case .padding(let token, let edges):
             self.modifier(FoundationUI.Padding(token, edges: edges))
+        case .nestedRadius:
+            self.modifier(FoundationUI.ClipContent())
+                .modifier(FoundationUI.NestedRadius())
         case .radius(let token, let clipContent):
             self.modifier(FoundationUI.ClipContent(!clipContent))
                 .modifier(FoundationUI.Radius(token))
-        case .background(let color):
-            self.modifier(FoundationUI.Background(color))
+        case .background(let color, let rounded):
+            self.modifier(FoundationUI.Background(color, rounded: rounded))
         case .clipContent:
             self.modifier(FoundationUI.ClipContent())
+        case .none:
+            self
         }
     }
 }
@@ -166,9 +187,17 @@ private struct FoundationRadiusKey: EnvironmentKey {
     static let defaultValue: CGFloat = 0
 }
 
+private struct FoundationPaddingKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 0
+}
+
 extension EnvironmentValues {
     public var foundationRadius: CGFloat {
         get { self[FoundationRadiusKey.self] }
         set { self[FoundationRadiusKey.self] = newValue }
+    }
+    public var foundationPadding: CGFloat {
+        get { self[FoundationPaddingKey.self] }
+        set { self[FoundationPaddingKey.self] = newValue }
     }
 }
