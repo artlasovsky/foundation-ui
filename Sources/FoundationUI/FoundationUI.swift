@@ -11,15 +11,22 @@ import AppKit
 
 public class FoundationUI:ObservableObject {
     @Published public var colorScheme: ColorScheme = .dark
-    public private (set) var config = FoundationUIConfig()
-    public func setConfig(_ config: FoundationUIConfig) {
-        self.config = config
-    }
-    public var accent: Color {
-        colorScheme == .dark ? .yellow : .accentColor
-    }
+    public private (set) var config = Config()
+    public private (set) var colors = Colors()
     public static var shared = FoundationUI()
     private var appearanceObserver: NSKeyValueObservation?
+    
+    private init() {
+        observeAppearanceChange()
+    }
+    deinit {
+        appearanceObserver?.invalidate()
+    }
+    
+    public func setConfig(_ config: Config) {
+        self.config = config
+    }
+    
     private func observeAppearanceChange() {
         appearanceObserver = NSApplication.shared.observe(\.effectiveAppearance, options: [.new, .old, .initial, .prior]) { app, change in
             if let appearanceName = change.newValue?.name {
@@ -32,14 +39,20 @@ public class FoundationUI:ObservableObject {
             }
         }
     }
-    private init() {
-        observeAppearanceChange()
+}
+
+
+/// A shortcut for ``FoundationUI``'s shared intance's config
+public let FoundationUIConfig = FoundationUI.shared.config
+public let FoundationUIColors = FoundationUI.shared.colors
+
+extension Color {
+    static public func foundation(_ token: FoundationUI.Colors.Token, inverse: Bool = false) -> Color {
+        token.get(inverse: inverse)
     }
-    deinit {
-        appearanceObserver?.invalidate()
-    }
-    
-    
+//    public init(token: FoundationUI.Colors.Token) {
+//        self = token.get()
+//    }
 }
 
 extension FoundationUI {
@@ -153,6 +166,7 @@ extension FoundationUI {
 
 // MARK: View.foundation() extension
 public enum FoundationParam {
+    /// Padding
     case padding(_ token: Token<CGFloat> = .base, _ edges: Edge.Set = .all)
     case radius(_ token: Token<CGFloat> = .base, clipContent: Bool = true)
     case nestedRadius
