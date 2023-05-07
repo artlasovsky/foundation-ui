@@ -46,15 +46,6 @@ public class FoundationUI:ObservableObject {
 public let FoundationUIConfig = FoundationUI.shared.config
 public let FoundationUIColors = FoundationUI.shared.colors
 
-extension Color {
-    static public func foundation(_ token: FoundationUI.Colors.Token, inverse: Bool = false) -> Color {
-        token.get(inverse: inverse)
-    }
-//    public init(token: FoundationUI.Colors.Token) {
-//        self = token.get()
-//    }
-}
-
 extension FoundationUI {
     public struct Padding: ViewModifier {
         private let token: Token<CGFloat>

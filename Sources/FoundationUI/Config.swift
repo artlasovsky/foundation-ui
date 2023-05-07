@@ -8,6 +8,11 @@
 import Foundation
 import SwiftUI
 
+extension Color {
+    static public func foundation(_ token: FoundationUI.Colors.Token, colorScheme: ColorScheme? = nil, inverse: Bool = false) -> Color {
+        token.get(colorScheme, inverse: inverse)
+    }
+}
 
 extension FoundationUI {
     public struct FoundationColor {
@@ -18,8 +23,8 @@ extension FoundationUI {
             FoundationUI.shared.colorScheme
         }
         
-        public func get(inverse: Bool = false) -> Color {
-            colorScheme == (inverse ? .light : .dark) ? dark : light
+        public func get(_ colorScheme: ColorScheme? = nil, inverse: Bool = false) -> Color {
+            (colorScheme ?? self.colorScheme) == (inverse ? .light : .dark) ? dark : light
         }
     }
     public class Colors {
@@ -28,10 +33,10 @@ extension FoundationUI {
         public enum Token {
             case primary
             
-            func get(inverse: Bool = false) -> Color {
+            func get(_ colorScheme: ColorScheme? = nil, inverse: Bool = false) -> Color {
                 switch self {
                 case .primary:
-                    return FoundationUIColors.primary.get(inverse: inverse)
+                    return FoundationUIColors.primary.get(colorScheme, inverse: inverse)
                 }
             }
         }
