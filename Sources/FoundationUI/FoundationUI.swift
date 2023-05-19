@@ -7,59 +7,25 @@
 
 import Foundation
 import SwiftUI
+#if os(macOS)
 import AppKit
+#endif
 
-public class FoundationUI:ObservableObject {
+
+public class FoundationUI: ObservableObject {
     @Published public var colorScheme: ColorScheme = .dark
-    public private (set) var config = Config()
-    public private (set) var colors = Colors()
     public static var shared = FoundationUI()
-    private var appearanceObserver: NSKeyValueObservation?
-    
-    private init() {
-        observeAppearanceChange()
-    }
-    deinit {
-        appearanceObserver?.invalidate()
-    }
-    
-    public func setConfig(_ config: Config) {
-        self.config = config
-    }
-    
-    private func observeAppearanceChange() {
-        appearanceObserver = NSApplication.shared.observe(\.effectiveAppearance, options: [.new, .old, .initial, .prior]) { app, change in
-            if let appearanceName = change.newValue?.name {
-                if appearanceName == .darkAqua {
-                    self.colorScheme = .dark
-                }
-                if appearanceName == .aqua {
-                    self.colorScheme = .light
-                }
-            }
-        }
-    }
 }
 
-
-/// A shortcut for ``FoundationUI``'s shared intance's config
-public let FoundationUIConfig = FoundationUI.shared.config
-public let FoundationUIColors = FoundationUI.shared.colors
-
 extension FoundationUI {
+    public class Config {}
     public struct Padding: ViewModifier {
-        private let token: Token<CGFloat>
+        private let padding: CGFloat
         private let edges: Edge.Set
-        public init(_ token: Token<CGFloat>, edges: Edge.Set) {
-            self.token = token
+        public init(_ padding: Config.Spacing, edges: Edge.Set) {
+            self.padding = padding.value
             self.edges = edges
-        }
-        // Keep view update on change of @Published variables (colorScheme)
-        @ObservedObject var ui = FoundationUI.shared
-        
-        private var padding: CGFloat {
-            return FoundationUI.shared.config.padding.get(token)
-        }
+        }        
         public func body(content: Content) -> some View {
             content
                 .padding(edges, padding)
@@ -81,13 +47,9 @@ extension FoundationUI {
         }
     }
     public struct Radius: ViewModifier {
-        private let token: Token<CGFloat>?
-        public init(_ token: Token<CGFloat>? = .base) {
-            self.token = token
-        }
-        private var radius: CGFloat {
-            guard let token else { return 0 }
-            return FoundationUI.shared.config.radius.get(token)
+        private let radius: CGFloat
+        public init(_ radius: FoundationUI.Config.Radius = .base) {
+            self.radius = radius.value
         }
         public func body(content: Content) -> some View {
             content
@@ -98,15 +60,27 @@ extension FoundationUI {
         RoundedRectangle(cornerRadius: foundationRadius, style: .continuous)
     }
     public struct Background: ViewModifier {
-        private let color: Color
-        private let rounded: Token<CGFloat>
-        public init(_ color: Color, rounded: Token<CGFloat> = .none) {
+        @ObservedObject var ui = FoundationUI.shared
+        private let color: FoundationUI.Config.Color
+        private let rounded: FoundationUI.Config.Radius
+        public init(_ color: FoundationUI.Config.Color, rounded: FoundationUI.Config.Radius = .none) {
             self.color = color
             self.rounded = rounded
         }
         public func body(content: Content) -> some View {
             content
-                .background(color.foundation(.radius(rounded)))
+                .background(color.value.foundation(.radius(rounded)))
+        }
+    }
+    public struct ForegroundColor: ViewModifier {
+        @ObservedObject var ui = FoundationUI.shared
+        private let color: FoundationUI.Config.Color
+        public init(_ color: FoundationUI.Config.Color) {
+            self.color = color
+        }
+        public func body(content: Content) -> some View {
+            content
+                .foregroundColor(color.value)
         }
     }
     public struct ClipContent: ViewModifier {
@@ -124,33 +98,38 @@ extension FoundationUI {
             }
         }
     }
+    // MARK: - TODO
+    // Stroke
+    // - outside nestedRadius
+    // - inside overlay + stroke
+    // - center mixed
+    // Font
+    // - size
+    // - other settings
+    // Shadow
+    // Animation
 }
 
 extension FoundationUI {
     public func updateColorScheme(_ colorScheme: ColorScheme) {
         self.colorScheme = colorScheme
     }
-    public struct PreviewColorSchemeObserver: ViewModifier {
+    public struct ColorSchemeObserver: ViewModifier {
         @Environment(\.colorScheme) private var colorScheme
         public init() {}
+//        @ObservedObject var ui = FoundationUI.shared
         public func body(content: Content) -> some View {
             content
+                .onAppear {
+                    FoundationUI.shared.updateColorScheme(colorScheme)
+                }
                 .onChange(of: colorScheme, perform: { colorScheme in
+                    print(colorScheme)
                     FoundationUI.shared.updateColorScheme(colorScheme)
                 })
         }
     }
 }
-// TODO: Modifiers:
-// - Padding
-// - Rounded
-// - Offset
-// - Text...
-// - Background
-// - Foreground
-// - Stroke
-// - Shadow
-// - Animation
 
 // TODO: Preview Layout Template (look for inspiration on Figma and Sketch design system templates)
 
@@ -158,27 +137,56 @@ extension FoundationUI {
 // MARK: View.foundation() extension
 public enum FoundationParam {
     /// Padding
-    case padding(_ token: Token<CGFloat> = .base, _ edges: Edge.Set = .all)
-    case radius(_ token: Token<CGFloat> = .base, clipContent: Bool = true)
+    case padding(_ value: FoundationUI.Config.Spacing = .base, _ edges: Edge.Set = .all)
+    static public var padding: FoundationParam {
+        .padding()
+    }
+    case radius(_ radius: FoundationUI.Config.Radius = .base, clipContent: Bool = true)
     case nestedRadius
-    case background(_ color: Color, rounded: Token<CGFloat> = .none)
+    case background(_ color: FoundationUI.Config.Color = .primary.background, rounded: FoundationUI.Config.Radius = .none)
+    case foreground(_ color: FoundationUI.Config.Color = .primary.foreground)
     case clipContent
+    
+    
+    static public var bg: FoundationParam {
+        .background()
+    }
+    static public func bg(_ value: CGFloat) -> FoundationParam {
+        .background()
+    }
+}
+
+public struct FoundationModifier<V: View> {
+    private let view: V
+    public init(_ view: V) {
+        self.view = view
+    }
+    @ViewBuilder
+    public func padding(_ value: FoundationUI.Config.Spacing = .base) -> some View {
+        view.modifier(FoundationUI.Padding(value, edges: .all))
+    }
+    @ViewBuilder
+    public var padding: some View {
+        padding()
+    }
 }
 
 extension View {
     @ViewBuilder
     public func foundation(_ param: FoundationParam?) -> some View {
         switch param {
-        case .padding(let token, let edges):
-            self.modifier(FoundationUI.Padding(token, edges: edges))
+        case .padding(let padding, let edges):
+            self.modifier(FoundationUI.Padding(padding, edges: edges))
         case .nestedRadius:
             self.modifier(FoundationUI.ClipContent())
                 .modifier(FoundationUI.NestedRadius())
-        case .radius(let token, let clipContent):
+        case .radius(let radius, let clipContent):
             self.modifier(FoundationUI.ClipContent(!clipContent))
-                .modifier(FoundationUI.Radius(token))
+                .modifier(FoundationUI.Radius(radius))
         case .background(let color, let rounded):
             self.modifier(FoundationUI.Background(color, rounded: rounded))
+        case .foreground(let color):
+            self.modifier(FoundationUI.ForegroundColor(color))
         case .clipContent:
             self.modifier(FoundationUI.ClipContent())
         case .none:

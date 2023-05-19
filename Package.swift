@@ -7,7 +7,7 @@ let package = Package(
     name: "FoundationUI",
     platforms: [
         .macOS(.v11),
-        .iOS(.v11)
+        .iOS(.v14)
     ],
     products: [
         .library(
