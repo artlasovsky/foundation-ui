@@ -128,10 +128,17 @@ struct ThemePreviews: PreviewProvider {
         var body: some View {
             HStack (spacing: 0) {
                 VStack {
-                    Text("Side")
+//                    Text("Side")
+                    Button(action: {}, label: { Text("Default Button") })
+                    Button(action: {}, label: { Text("Custom Style") })
+                        .buttonStyle(.plain)
+                        .foundation(.padding(.base, .horizontal))
+                        .foundation(.padding(.sm, .vertical))
+                        .foundation(.foreground)
+                        .foundation(.background(.accent.fill(.faded), rounded: .sm))
                 }
-                .frame(maxWidth: 120, maxHeight: .infinity)
-                .foundation(.background(.primary.background))
+                .frame(maxWidth: 150, maxHeight: .infinity)
+                .foundation(.background(.primary.background(.faded)))
                 Rectangle().frame(width: 1)
                     .foundation(.foreground(.primary.background(.emphasized)))
                 VStack (spacing: 0) {

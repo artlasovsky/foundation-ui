@@ -7,9 +7,6 @@
 
 import Foundation
 import SwiftUI
-#if os(macOS)
-import AppKit
-#endif
 
 
 public class FoundationUI: ObservableObject {
@@ -70,17 +67,26 @@ extension FoundationUI {
         public func body(content: Content) -> some View {
             content
                 .background(color.value.foundation(.radius(rounded)))
+                .environment(\.foundationBackgroundColor, color)
         }
     }
     public struct ForegroundColor: ViewModifier {
+        @Environment(\.foundationBackgroundColor) private var backgroundColor
         @ObservedObject var ui = FoundationUI.shared
-        private let color: FoundationUI.Config.Color
-        public init(_ color: FoundationUI.Config.Color) {
+        private let color: FoundationUI.Config.Color?
+        private var colorValue: Color {
+            if let color {
+                return color.value
+            } else {
+                return backgroundColor.inverted().value
+            }
+        }
+        public init(_ color: FoundationUI.Config.Color?) {
             self.color = color
         }
         public func body(content: Content) -> some View {
             content
-                .foregroundColor(color.value)
+                .foregroundColor(colorValue)
         }
     }
     public struct ClipContent: ViewModifier {
@@ -142,10 +148,14 @@ public enum FoundationParam {
     case radius(_ radius: FoundationUI.Config.Radius = .base, clipContent: Bool = true)
     case nestedRadius
     case background(_ color: FoundationUI.Config.Color = .primary.background, rounded: FoundationUI.Config.Radius = .none)
-    case foreground(_ color: FoundationUI.Config.Color = .primary.foreground)
+    case foreground(_ color: FoundationUI.Config.Color? = .primary.foreground)
     case clipContent
     
+    static public var foreground: FoundationParam {
+        .foreground(nil) // auto
+    }
     
+    // Short
     static public var bg: FoundationParam {
         .background()
     }
@@ -236,6 +246,10 @@ private struct FoundationPaddingKey: EnvironmentKey {
     static let defaultValue: CGFloat = 0
 }
 
+private struct FoundationBackgroundColorKey: EnvironmentKey {
+    static let defaultValue: FoundationUI.Config.Color = .primary.background
+}
+
 extension EnvironmentValues {
     public var foundationRadius: CGFloat {
         get { self[FoundationRadiusKey.self] }
@@ -244,5 +258,9 @@ extension EnvironmentValues {
     public var foundationPadding: CGFloat {
         get { self[FoundationPaddingKey.self] }
         set { self[FoundationPaddingKey.self] = newValue }
+    }
+    public var foundationBackgroundColor: FoundationUI.Config.Color {
+        get { self[FoundationBackgroundColorKey.self] }
+        set { self[FoundationBackgroundColorKey.self] = newValue }
     }
 }

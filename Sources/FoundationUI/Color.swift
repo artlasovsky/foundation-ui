@@ -5,9 +5,20 @@ import SwiftUI
 public protocol FoundationUIColor {
     static var primary: FoundationUI.Config.Color { get }
     static var accent: FoundationUI.Config.Color { get }
+    var value: SwiftUI.Color { get }
+    var hue: CGFloat { get }
+    var saturation: CGFloat { get }
+    var brightness: CGFloat { get }
 }
 
 // MARK: Default implementation
+extension FoundationUIColor {
+    public var value: SwiftUI.Color {
+        return .init(hue: hue, saturation: saturation, brightness: brightness)
+    }
+}
+
+// MARK: Default tokens
 extension FoundationUIColor {
     public static var primary: FoundationUI.Config.Color { .init(hue: 0, saturation: 0, brightness: 0.5) }
     public static var accent: FoundationUI.Config.Color { .init(hue: 0.12, saturation: 1, brightness: 0.5) }
@@ -115,23 +126,23 @@ extension FoundationUI.Config {
         private var scaleIndex: Int = 4
         private var inverted: Bool = false
         
-        public var value: SwiftUI.Color {
-            return .init(hue: hue, saturation: saturation, brightness: brightness)
-        }
         private var colorScheme: ColorScheme { colorSchemeOverride ?? FoundationUI.shared.colorScheme }
 //        MARK: Color components
         public var hue: CGFloat {
             hueScale[scaleIndex]
         }
         public var saturation: CGFloat {
-            saturationScale[scaleIndex]
+            var saturation = saturationScale[scaleIndex]
+            if inverted {
+                saturation *= 0.3
+            }
+            return saturation
         }
         public var brightness: CGFloat {
             var brightness = brightnessScale[scaleIndex]
-            let saturation = saturationScale[scaleIndex]
             if inverted {
                 var invertedBrightness = 1 - brightness
-                let contrastRatio = saturation > 0 ? 0.54 : 0.66
+                let contrastRatio = saturation > 0 ? 0.5 : 0.66
                 while abs(invertedBrightness - brightness) < contrastRatio {
                     invertedBrightness += 0.05
                 }
