@@ -117,14 +117,12 @@ extension FoundationUI {
     public struct ColorSchemeObserver: ViewModifier {
         @Environment(\.colorScheme) private var colorScheme
         public init() {}
-//        @ObservedObject var ui = FoundationUI.shared
         public func body(content: Content) -> some View {
             content
                 .onAppear {
                     FoundationUI.shared.updateColorScheme(colorScheme)
                 }
                 .onChange(of: colorScheme, perform: { colorScheme in
-                    print(colorScheme)
                     FoundationUI.shared.updateColorScheme(colorScheme)
                 })
         }
@@ -192,6 +190,40 @@ extension View {
         case .none:
             self
         }
+    }
+    
+    /// Special modifier for tracking the changes in app's color scheme and update ``FoundationUI``'s color scheme dependable values
+    ///
+    /// Should be applied once to the root content view:
+    /**
+    ```swift
+    @main
+    struct FoundationUI_PlaygroundApp: App {
+        var body: some Scene {
+            WindowGroup {
+                ContentView()
+                    .colorSchemeObserver()
+            }
+        }
+    }
+    ```
+    */
+    /// And to every preview:
+    /**
+    ```swift
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            VStack {
+                ContentView()
+            }
+            .colorSchemeObserver()
+        }
+    }
+    ```
+    */
+    @ViewBuilder
+    public func colorSchemeObserver() -> some View {
+        self.modifier(FoundationUI.ColorSchemeObserver())
     }
 }
 
