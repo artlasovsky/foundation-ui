@@ -139,10 +139,10 @@ extension FoundationUI {
 
 
 // MARK: View.foundation() extension
-public enum FoundationParam {
+public enum FoundationModifier {
     /// Padding
     case padding(_ value: FoundationUI.Config.Spacing = .base, _ edges: Edge.Set = .all)
-    static public var padding: FoundationParam {
+    static public var padding: FoundationModifier {
         .padding()
     }
     case radius(_ radius: FoundationUI.Config.Radius = .base, clipContent: Bool = true)
@@ -151,38 +151,23 @@ public enum FoundationParam {
     case foreground(_ color: FoundationUI.Config.Color? = .primary.foreground)
     case clipContent
     
-    static public var foreground: FoundationParam {
+    static public var foreground: FoundationModifier {
         .foreground(nil) // auto
     }
     
     // Short
-    static public var bg: FoundationParam {
+    static public var bg: FoundationModifier {
         .background()
     }
-    static public func bg(_ value: CGFloat) -> FoundationParam {
+    static public func bg(_ value: CGFloat) -> FoundationModifier {
         .background()
-    }
-}
-
-public struct FoundationModifier<V: View> {
-    private let view: V
-    public init(_ view: V) {
-        self.view = view
-    }
-    @ViewBuilder
-    public func padding(_ value: FoundationUI.Config.Spacing = .base) -> some View {
-        view.modifier(FoundationUI.Padding(value, edges: .all))
-    }
-    @ViewBuilder
-    public var padding: some View {
-        padding()
     }
 }
 
 extension View {
     @ViewBuilder
-    public func foundation(_ param: FoundationParam?) -> some View {
-        switch param {
+    public func foundation(_ modifier: FoundationModifier?) -> some View {
+        switch modifier {
         case .padding(let padding, let edges):
             self.modifier(FoundationUI.Padding(padding, edges: edges))
         case .nestedRadius:

@@ -2,6 +2,10 @@
 
 Package to speedup UI prototyping and development with SwiftUI.
 
+## Requirements
+
+TODO: Platforms (macOS, iOS, tvOS?, watchOS?) / Swift versions
+
 
 ## Getting Started
 
@@ -73,21 +77,21 @@ The core FoundationUI idea is to have a customizable built-in design system.
 Which will allow to select a predefined value with a token, and if it will be required change it later in one place.
 
 #### Modifiers
-    
+Modifiers available as a ViewModifiers (`FoundationUI.*`) or by using `*.foundation(_)` method on any SwiftUI View.
     TODO: How to use modifiers
 
 #### Available tokens
 There are three tokens available right now:
 
-- Radius `FoundationUIRadius`
+- `FoundationUIRadius`
 
     Which holds values in `.none`, `.xs`, `.sm`, `.base`, `.lg`, `.xl`
     
-- Spacing `FoundationUISpacing`
+- `FoundationUISpacing`
 
     Which holds values in `.none`, `.xs`, `.sm`, `.base`, `.lg`, `.xl`
     
-- Color `FoundationUIColor`
+- `FoundationUIColor`
 
     Which holds values in `.primary`, `.accent`
     

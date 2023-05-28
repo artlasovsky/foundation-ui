@@ -67,7 +67,9 @@ extension CGFloat {
 
 
 // MARK: - Previews
-struct ThemePreviews: PreviewProvider {
+
+#if DEBUG
+struct SamplePreview: View {
     struct ColorSample: View {
         let label: String
         let color: FoundationUI.Config.Color
@@ -128,7 +130,7 @@ struct ThemePreviews: PreviewProvider {
         var body: some View {
             HStack (spacing: 0) {
                 VStack {
-//                    Text("Side")
+                    //                    Text("Side")
                     Button(action: {}, label: { Text("Default Button") })
                     Button(action: {}, label: { Text("Custom Style") })
                         .buttonStyle(.plain)
@@ -154,7 +156,7 @@ struct ThemePreviews: PreviewProvider {
             }.foundation(.foreground(.primary.foreground))
         }
     }
-    static var previews: some View {
+    var body: some View {
         VStack (spacing: .foundation(.none)) {
             VStack (alignment: .trailing, spacing: .foundation(.sm)) {
                 ColorSamples(color: .primary, colorScheme: .dark)
@@ -172,5 +174,12 @@ struct ThemePreviews: PreviewProvider {
         }
         .frame(width: 400, height: 400)
         .colorSchemeObserver()
+    }
+}
+#endif
+
+struct ThemePreviews: PreviewProvider {
+    static var previews: some View {
+        SamplePreview()
     }
 }
