@@ -1,6 +1,8 @@
 # FoundationUI
 
-Package to speedup UI prototyping and development with SwiftUI.
+Accelerate the process of designing and developing user interfaces with SwiftUI
+
+> NOTE: Readme is not finished yet...
 
 ## Requirements
 
