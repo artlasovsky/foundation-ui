@@ -9,19 +9,20 @@ public protocol FoundationUIColor {
     var hue: CGFloat { get }
     var saturation: CGFloat { get }
     var brightness: CGFloat { get }
+    var opacity: CGFloat { get }
 }
 
 // MARK: Default implementation
 extension FoundationUIColor {
     public var value: SwiftUI.Color {
-        return .init(hue: hue, saturation: saturation, brightness: brightness)
+        return .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)
     }
 }
 
 // MARK: Default tokens
 extension FoundationUIColor {
     public static var primary: FoundationUI.Config.Color { .init(hue: 0, saturation: 0, brightness: 0.5) }
-    public static var accent: FoundationUI.Config.Color { .init(hue: 0.12, saturation: 1, brightness: 0.5) }
+    public static var accent: FoundationUI.Config.Color { .init(hue: 0.567, saturation: 1, brightness: 0.5) }
     // Temporary to test
     public static var twBlue: FoundationUI.Config.Color { .init(
         universal: .init(
@@ -92,7 +93,6 @@ extension FoundationUI.Config.Color {
         let _700: Components
         let _800: Components
         let _900: Components
-        
         public init(_ _100: Components, _ _200: Components, _ _300: Components, _ _400: Components, _ _500: Components, _ _600: Components, _ _700: Components, _ _800: Components, _ _900: Components) {
             self._100 = _100
             self._200 = _200
@@ -124,7 +124,8 @@ extension FoundationUI.Config {
         private let _brightnessScale: ScaleSet?
         private var colorSchemeOverride: ColorScheme?
         private var scaleIndex: Int = 4
-        private var inverted: Bool = false
+        public private(set) var opacity: CGFloat = 1
+        private var invert: Bool = false
         
         private var colorScheme: ColorScheme { colorSchemeOverride ?? FoundationUI.shared.colorScheme }
 //        MARK: Color components
@@ -133,14 +134,14 @@ extension FoundationUI.Config {
         }
         public var saturation: CGFloat {
             var saturation = saturationScale[scaleIndex]
-            if inverted {
+            if invert {
                 saturation *= 0.3
             }
             return saturation
         }
         public var brightness: CGFloat {
             var brightness = brightnessScale[scaleIndex]
-            if inverted {
+            if invert {
                 var invertedBrightness = 1 - brightness
                 let contrastRatio = saturation > 0 ? 0.5 : 0.66
                 while abs(invertedBrightness - brightness) < contrastRatio {
@@ -204,6 +205,7 @@ extension FoundationUI.Config {
             return scale
         }
 //        MARK: Inits
+        /// Generate scale by from HSB value
         public init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
             self.components = .init(
                 hue: hue,
@@ -214,6 +216,7 @@ extension FoundationUI.Config {
             self._saturationScale = nil
             self._brightnessScale = nil
         }
+        /// Manually set all scale values
         public init(
             universal: ColorScale,
             dark: ColorScale? = nil
@@ -230,35 +233,49 @@ extension FoundationUI.Config {
             color.colorSchemeOverride = colorScheme
             return color
         }
-        public func inverted(_ value: Bool = true) -> Self {
-            var color = self
-            color.inverted = value
-            return color
-        }
+
+        // MARK: Color States
         public var foreground: Self {
-            return foreground(.base)
-        }
-        public func foreground(_ adjust: FoundationUIColorAdjust) -> Self {
             var color = self
             color.scaleIndex = 7
-            color.adjustLevel(adjust)
             return color
         }
         public var fill: Self {
-            return fill(.base)
-        }
-        public func fill(_ adjust: FoundationUIColorAdjust) -> Self {
             var color = self
             color.scaleIndex = 4
-            color.adjustLevel(adjust)
             return color
         }
         public var background: Self {
-            return background(.base)
-        }
-        public func background(_ adjust: FoundationUIColorAdjust) -> Self {
             var color = self
             color.scaleIndex = 1
+            return color
+        }
+        public var faded: Self {
+            var color = self
+            color.adjustLevel(.faded)
+            return color
+        }
+        public var emphasized: Self {
+            var color = self
+            color.adjustLevel(.emphasized)
+            return color
+        }
+        public var inverted: Self {
+            inverted()
+        }
+        // MARK: Adjustments
+        public func opacity(_ value: CGFloat) -> Self {
+            var color = self
+            color.opacity = value
+            return color
+        }
+        public func inverted(_ value: Bool = true) -> Self {
+            var color = self
+            color.invert = value
+            return color
+        }
+        public func adjust(_ adjust: FoundationUIColorAdjust) -> Self {
+            var color = self
             color.adjustLevel(adjust)
             return color
         }

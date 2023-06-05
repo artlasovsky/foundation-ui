@@ -3,6 +3,7 @@ import SwiftUI
 
 // MARK: - Radius
 public protocol FoundationUIRadius {
+    static func custom(_ value: CGFloat) -> FoundationUI.Config.Spacing
     static var none: FoundationUI.Config.Radius { get }
     static var xs: FoundationUI.Config.Radius { get }
     static var sm: FoundationUI.Config.Radius { get }
@@ -12,6 +13,7 @@ public protocol FoundationUIRadius {
 }
 // MARK: Default implementation
 extension FoundationUIRadius {
+    public static func custom(_ value: CGFloat) -> FoundationUI.Config.Spacing { .init(value) }
     public static var none: FoundationUI.Config.Radius { .init(0) }
     public static var xs:   FoundationUI.Config.Radius { .init(4) }
     public static var sm:   FoundationUI.Config.Radius { .init(8) }
@@ -84,11 +86,11 @@ struct SamplePreview: View {
                     .foundation(.foreground(color))
                 Text(label)
                     .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(color.inverted().value)
+                    .foregroundColor(color.inverted.value)
             }
             .foundation(.nestedRadius)
             .foundation(.padding(.custom(1)))
-            .foundation(.background(.primary.background(.faded)))
+            .foundation(.background(.primary.background.faded))
         }
     }
     struct ColorSamples: View {
@@ -114,15 +116,15 @@ struct SamplePreview: View {
                         Text("Light ").font(.system(.caption, design: .monospaced))
                     }
                 }
-                ColorSample(color: color.background(.faded))
+                ColorSample(color: color.background.faded)
                 ColorSample(color: color.background)
-                ColorSample(color: color.background(.emphasized))
-                ColorSample(color: color.fill(.faded))
+                ColorSample(color: color.background.emphasized)
+                ColorSample(color: color.fill.faded)
                 ColorSample(color: color.fill)
-                ColorSample(color: color.fill(.emphasized))
-                ColorSample(color: color.foreground(.faded))
+                ColorSample(color: color.fill.emphasized)
+                ColorSample(color: color.foreground.faded)
                 ColorSample(color: color.foreground)
-                ColorSample(color: color.foreground(.emphasized))
+                ColorSample(color: color.foreground.emphasized)
             }
         }
     }
@@ -137,22 +139,22 @@ struct SamplePreview: View {
                         .foundation(.padding(.base, .horizontal))
                         .foundation(.padding(.sm, .vertical))
                         .foundation(.foreground)
-                        .foundation(.background(.accent.fill(.faded), rounded: .sm))
+                        .foundation(.background(.accent.faded, rounded: .sm))
                 }
                 .frame(maxWidth: 150, maxHeight: .infinity)
-                .foundation(.background(.primary.background(.faded)))
+                .foundation(.background(.primary.background.faded))
                 Rectangle().frame(width: 1)
-                    .foundation(.foreground(.primary.background(.emphasized)))
+                    .foundation(.foreground(.primary.background.emphasized))
                 VStack (spacing: 0) {
                     Text("Foreground").foundation(.foreground())
-                    Text("Foreground Faded").foundation(.foreground(.primary.foreground(.faded)))
+                    Text("Foreground Faded").foundation(.foreground(.primary.foreground.faded))
                     Text("Fill").foundation(.foreground(.primary.fill))
-                    Text("Fill Faded").foundation(.foreground(.primary.fill(.faded)))
+                    Text("Fill Faded").foundation(.foreground(.primary.faded))
                     Text("Link").underline().foundation(.foreground(.accent.foreground))
                     Text("Link").underline().foundation(.foreground())
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .foundation(.background(.primary.background(.faded)))
+                .foundation(.background(.primary.background.faded))
             }.foundation(.foreground(.primary.foreground))
         }
     }
@@ -169,7 +171,7 @@ struct SamplePreview: View {
             .foundation(.padding(.custom(.foundation(.sm))))
             .foundation(.background(.primary.background))
             Rectangle().frame(height: 1)
-                .foundation(.foreground(.primary.background(.emphasized)))
+                .foundation(.foreground(.primary.background.emphasized))
             UISample()
         }
         .frame(width: 400, height: 400)
