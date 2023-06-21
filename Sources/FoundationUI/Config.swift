@@ -3,26 +3,26 @@ import SwiftUI
 
 // MARK: - Radius
 public protocol FoundationUIRadius {
-    static func custom(_ value: CGFloat) -> FoundationUI.Config.Spacing
-    static var none: FoundationUI.Config.Radius { get }
-    static var xs: FoundationUI.Config.Radius { get }
-    static var sm: FoundationUI.Config.Radius { get }
-    static var base: FoundationUI.Config.Radius { get }
-    static var lg: FoundationUI.Config.Radius { get }
-    static var xl: FoundationUI.Config.Radius { get }
+    static func custom(_ value: CGFloat) -> Theme.Radius
+    static var none: Theme.Radius { get }
+    static var xs: Theme.Radius { get }
+    static var sm: Theme.Radius { get }
+    static var base: Theme.Radius { get }
+    static var lg: Theme.Radius { get }
+    static var xl: Theme.Radius { get }
 }
 // MARK: Default implementation
 extension FoundationUIRadius {
-    public static func custom(_ value: CGFloat) -> FoundationUI.Config.Spacing { .init(value) }
-    public static var none: FoundationUI.Config.Radius { .init(0) }
-    public static var xs:   FoundationUI.Config.Radius { .init(4) }
-    public static var sm:   FoundationUI.Config.Radius { .init(8) }
-    public static var base: FoundationUI.Config.Radius { .init(10) }
-    public static var lg:   FoundationUI.Config.Radius { .init(14) }
-    public static var xl:   FoundationUI.Config.Radius { .init(18) }
+    public static func custom(_ value: CGFloat) -> Theme.Radius { .init(value) }
+    public static var none: Theme.Radius { .init(0) }
+    public static var xs:   Theme.Radius { .init(4) }
+    public static var sm:   Theme.Radius { .init(8) }
+    public static var base: Theme.Radius { .init(10) }
+    public static var lg:   Theme.Radius { .init(14) }
+    public static var xl:   Theme.Radius { .init(18) }
 }
 
-extension FoundationUI.Config {
+extension Theme {
     public struct Radius: FoundationUIRadius {
         public var value: CGFloat
         public init(_ value: CGFloat) {
@@ -33,26 +33,26 @@ extension FoundationUI.Config {
 
 // MARK: - Spacing
 public protocol FoundationUISpacing {
-    static func custom(_ value: CGFloat) -> FoundationUI.Config.Spacing
-    static var none: FoundationUI.Config.Spacing { get }
-    static var xs: FoundationUI.Config.Spacing { get }
-    static var sm: FoundationUI.Config.Spacing { get }
-    static var base: FoundationUI.Config.Spacing { get }
-    static var lg: FoundationUI.Config.Spacing { get }
-    static var xl: FoundationUI.Config.Spacing { get }
+    static func custom(_ value: CGFloat) -> Theme.Spacing
+    static var none: Theme.Spacing { get }
+    static var xs: Theme.Spacing { get }
+    static var sm: Theme.Spacing { get }
+    static var base: Theme.Spacing { get }
+    static var lg: Theme.Spacing { get }
+    static var xl: Theme.Spacing { get }
 }
 // MARK: Default implementation
 extension FoundationUISpacing {
-    public static func custom(_ value: CGFloat) -> FoundationUI.Config.Spacing { .init(value) }
-    public static var none: FoundationUI.Config.Spacing { .init(0) }
-    public static var xs:   FoundationUI.Config.Spacing { .init(2) }
-    public static var sm:   FoundationUI.Config.Spacing { .init(4) }
-    public static var base: FoundationUI.Config.Spacing { .init(8) }
-    public static var lg:   FoundationUI.Config.Spacing { .init(12) }
-    public static var xl:   FoundationUI.Config.Spacing { .init(16) }
+    public static func custom(_ value: CGFloat) -> Theme.Spacing { .init(value) }
+    public static var none: Theme.Spacing { .init(0) }
+    public static var xs:   Theme.Spacing { .init(2) }
+    public static var sm:   Theme.Spacing { .init(4) }
+    public static var base: Theme.Spacing { .init(6) }
+    public static var lg:   Theme.Spacing { .init(10) }
+    public static var xl:   Theme.Spacing { .init(14) }
 }
 
-extension FoundationUI.Config {
+extension Theme {
     public struct Spacing: FoundationUISpacing {
         public var value: CGFloat
         public init(_ value: CGFloat) {
@@ -61,21 +61,49 @@ extension FoundationUI.Config {
     }
 }
 extension CGFloat {
-    public static func foundation(_ spacing: FoundationUI.Config.Spacing) -> Self {
+    public static func foundation(_ spacing: Theme.Spacing) -> Self {
         spacing.value
     }
 }
 
-
-
 // MARK: - Previews
 
 #if DEBUG
+// Temporary to test
+extension Theme.Color {
+    static var twBlue: Self {
+        .init(
+            universal: .init(
+                .init(hex: "#dbeafe"),
+                .init(hex: "#bfdbfe"),
+                .init(hex: "#93c5fd"),
+                .init(hex: "#60a5fa"),
+                .init(hex: "#3b82f6"),
+                .init(hex: "#2563eb"),
+                .init(hex: "#1d4ed8"),
+                .init(hex: "#1e40af"),
+                .init(hex: "#1e3a8a")
+            ),
+            dark: .init(
+                .init(hex: "#1e3a8a"),
+                .init(hex: "#1e40af"),
+                .init(hex: "#1d4ed8"),
+                .init(hex: "#2563eb"),
+                .init(hex: "#3b82f6"),
+                .init(hex: "#60a5fa"),
+                .init(hex: "#93c5fd"),
+                .init(hex: "#bfdbfe"),
+                .init(hex: "#dbeafe")
+            )
+        )
+    }
+}
+
 struct SamplePreview: View {
     struct ColorSample: View {
         let label: String
-        let color: FoundationUI.Config.Color
-        init(color: FoundationUI.Config.Color, label: String = "T") {
+        let color: Theme.Color
+        init(color: Theme.Color, label: String = "T") {
             self.label = label
             self.color = color
         }
@@ -93,14 +121,15 @@ struct SamplePreview: View {
             .foundation(.background(.primary.background.faded))
         }
     }
+    
     struct ColorSamples: View {
-        private let color: FoundationUI.Config.Color
+        private let color: Theme.Color
         @Environment(\.colorScheme) private var systemColorScheme
         private let colorSchemeOverride: ColorScheme?
         private var colorScheme: ColorScheme {
             colorSchemeOverride ?? systemColorScheme
         }
-        init(color: FoundationUI.Config.Color, colorScheme: ColorScheme? = nil) {
+        init(color: Theme.Color, colorScheme: ColorScheme? = nil) {
             self.color = color
             self.colorSchemeOverride = colorScheme
         }
@@ -132,14 +161,26 @@ struct SamplePreview: View {
         var body: some View {
             HStack (spacing: 0) {
                 VStack {
-                    //                    Text("Side")
-                    Button(action: {}, label: { Text("Default Button") })
-                    Button(action: {}, label: { Text("Custom Style") })
-                        .buttonStyle(.plain)
-                        .foundation(.padding(.base, .horizontal))
-                        .foundation(.padding(.sm, .vertical))
-                        .foundation(.foreground)
-                        .foundation(.background(.accent.faded, rounded: .sm))
+                    ColorPath(.primary)
+//                    Button(action: {}, label: { Text("Styled Button") })
+//                        .buttonStyle(.plain)
+//                        .foundation(.padding(.base, .horizontal))
+//                        .foundation(.padding(.sm, .vertical))
+//                        .foundation(.foreground)
+//                        .foundation(.background(.accent, rounded: .sm))
+                    ZStack {
+                        Color.clear
+//                            .foundation(.foreground(.primary))
+                            .foundation(.background())
+                            .foundation(.nestedRadius)
+                            .foundation(.padding(.sm))
+                    }
+                    .frame(width: 100, height: 40)
+                    .foundation(.background(.primary.foreground))
+                    .foundation(.nestedRadius)
+                    .foundation(.padding)
+                    .foundation(.background(.primary.foreground.faded))
+                    .foundation(.radius(.xl))
                 }
                 .frame(maxWidth: 150, maxHeight: .infinity)
                 .foundation(.background(.primary.background.faded))

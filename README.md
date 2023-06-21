@@ -63,7 +63,7 @@ struct SampleView: View {
                 .foundation(.padding(.base, .horizontal))
                 .foundation(.padding(.sm, .vertical))
                 .foundation(.foreground)
-                .foundation(.background(.accent.background, rounded: .sm))        
+                .foundation(.background(.accent.background.faded, rounded: .sm))        
         }
     }
 }
@@ -108,14 +108,17 @@ All token values can be overriden or extended.
 
 Add a new color to the theme by extending `FoundationUIColor`:
 ```swift
-public extension FoundationUIColor {
+import FoundationUI
+
+public extension Theme.Color {
     static var customColor: FoundationUI.Config.Color { .init(hue: 0.5, saturation: 1, brightness: 0.5) }
 }
 ```
 
 To override the default theme color just declare the new computed property with the same color name in `FoundationUIColor` extension:
 ```swift
-public extension FoundationUIColor {
+import FoundationUI
+public extension Theme.Color {
     static var accent: FoundationUI.Config.Color { .init(hue: 0.32, saturation: 0.5, brightness: 1) }
 }
 ``` 

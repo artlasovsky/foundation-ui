@@ -1,53 +1,29 @@
 import Foundation
 import SwiftUI
 
+//#warning("TODO: ColorSpace")
 // MARK: - Color
-public protocol FoundationUIColor {
-    static var primary: FoundationUI.Config.Color { get }
-    static var accent: FoundationUI.Config.Color { get }
-    var value: SwiftUI.Color { get }
-    var hue: CGFloat { get }
-    var saturation: CGFloat { get }
-    var brightness: CGFloat { get }
-    var opacity: CGFloat { get }
-}
-
-// MARK: Default implementation
-extension FoundationUIColor {
-    public var value: SwiftUI.Color {
-        return .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)
-    }
-}
+//public protocol FoundationUIColor {
+//    var value: SwiftUI.Color { get }
+//    var hue: CGFloat { get }
+//    var saturation: CGFloat { get }
+//    var brightness: CGFloat { get }
+//    var opacity: CGFloat { get }
+//}
 
 // MARK: Default tokens
-extension FoundationUIColor {
-    public static var primary: FoundationUI.Config.Color { .init(hue: 0, saturation: 0, brightness: 0.5) }
-    public static var accent: FoundationUI.Config.Color { .init(hue: 0.567, saturation: 1, brightness: 0.5) }
-    // Temporary to test
-    public static var twBlue: FoundationUI.Config.Color { .init(
-        universal: .init(
-            .init(hex: "#dbeafe"),
-            .init(hex: "#bfdbfe"),
-            .init(hex: "#93c5fd"),
-            .init(hex: "#60a5fa"),
-            .init(hex: "#3b82f6"),
-            .init(hex: "#2563eb"),
-            .init(hex: "#1d4ed8"),
-            .init(hex: "#1e40af"),
-            .init(hex: "#1e3a8a")
-        ),
-        dark: .init(
-            .init(hex: "#1e3a8a"),
-            .init(hex: "#1e40af"),
-            .init(hex: "#1d4ed8"),
-            .init(hex: "#2563eb"),
-            .init(hex: "#3b82f6"),
-            .init(hex: "#60a5fa"),
-            .init(hex: "#93c5fd"),
-            .init(hex: "#bfdbfe"),
-            .init(hex: "#dbeafe")
-        )
-    )}
+//#warning("TODO: Default tokens") // primary, accent, systemColors
+extension Theme.Color {
+    public static let primary: Self = .init(universal: .init(hue: 0, saturation: 0, brightness: 0.5))
+    public static let accent: Self = .init(universal: .init(hue: 0.567, saturation: 1, brightness: 0.5))
+    public static let systemRed: Self = .init(
+        universal: .init(red: 255, green: 19, blue: 48, dividedBy: 255),
+        dark: .init(red: 255, green: 69, blue: 58, dividedBy: 255)
+    )
+    public static let systemBlue: Self = .init(
+        universal: .init(red: 0, green: 122, blue: 255, dividedBy: 255),
+        dark: .init(red: 10, green: 132, blue: 255, dividedBy: 255)
+    )
 }
 
 public enum FoundationUIColorAdjust {
@@ -58,67 +34,50 @@ public enum FoundationUIColorAdjust {
     case emphasized
 }
 
-extension FoundationUI.Config.Color {
-    private typealias ScaleSet = (light: [CGFloat], dark: [CGFloat])
-    public struct Components {
-        let hue: CGFloat
-        let saturation: CGFloat
-        let brightness: CGFloat
-        
-        public init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
-            self.hue = hue
-            self.saturation = saturation
-            self.brightness = brightness
+struct Color_Previews: PreviewProvider {
+    static var previews: some View {
+        HStack {
+            VStack {
+                Rectangle()
+                    .foundation(.foreground(.systemRed.base))
+                    .frame(width: 50, height: 50)
+                Rectangle()
+                    .foundation(.foreground(.systemRed.source))
+                    .frame(width: 50, height: 50)
+                Rectangle()
+                    .foregroundColor(.red)
+                    .frame(width: 50, height: 50)
+            }
+            VStack {
+                Rectangle()
+                    .foundation(.foreground(.systemBlue.base))
+                    .frame(width: 50, height: 50)
+                Rectangle()
+                    .foundation(.foreground(.systemBlue.source))
+                    .frame(width: 50, height: 50)
+                Rectangle()
+                    .foregroundColor(.blue)
+                    .frame(width: 50, height: 50)
+            }
         }
-        public init(red: CGFloat, green: CGFloat, blue: CGFloat) {
-            let hsb = RGB_to_HSB(r: red, g: green, b: blue)
-            hue = hsb.h
-            saturation = hsb.s
-            brightness = hsb.b
-        }
-        public init(hex: String) {
-            let color = SwiftUI.Color(hex: hex)
-            hue = color?.hueComponent ?? 0
-            saturation = color?.saturationComponent ?? 0
-            brightness = color?.brightnessComponent ?? 0
-        }
-    }
-    public struct ColorScale {
-        let _100: Components
-        let _200: Components
-        let _300: Components
-        let _400: Components
-        let _500: Components
-        let _600: Components
-        let _700: Components
-        let _800: Components
-        let _900: Components
-        public init(_ _100: Components, _ _200: Components, _ _300: Components, _ _400: Components, _ _500: Components, _ _600: Components, _ _700: Components, _ _800: Components, _ _900: Components) {
-            self._100 = _100
-            self._200 = _200
-            self._300 = _300
-            self._400 = _400
-            self._500 = _500
-            self._600 = _600
-            self._700 = _700
-            self._800 = _800
-            self._900 = _900
-        }
-        public var brightnessScale: [CGFloat] {
-            [_100.brightness, _200.brightness, _300.brightness, _400.brightness, _500.brightness, _600.brightness, _700.brightness, _800.brightness, _900.brightness]
-        }
-        public var saturationScale: [CGFloat] {
-            [_100.saturation, _200.saturation, _300.saturation, _400.saturation, _500.saturation, _600.saturation, _700.saturation, _800.saturation, _900.saturation]
-        }
-        public var hueScale: [CGFloat] {
-            [_100.hue, _200.hue, _300.hue, _400.hue, _500.hue, _600.hue, _700.hue, _800.hue, _900.hue]
-        }
+        .frame(width: 300, height: 300)
+        .foundation(.none)
     }
 }
 
-extension FoundationUI.Config {
-    public struct Color: FoundationUIColor {
-        private let components: Components?
+extension Theme {
+    public struct Color {
+        public var value: SwiftUI.Color {
+            if useSourceValue, let components {
+                return .init(hue: components.hue, saturation: components.saturation, brightness: components.brightness, opacity: opacity)
+            }
+            return .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)
+        }
+        private let componentsUniversal: Components?
+        private let componentsDark: Components?
+        private var components: Components? {
+            colorScheme == .dark ? componentsDark : componentsUniversal
+        }
         private let _hueScale: ScaleSet?
         private let _saturationScale: ScaleSet?
         private let _brightnessScale: ScaleSet?
@@ -126,8 +85,33 @@ extension FoundationUI.Config {
         private var scaleIndex: Int = 4
         public private(set) var opacity: CGFloat = 1
         private var invert: Bool = false
+        private var useSourceValue: Bool = false
         
-        private var colorScheme: ColorScheme { colorSchemeOverride ?? FoundationUI.shared.colorScheme }
+        private var baseIndex: Int {
+            var index: Int = 4
+            if let components, let closest = brightnessScale.min(by: { abs($0 - components.brightness) < abs($1 - components.brightness) }) {
+                if let closestIndex = brightnessScale.firstIndex(of: closest) {
+                    index = closestIndex
+                }
+            }
+            return index
+        }
+        /// Source color without any modifications
+        public var source: Self {
+            var color = self
+            color.useSourceValue = true
+            return color
+        }
+        /// Color closest to **source** color from the generated scale
+        public var base: Self {
+            var color = self
+            color.scaleIndex = baseIndex
+            return color
+        }
+        
+        private var colorScheme: ColorScheme {
+            colorSchemeOverride ?? FoundationUI.shared.colorScheme
+        }
 //        MARK: Color components
         public var hue: CGFloat {
             hueScale[scaleIndex]
@@ -162,7 +146,7 @@ extension FoundationUI.Config {
             if let _brightnessScale {
                 scale = colorScheme == .dark ? _brightnessScale.dark : _brightnessScale.light
             }
-            if let components {
+            else if let components {
                 if colorScheme == .dark || components.saturation > 0 {
                     scale = Range(0...8).map { index in
                         let x = CGFloat(index) / 8
@@ -204,14 +188,10 @@ extension FoundationUI.Config {
             }
             return scale
         }
-//        MARK: Inits
-        /// Generate scale by from HSB value
-        public init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
-            self.components = .init(
-                hue: hue,
-                saturation: saturation,
-                brightness: brightness
-            )
+//        MARK: - Inits
+        public init(universal: Components, dark: Components? = nil) {
+            self.componentsUniversal = universal
+            self.componentsDark = dark ?? universal
             self._hueScale = nil
             self._saturationScale = nil
             self._brightnessScale = nil
@@ -225,9 +205,10 @@ extension FoundationUI.Config {
             _hueScale = (light: universal.hueScale, dark: dark.hueScale)
             _saturationScale = (light: universal.saturationScale, dark: dark.saturationScale)
             _brightnessScale = (light: universal.brightnessScale, dark: dark.brightnessScale)
-            self.components = nil
+            self.componentsUniversal = nil
+            self.componentsDark = nil
         }
-//        MARK: Public functions
+//        MARK: - Public functions
         public func colorScheme(_ colorScheme: ColorScheme) -> Self {
             var color = self
             color.colorSchemeOverride = colorScheme
@@ -333,6 +314,64 @@ extension SwiftUI.Color {
     }
     public var alphaComponent: CGFloat? {
         self.cgColor?.components?[3]
+    }
+}
+
+extension Theme.Color {
+    private typealias ScaleSet = (light: [CGFloat], dark: [CGFloat])
+    public struct Components {
+        let hue: CGFloat
+        let saturation: CGFloat
+        let brightness: CGFloat
+        
+        public init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat) {
+            self.hue = hue
+            self.saturation = saturation
+            self.brightness = brightness
+        }
+        public init(red: CGFloat, green: CGFloat, blue: CGFloat, dividedBy: CGFloat = 1) {
+            let hsb = RGB_to_HSB(r: red / dividedBy, g: green / dividedBy, b: blue / dividedBy)
+            hue = hsb.h
+            saturation = hsb.s
+            brightness = hsb.b
+        }
+        public init(hex: String) {
+            let color = SwiftUI.Color(hex: hex)
+            hue = color?.hueComponent ?? 0
+            saturation = color?.saturationComponent ?? 0
+            brightness = color?.brightnessComponent ?? 0
+        }
+    }
+    public struct ColorScale {
+        let _100: Components
+        let _200: Components
+        let _300: Components
+        let _400: Components
+        let _500: Components
+        let _600: Components
+        let _700: Components
+        let _800: Components
+        let _900: Components
+        public init(_ _100: Components, _ _200: Components, _ _300: Components, _ _400: Components, _ _500: Components, _ _600: Components, _ _700: Components, _ _800: Components, _ _900: Components) {
+            self._100 = _100
+            self._200 = _200
+            self._300 = _300
+            self._400 = _400
+            self._500 = _500
+            self._600 = _600
+            self._700 = _700
+            self._800 = _800
+            self._900 = _900
+        }
+        public var brightnessScale: [CGFloat] {
+            [_100.brightness, _200.brightness, _300.brightness, _400.brightness, _500.brightness, _600.brightness, _700.brightness, _800.brightness, _900.brightness]
+        }
+        public var saturationScale: [CGFloat] {
+            [_100.saturation, _200.saturation, _300.saturation, _400.saturation, _500.saturation, _600.saturation, _700.saturation, _800.saturation, _900.saturation]
+        }
+        public var hueScale: [CGFloat] {
+            [_100.hue, _200.hue, _300.hue, _400.hue, _500.hue, _600.hue, _700.hue, _800.hue, _900.hue]
+        }
     }
 }
 
