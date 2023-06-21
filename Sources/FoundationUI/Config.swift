@@ -161,7 +161,6 @@ struct SamplePreview: View {
         var body: some View {
             HStack (spacing: 0) {
                 VStack {
-                    ColorPath(.primary)
 //                    Button(action: {}, label: { Text("Styled Button") })
 //                        .buttonStyle(.plain)
 //                        .foundation(.padding(.base, .horizontal))
