@@ -3,27 +3,27 @@ import SwiftUI
 
 //#warning("TODO: ColorSpace")
 // MARK: - Color
-//public protocol FoundationUIColor {
-//    var value: SwiftUI.Color { get }
-//    var hue: CGFloat { get }
-//    var saturation: CGFloat { get }
-//    var brightness: CGFloat { get }
-//    var opacity: CGFloat { get }
-//}
+public protocol FoundationUIColor {
+    var value: SwiftUI.Color { get }
+    var hue: CGFloat { get }
+    var saturation: CGFloat { get }
+    var brightness: CGFloat { get }
+    var opacity: CGFloat { get }
+}
 
 // MARK: Default tokens
 //#warning("TODO: Default tokens") // primary, accent, systemColors
-extension Theme.Color {
-    public static let primary: Self = .init(universal: .init(hue: 0, saturation: 0, brightness: 0.5))
-    public static let accent: Self = .init(universal: .init(hue: 0.567, saturation: 1, brightness: 0.5))
-    public static let systemRed: Self = .init(
+extension FoundationUIColor {
+    public static var primary: Theme.Color { .init(universal: .init(hue: 0, saturation: 0, brightness: 0.5)) }
+    public static var accent: Theme.Color { .init(universal: .init(hue: 0.567, saturation: 1, brightness: 0.5)) }
+    public static var systemRed: Theme.Color { .init(
         universal: .init(red: 255, green: 19, blue: 48, dividedBy: 255),
         dark: .init(red: 255, green: 69, blue: 58, dividedBy: 255)
-    )
-    public static let systemBlue: Self = .init(
+    ) }
+    public static var systemBlue: Theme.Color { .init(
         universal: .init(red: 0, green: 122, blue: 255, dividedBy: 255),
         dark: .init(red: 10, green: 132, blue: 255, dividedBy: 255)
-    )
+    ) }
 }
 
 public enum FoundationUIColorAdjust {
@@ -66,7 +66,7 @@ struct Color_Previews: PreviewProvider {
 }
 
 extension Theme {
-    public struct Color {
+    public struct Color: FoundationUIColor {
         public var value: SwiftUI.Color {
             if useSourceValue, let components {
                 return .init(hue: components.hue, saturation: components.saturation, brightness: components.brightness, opacity: opacity)
