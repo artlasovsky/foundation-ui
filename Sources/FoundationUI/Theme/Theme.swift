@@ -7,97 +7,71 @@
 import Foundation
 import SwiftUI
 
-public func setThemeConfig(_ padding: FoundationSizeConfig) {
-    Theme.paddingConfig = padding
-}
-
 public struct FoundationUI {
+    internal struct Config {
+        typealias Size = FoundationUI.SizeConfig
+        var padding: FoundationUI.SizeConfig
+        var radius: FoundationUI.SizeConfig
+        
+        init(padding: Size, radius: Size) {
+            self.padding = padding
+            self.radius = radius
+        }
+        
+        public mutating func updateConfig(
+            padding: FoundationUI.SizeConfig?,
+            radius: FoundationUI.SizeConfig?
+        ) {
+            self.padding = padding ?? self.padding
+            self.radius = radius ?? self.radius
+        }
+    }
+    
     internal init() {}
-    internal static var paddingConfig: FoundationSizeConfig = .init(multiplier: 2, base: 8)
+    internal static var config: FoundationUI.Config = .init(
+        padding: .init(multiplier: 2, base: 8),
+        radius: .init(multiplier: 2, base: 8)
+    )
     
     /// Set theme config globally
-    public static func setConfig(padding: FoundationSizeConfig) {
-        Self.paddingConfig = padding
+    public static func setConfig(
+        padding: SizeConfig?,
+        radius: SizeConfig?
+    ) {
+        Self.config.updateConfig(padding: padding, radius: radius)
     }
     
-    public struct Padding: ThemePadding {
-        internal init() {}
-    }
+    public struct Padding: FoundationPadding { internal init() {} }
     
-    public struct Color: FoundationColor {
-        internal init() {}
-    }
+    public struct Radius: FoundationRadius { internal init() {} }
+    
+    public struct Color: FoundationColor { internal init() {} }
+    
+    public final class Modifier {}
 }
-
-public typealias Theme = FoundationUI
-
 
 public protocol FoundationColor {}
-
 public extension FoundationColor {
     static var primary: Color { .primary }
+//    static var secondary: Color { .init(light: .black, dark: .white)}
 }
 
-public extension ShapeStyle {
-    typealias theme = Theme.Color
+public protocol FoundationPadding: FoundationSize {}
+public extension FoundationPadding {
+    private static var config: FoundationUI.SizeConfig { FoundationUI.config.padding }
+    static var xsmall: CGFloat { config.xsmall }
+    static var small: CGFloat { config.small }
+    static var regular: CGFloat { config.regular }
+    static var large: CGFloat { config.large }
+    static var xlarge: CGFloat { config.xlarge }
 }
 
-// Set of several different value sets
-public enum ThemeCGFloatProperties {
-    public typealias padding = Theme.Padding
-    public typealias radius = Theme.Padding
-}
-public extension CGFloat {
-    typealias theme = ThemeCGFloatProperties
-}
-
-
-public struct FoundationSizeConfig {
-    internal var multiplier: CGFloat
-    internal var base: CGFloat
-    
-    internal var _xsmall: CGFloat?
-    internal var _small: CGFloat?
-    internal var _regular: CGFloat?
-    internal var _large: CGFloat?
-    internal var _xlarge: CGFloat?
-    
-    public init(multiplier: CGFloat, base: CGFloat) {
-        self.multiplier = multiplier
-        self.base = base
-    }
-    
-    public init(xsmall: CGFloat, small: CGFloat, regular: CGFloat, large: CGFloat, xlarge: CGFloat) {
-        self._xsmall = xsmall
-        self._small = small
-        self._regular = regular
-        self._large = large
-        self._xlarge = xlarge
-        self.multiplier = 1
-        self.base = 0
-    }
-    
-    internal var xsmall: CGFloat { _xsmall ?? small / multiplier }
-    internal var small: CGFloat { _small ?? regular / multiplier }
-    internal var regular: CGFloat { _regular ?? base }
-    internal var large: CGFloat { _large ?? regular * multiplier }
-    internal var xlarge: CGFloat { _xlarge ?? large * multiplier }
-}
-
-public protocol FoundationSize {
-    static var xsmall: CGFloat { get }
-    static var small: CGFloat { get }
-    static var regular: CGFloat { get }
-    static var large: CGFloat { get }
-    static var xlarge: CGFloat { get }
-}
-
-public protocol ThemePadding: FoundationSize {}
-
-public extension ThemePadding {
-    static var xsmall: CGFloat { Theme.paddingConfig.xsmall } // 2
-    static var small: CGFloat { Theme.paddingConfig.small } // 4
-    static var regular: CGFloat { Theme.paddingConfig.regular } // 8
-    static var large: CGFloat { Theme.paddingConfig.large } // 16
-    static var xlarge: CGFloat { Theme.paddingConfig.xlarge } // 32
+public protocol FoundationRadius: FoundationSize {}
+public extension FoundationRadius {
+    private static var config: FoundationUI.SizeConfig { FoundationUI.config.radius }
+    static var xsmall: CGFloat { config.xsmall }
+    static var small: CGFloat { config.small }
+    static var regular: CGFloat { config.regular }
+    static var large: CGFloat { config.large }
+    static var xlarge: CGFloat { config.xlarge }
 }
