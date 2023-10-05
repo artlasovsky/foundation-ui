@@ -69,50 +69,6 @@ extension Color {
 // e.g. medium gray -> [0 - V - 12]
 // TODO: Transparent variant
 
-/*
- lightGray
-   gray1: '#fcfcfc',    hsl(0deg, 0%, 99%) - hsl(0deg, 0%, 0%, 0.012)
-   gray2: '#f9f9f9',    hsl(0deg, 0%, 98%) - hsl(0deg, 0%, 0%, 0.024)
-   gray3: '#f0f0f0',    hsl(0deg, 0%, 94%) - hsl(0deg, 0%, 0%, 0.059)
-   gray4: '#e8e8e8',    hsl(0deg, 0%, 91%) - hsl(0deg, 0%, 0%, 0.09)
-   gray5: '#e0e0e0',    hsl(0deg, 0%, 88%) - hsl(0deg, 0%, 0%, 0.12)
-   gray6: '#d9d9d9',    hsl(0deg, 0%, 85%) - hsl(0deg, 0%, 0%, 0.15)
-   gray7: '#cecece',    hsl(0deg, 0%, 81%) - hsl(0deg, 0%, 0%, 0.19)
-   gray8: '#bbbbbb',    hsl(0deg, 0%, 73%) - hsl(0deg, 0%, 0%, 0.27)
-   gray9: '#8d8d8d',    hsl(0deg, 0%, 55%) - hsl(0deg, 0%, 0%, 0.45) < ROOT
-   gray10: '#838383',   hsl(0deg, 0%, 51%) - hsl(0deg, 0%, 0%, 0.49)
-   gray11: '#646464',   hsl(0deg, 0%, 39%) - hsl(0deg, 0%, 0%, 0.61)
-   gray12: '#202020',   hsl(0deg, 0%, 13%) - hsl(0deg, 0%, 0%, 0.87)
- 
- darkGray
-   gray1: '#111111',    hsl(0deg, 0%, 7%)  - hsl(0deg, 0%, 0%, 0)
-   gray2: '#191919',    hsl(0deg, 0%, 10%) - hsl(0deg, 0%, 100%, 0.035)
-   gray3: '#222222',    hsl(0deg, 0%, 13%) - hsl(0deg, 0%, 100%, 0.071)
-   gray4: '#2a2a2a',    hsl(0deg, 0%, 16%) - hsl(0deg, 0%, 100%, 0.11)
-   gray5: '#313131',    hsl(0deg, 0%, 19%) - hsl(0deg, 0%, 100%, 0.13)
-   gray6: '#3a3a3a',    hsl(0deg, 0%, 23%) - hsl(0deg, 0%, 100%, 0.17)
-   gray7: '#484848',    hsl(0deg, 0%, 28%) - hsl(0deg, 0%, 100%, 0.23)
-   gray8: '#606060',    hsl(0deg, 0%, 38%) - hsl(0deg, 0%, 100%, 0.33)
-   gray9: '#6e6e6e',    hsl(0deg, 0%, 43%) - hsl(0deg, 0%, 100%, 0.39) < ROOT
-   gray10: '#7b7b7b',   hsl(0deg, 0%, 48%) - hsl(0deg, 0%, 100%, 0.45)
-   gray11: '#b4b4b4',   hsl(0deg, 0%, 71%) - hsl(0deg, 0%, 100%, 0.69)
-   gray12: '#eeeeee',   hsl(0deg, 0%, 93%) - hsl(0deg, 0%, 100%, 0.93)
- 
- Radix:
- 1 App background
- 2 Subtle background
- 3 UI element background
- 4 Hovered UI element background
- 5 Active / Selected UI element background
- 6 Subtle borders and separators
- 7 UI element border and focus rings
- 8 Hovered UI element border
- 9 Solid backgrounds
- 10 Hovered solid backgrounds
- 11 Low-contrast text
- 12 High-contrast text
-*/
-
 //struct SemanticScale {
 //    let color: Color
 //    
@@ -122,18 +78,18 @@ extension Color {
 //}
 
 enum ScaleKeys: Int {
-    case background = 1
-    case backgroundEmphasized = 2
-    case component = 3
-    case componentHover = 4
-    case componentPress = 5
-    case borderFaded = 6
-    case border = 7
-    case borderEmphasized = 8
-    case solid = 9
-    case solidEmphasized = 10
-    case textFaded = 11
-    case text = 12
+    case background = 1             // App background
+    case backgroundEmphasized = 2   // Subtle background
+    case element = 3                // UI element background
+    case elementHovered = 4         // Hovered UI element background
+    case elementActive = 5          // Active / Selected UI element background
+    case borderFaded = 6            // Subtle borders and separators
+    case border = 7                 // UI element border and focus rings
+    case borderEmphasized = 8       // Hovered UI element border
+    case solid = 9                  // Solid backgrounds
+    case solidEmphasized = 10       // Hovered solid backgrounds
+    case textFaded = 11             // Low-contrast text
+    case text = 12                  // High-contrast text
 }
 
 extension Color {
@@ -160,10 +116,8 @@ extension Color {
             11: self.semantic(.textFaded)
                 .adjustingSaturation(light: 2.1, dark: 1.05)
                 .adjustingBrightness(light: isSaturated ? 0.95 : 0.7, dark: isSaturated ? 2 : 2)
-//                .settingBrightness(light: 0.25, dark: 1)
                 .settingOpacity(light: isSaturated ? 0.75 : 0.85, dark: isSaturated ? 0.95 : 0.8),
             12: self.semantic(.text)
-//                .settingBrightness(light: 0, dark: 1)
                 .adjustingSaturation(light: 3, dark: 1)
                 .adjustingBrightness(light: isSaturated ? 0.85 : 0, dark: 2)
                 .settingOpacity(light: 0.9, dark: 0.9)
