@@ -13,13 +13,23 @@ let package = Package(
         .library(
             name: "FoundationUI",
             targets: ["FoundationUI"]),
+        .library(
+            name: "FoundationUICore",
+            targets: ["FoundationUICore"])
     ],
     dependencies: [
     ],
     targets: [
+        // Default theme – Native experience
         .target(
             name: "FoundationUI",
-            dependencies: []),
+            dependencies: ["FoundationUICore"],
+            path: "Sources/Themes/Default"),
+        // Core
+        .target(
+            name: "FoundationUICore",
+            dependencies: [],
+            path: "Sources/FoundationUI"),
         .testTarget(
             name: "FoundationUITests",
             dependencies: ["FoundationUI"]),

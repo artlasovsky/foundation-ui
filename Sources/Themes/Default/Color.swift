@@ -1,9 +1,9 @@
 //
 //  Color.swift
+//  
 //
-//  Created by Art Lasovsky on 10/2/23.
+//  Created by Art Lasovsky on 10/6/23.
 //
-
 import Foundation
 import SwiftUI
 #if os(macOS)
@@ -12,6 +12,8 @@ import AppKit
 #if os(iOS)
 import UIKit
 #endif
+
+import FoundationUICore
 
 extension Color {
     // TODO: visionOS
@@ -289,43 +291,33 @@ public extension Color {
             self.isTransparent = transparent
         }
         /// App background
-        var background: Color { color.swatch(1, transparent: isTransparent) }
+        public var background: Color { color.swatch(1, transparent: isTransparent) }
         /// Subtle background
-        var backgroundEmphasized: Color { color.swatch(2, transparent: isTransparent) }
+        public var backgroundEmphasized: Color { color.swatch(2, transparent: isTransparent) }
         /// UI element background
-        var element: Color { color.swatch(3, transparent: isTransparent) }
+        public var element: Color { color.swatch(3, transparent: isTransparent) }
         /// Hovered UI element background
-        var elementHovered: Color { color.swatch(4, transparent: isTransparent) }
+        public var elementHovered: Color { color.swatch(4, transparent: isTransparent) }
         /// Active / Selected UI element background
-        var elementActive: Color { color.swatch(5, transparent: isTransparent) }
+        public var elementActive: Color { color.swatch(5, transparent: isTransparent) }
         /// Subtle borders and separators
-        var borderFaded: Color { color.swatch(6, transparent: isTransparent) }
+        public var borderFaded: Color { color.swatch(6, transparent: isTransparent) }
         /// UI element border and focus rings
-        var border: Color { color.swatch(7, transparent: isTransparent) }
+        public var border: Color { color.swatch(7, transparent: isTransparent) }
         /// Hovered UI element border
-        var borderEmphasized: Color { color.swatch(8, transparent: isTransparent) }
+        public var borderEmphasized: Color { color.swatch(8, transparent: isTransparent) }
         /// Solid backgrounds
-        var solid: Color { color.swatch(9, transparent: isTransparent) }
+        public var solid: Color { color.swatch(9, transparent: isTransparent) }
         /// Hovered solid backgrounds
-        var solidEmphasized: Color { color.swatch(10, transparent: isTransparent) }
+        public var solidEmphasized: Color { color.swatch(10, transparent: isTransparent) }
         /// Low-contrast text
-        var textFaded: Color { color.swatch(11, transparent: isTransparent) }
+        public var textFaded: Color { color.swatch(11, transparent: isTransparent) }
         /// High-contrast text
-        var text: Color { color.swatch(12, transparent: isTransparent) }
+        public var text: Color { color.swatch(12, transparent: isTransparent) }
     }
 }
 
-extension FoundationColor {
-    static var secondary: Color {
-        .init(gray: 0.43, grayDark: 0.55)
-    }
-    static var accent: Color {
-        .blue
-//        .init(light: (0.57, 1, 0.5, 1), dark: (0.57, 1, 0.5, 1))
-    }
-}
-
-struct ColorScalePreviews: View {
+private struct ColorScalePreviews: View {
     struct Swatch: View {
         let color: Color
         let colorIndex: Int
@@ -360,7 +352,7 @@ struct ColorScalePreviews: View {
             VStack(spacing: .theme.padding.regular) {
                 Text(colorScheme == .dark ? "Dark" : "Light")
                     .foregroundStyle(.theme.primary.scale.text)
-                ColorScale(color: .theme.secondary)
+                ColorScale(color: .theme.primary)
                 ColorScale(color: .theme.accent)
                 ColorScale(color: .orange)
             }
