@@ -40,9 +40,9 @@ public enum ThemeCGFloatProperties {
 }
 
 public extension View {
-    func shadow(_ theme: FoundationUI.Shadow) -> some View {
+    func shadow(_ value: FoundationUI.Shadow) -> some View {
         self
-            .shadow(color: theme.color, radius: theme.radius, x: theme.x, y: theme.y)
+            .shadow(color: value.color, radius: value.radius, x: value.x, y: value.y)
     }
 }
 

@@ -28,19 +28,21 @@ extension FoundationUI.Font: FoundationUISize {
 }
 
 extension FoundationUI.Shadow: FoundationUISize {
-    public static var xsmall    = FoundationUI.Shadow(radius: 2)
-    public static var small     = FoundationUI.Shadow(radius: 4)
-    public static var regular   = FoundationUI.Shadow(radius: 8)
+    public static var xsmall    = FoundationUI.Shadow(.black.opacity(0.25), radius: 3, x: 0, y: 3)
+    public static var small     = FoundationUI.Shadow(.black.opacity(0.35), radius: 4, x: 0, y: 4)
+    public static var regular   = FoundationUI.Shadow(.black.opacity(0.4), radius: 5, x: 0, y: 5)
     public static var large     = FoundationUI.Shadow(radius: 12)
     public static var xlarge    = FoundationUI.Shadow(radius: 16)
     public static var xxlarge   = FoundationUI.Shadow(radius: 18)
 }
 
-#Preview(body: {
-    Rectangle().frame(width: 20, height: 30)
-        .shadow(.small)
-        .padding()
-})
+public extension View {
+    func shadow(double value: FoundationUI.Shadow) -> some View {
+        self
+            .shadow(color: value.color.opacity(0.3), radius: value.radius * 0.2, x: 0, y: value.y * 0.1)
+            .shadow(color: value.color, radius: value.radius, x: value.x, y: value.y)
+    }
+}
 
 extension FoundationUI {
     internal static var config: FoundationUI.Config = .init(
