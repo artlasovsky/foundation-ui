@@ -14,10 +14,6 @@ public extension FoundationUI.Color {
     static var accent: Color { .blue }
 }
 
-public extension FoundationUI.Radius {
-    static let window: CGFloat = 10
-}
-
 extension FoundationUI.Font: FoundationUISize {
     public static let xSmall    = Font.caption
     public static let small     = Font.callout
@@ -80,6 +76,12 @@ extension FoundationUI.Radius: FoundationUISize {
     public static let xLarge    = config.xLarge
     public static let xxLarge   = config.xxLarge
 }
+
+#if os(macOS)
+public extension FoundationUI.Radius {
+    static let window: CGFloat = 10
+}
+#endif
 
 public protocol FoundationUISize {
     associatedtype V

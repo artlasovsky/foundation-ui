@@ -27,8 +27,6 @@ public struct FoundationUI {
             self.y = y
         }
     }
-    
-    public final class Modifier {}
 }
 
 

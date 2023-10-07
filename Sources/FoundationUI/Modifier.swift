@@ -8,92 +8,59 @@
 import Foundation
 import SwiftUI
 
-
-// TODO: Guideline modifier
-
-extension FoundationUI.Modifier {
-//    @Published public var colorScheme: ColorScheme = .dark
+extension FoundationUI {
+    private struct Border: ViewModifier {
+        @Environment(\.foundationRadius) private var env
+        let color: SwiftUI.Color
+        let width: CGFloat
+        func body(content: Content) -> some View {
+            content.overlay {
+                RoundedRectangle(cornerRadius: env.radius, style: env.style)
+                    .stroke(lineWidth: width)
+                    .padding(width / 2) // TODO: Inside / Outside / Center
+                    .opacity(0.3) // TODO: Opacity
+                    .blendMode(.plusLighter) // TODO: BlendMode
+            }
+        }
+    }
+    struct Modifier<Content: View> {
+        private var view: Content
+        internal init(_ view: Content) {
+            self.view = view
+        }
+        func background(_ style: some ShapeStyle, cornerRadius: CGFloat = 0, cornerRadiusStyle: RoundedCornerStyle = .continuous) -> some View {
+            view
+                .environment(\.foundationRadius, (cornerRadius, cornerRadiusStyle))
+                .background {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: cornerRadiusStyle)
+                        .foregroundStyle(style)
+                }
+        }
+        // TODO: Theme should have a set of predefined styles
+        func border(color: SwiftUI.Color, width: CGFloat) -> some View {
+            view
+                .modifier(FoundationUI.Border(color: color, width: width))
+        }
+    }
 }
-//public final class FoundationUI: ObservableObject {
-//    @Published public var colorScheme: ColorScheme = .dark
-//    public static var shared = FoundationUI()
-//    
-//    @MainActor
-//    public func updateColorScheme(_ colorScheme: ColorScheme) {
-//        self.colorScheme = colorScheme
-//    }
-//    public struct ColorSchemeObserver: ViewModifier {
-//        @Environment(\.colorScheme) private var colorScheme
-//        @Environment(\.foundationColorSchemeObserverIsSet) private var isSet
-//        @ObservedObject var ui = FoundationUI.shared
-//        public init() {}
-//        public func body(content: Content) -> some View {
-//            if isSet {
-//                content
-//            } else {
-//                content
-//                    .environment(\.foundationColorSchemeObserverIsSet, true)
-//                    .onAppear {
-//                        Task {
-//                            FoundationUI.shared.updateColorScheme(colorScheme)
-//                            print("color observer was initialized")
-//                        }
-//                    }
-//                    .onChange(of: colorScheme, perform: { colorScheme in
-//                        Task {
-//                            FoundationUI.shared.updateColorScheme(colorScheme)
-//                            print("color observer was updated")
-//                        }
-//                    })
-//                    .onChange(of: ui.colorScheme) { newValue in
-//                        print(newValue)
-//                    }
-//            }
-//        }
-//    }
-//}
-//
-//public typealias Theme = FoundationUI.Config
-//
+
+
+extension View {
+    var theme: FoundationUI.Modifier<Self> { FoundationUI.Modifier(self) }
+}
+
+#Preview("Name"){
+    VStack {
+        Text("Hello!")
+            .padding()
+            .theme.border(color: .white, width: 1)
+            .theme.background(.blue, cornerRadius: 12)
+    }
+    .padding()
+}
+
 //extension FoundationUI {
 //    public class Config {}
-//    public struct Padding: ViewModifier {
-//        private let padding: CGFloat
-//        private let edges: Edge.Set
-//        public init(_ padding: Config.Spacing, edges: Edge.Set) {
-//            self.padding = padding.value
-//            self.edges = edges
-//        }        
-//        public func body(content: Content) -> some View {
-//            content
-//                .padding(edges, padding)
-//                .environment(\.foundationPadding, padding)
-//        }
-//    }
-//    public struct NestedRadius: ViewModifier {
-//        @Environment(\.foundationPadding) private var foundationPadding
-//        @Environment(\.foundationRadius) private var foundationRadius
-//        public init() {}
-//        
-//        private var radius: CGFloat {
-//            foundationRadius - foundationPadding
-//        }
-//        
-//        public func body(content: Content) -> some View {
-//            content
-//                .environment(\.foundationRadius, radius)
-//        }
-//    }
-//    public struct Radius: ViewModifier {
-//        private let radius: CGFloat
-//        public init(_ radius: Theme.Radius = .base) {
-//            self.radius = radius.value
-//        }
-//        public func body(content: Content) -> some View {
-//            content
-//                .environment(\.foundationRadius, radius)
-//        }
-//    }
 //    static func getRoundedShape(_ foundationRadius: CGFloat) -> RoundedRectangle {
 //        RoundedRectangle(cornerRadius: foundationRadius, style: .continuous)
 //    }
@@ -244,38 +211,30 @@ extension FoundationUI.Modifier {
 //    }
 //}
 //
-//// MARK: - Environment Values
-//private struct FoundationRadiusKey: EnvironmentKey {
-//    static let defaultValue: CGFloat = 0
-//}
-//
-//private struct FoundationPaddingKey: EnvironmentKey {
-//    static let defaultValue: CGFloat = 0
-//}
+// MARK: - Environment Values
+private struct FoundationRadiusKey: EnvironmentKey {
+    static let defaultValue: (radius: CGFloat, style: RoundedCornerStyle) = (0, .continuous)
+}
+
+private struct FoundationPaddingKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 0
+}
 //
 //private struct FoundationBackgroundColorKey: EnvironmentKey {
 //    static let defaultValue: Theme.Color = .primary.background
 //}
 //
-//private struct FoundationColorSchemeObserverIsSetKey: EnvironmentKey {
-//    static let defaultValue: Bool = false
-//}
-//
-//extension EnvironmentValues {
-//    public var foundationRadius: CGFloat {
-//        get { self[FoundationRadiusKey.self] }
-//        set { self[FoundationRadiusKey.self] = newValue }
-//    }
-//    public var foundationPadding: CGFloat {
-//        get { self[FoundationPaddingKey.self] }
-//        set { self[FoundationPaddingKey.self] = newValue }
-//    }
+extension EnvironmentValues {
+    public var foundationRadius: (radius: CGFloat, style: RoundedCornerStyle) {
+        get { self[FoundationRadiusKey.self] }
+        set { self[FoundationRadiusKey.self] = newValue }
+    }
+    public var foundationPadding: CGFloat {
+        get { self[FoundationPaddingKey.self] }
+        set { self[FoundationPaddingKey.self] = newValue }
+    }
 //    public var foundationBackgroundColor: Theme.Color {
 //        get { self[FoundationBackgroundColorKey.self] }
 //        set { self[FoundationBackgroundColorKey.self] = newValue }
 //    }
-//    public var foundationColorSchemeObserverIsSet: Bool {
-//        get { self[FoundationColorSchemeObserverIsSetKey.self] }
-//        set { self[FoundationColorSchemeObserverIsSetKey.self] = newValue }
-//    }
-//}
+}
