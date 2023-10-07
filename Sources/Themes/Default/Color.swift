@@ -67,8 +67,8 @@ extension Color {
     #endif
 }
 
-internal extension Color {
 #if os(macOS)
+internal extension Color {
     init(gray: CGFloat, grayDark: CGFloat? = nil) {
         self.init(
             light: .init(colorSpace: Self.colorSpace, hue: 0, saturation: 0, brightness: gray, alpha: 1),
@@ -100,7 +100,6 @@ internal extension Color {
             s: CGFloat = 0,
             b: CGFloat = 0,
             a: CGFloat = 0
-        
         colorUsingColorSpace?.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
         return (h, s, b, a)
     }
@@ -184,7 +183,9 @@ internal extension Color {
                          alpha: clamp(a))
         }))
     }
+}
 #elseif os(iOS)
+internal extension Color {
     init(gray: CGFloat, grayDark: CGFloat? = nil) {
         self.init(
             light: .init(hue: 0, saturation: 0, brightness: gray, alpha: 1),
@@ -302,13 +303,11 @@ internal extension Color {
                          alpha: clamp(a))
         }))
     }
-#endif
 }
+#endif
 
 
 internal extension Color {
-    
-    
     private func swatch(_ index: Int, transparent: Bool = false) -> Self {
         (transparent ? transparentScale : baseScale)[index] ?? self
     }
@@ -454,14 +453,20 @@ private struct ColorScalePreviews: View {
     struct Swatch: View {
         let color: Color
         let colorIndex: Int
+        var swatchColor: Color? {
+            color.baseScale[colorIndex]
+        }
+        var swatchTransparentColor: Color? {
+            color.transparentScale[colorIndex]
+        }
         var body: some View {
             VStack(spacing: .theme.padding.small) {
                 Rectangle()
                     .frame(width: 25, height: 20)
-                    .foregroundColor(color.baseScale[colorIndex])
+                    .foregroundColor(swatchColor)
                 Rectangle()
                     .frame(width: 25, height: 20)
-                    .foregroundColor(color.transparentScale[colorIndex])
+                    .foregroundColor(swatchTransparentColor)
             }
         }
     }
@@ -505,14 +510,6 @@ private struct ColorScalePreviews: View {
         .padding(.vertical, 50)
     }
 }
-
-//Text("Hello World")
-//                .padding(.horizontal, .theme.padding.large)
-//                .padding(.vertical, .theme.padding.regular)
-//                .background(Color.theme.accent.scale.backgroundEmphasized)
-//                .foregroundStyle(.theme.accent.scaleA.text)
-//                .clipShape(RoundedRectangle(cornerRadius: .theme.radius.regular))
-//                .padding(.theme.padding.small)
 #Preview("Color Scales") {
     ColorScalePreviews()
 }

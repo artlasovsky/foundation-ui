@@ -37,13 +37,6 @@ public enum ThemeCGFloatProperties {
     public typealias radius = FoundationUI.Padding
 }
 
-public extension View {
-    func shadow(_ value: FoundationUI.Shadow) -> some View {
-        self
-            .shadow(color: value.color, radius: value.radius, x: value.x, y: value.y)
-    }
-}
-
 public extension CGFloat {
     typealias theme = ThemeCGFloatProperties
     typealias foundation = ThemeCGFloatProperties
