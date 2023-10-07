@@ -19,21 +19,21 @@ public extension FoundationUI.Radius {
 }
 
 extension FoundationUI.Font: FoundationUISize {
-    public static let xsmall    = Font.caption
+    public static let xSmall    = Font.caption
     public static let small     = Font.callout
     public static let regular   = Font.body
     public static let large     = Font.title3
-    public static let xlarge    = Font.title2
-    public static let xxlarge   = Font.title
+    public static let xLarge    = Font.title2
+    public static let xxLarge   = Font.title
 }
 
 extension FoundationUI.Shadow: FoundationUISize {
-    public static var xsmall    = FoundationUI.Shadow(.black.opacity(0.25), radius: 3, x: 0, y: 3)
+    public static var xSmall    = FoundationUI.Shadow(.black.opacity(0.25), radius: 3, x: 0, y: 3)
     public static var small     = FoundationUI.Shadow(.black.opacity(0.35), radius: 4, x: 0, y: 4)
     public static var regular   = FoundationUI.Shadow(.black.opacity(0.4), radius: 5, x: 0, y: 5)
     public static var large     = FoundationUI.Shadow(radius: 12)
-    public static var xlarge    = FoundationUI.Shadow(radius: 16)
-    public static var xxlarge   = FoundationUI.Shadow(radius: 18)
+    public static var xLarge    = FoundationUI.Shadow(radius: 16)
+    public static var xxLarge   = FoundationUI.Shadow(radius: 18)
 }
 
 public extension View {
@@ -63,43 +63,43 @@ extension FoundationUI {
 
 extension FoundationUI.Padding: FoundationUISize {
     private static let config   = FoundationUI.config.padding
-    public static let xsmall    = config.xsmall
+    public static let xSmall    = config.xSmall
     public static let small     = config.small
     public static let regular   = config.regular
     public static let large     = config.large
-    public static let xlarge    = config.xlarge
-    public static let xxlarge   = config.xxlarge
+    public static let xLarge    = config.xLarge
+    public static let xxLarge   = config.xxLarge
 }
 
 extension FoundationUI.Radius: FoundationUISize {
     private static let config   = FoundationUI.config.radius
-    public static let xsmall    = config.xsmall
+    public static let xSmall    = config.xSmall
     public static let small     = config.small
     public static let regular   = config.regular
     public static let large     = config.large
-    public static let xlarge    = config.xlarge
-    public static let xxlarge   = config.xxlarge
+    public static let xLarge    = config.xLarge
+    public static let xxLarge   = config.xxLarge
 }
 
 public protocol FoundationUISize {
     associatedtype V
-    static var xsmall: V { get }
+    static var xSmall: V { get }
     static var small: V { get }
     static var regular: V { get }
     static var large: V { get }
-    static var xlarge: V { get }
-    static var xxlarge: V { get }
+    static var xLarge: V { get }
+    static var xxLarge: V { get }
 }
 
 
 extension FoundationUI.Config {
     public struct Size {
-        public var xsmall: CGFloat  { _xsmall ?? small / multiplier }
+        public var xSmall: CGFloat  { _xSmall ?? small / multiplier }
         public var small: CGFloat   { _small ?? regular / multiplier }
         public var regular: CGFloat { _regular ?? base }
         public var large: CGFloat   { _large ?? regular * multiplier }
-        public var xlarge: CGFloat  { _xlarge ?? large * multiplier }
-        public var xxlarge: CGFloat { _xxlarge ?? xlarge * multiplier }
+        public var xLarge: CGFloat  { _xLarge ?? large * multiplier }
+        public var xxLarge: CGFloat { _xxLarge ?? xLarge * multiplier }
         
         public init(multiplier: CGFloat, base: CGFloat) {
             self.multiplier = multiplier
@@ -114,12 +114,12 @@ extension FoundationUI.Config {
             xlarge: CGFloat,
             xxlarge: CGFloat
         ) {
-            _xsmall = xsmall
+            _xSmall = xsmall
             _small = small
             _regular = regular
             _large = large
-            _xlarge = xlarge
-            _xxlarge = xxlarge
+            _xLarge = xlarge
+            _xxLarge = xxlarge
             multiplier = 1
             base = 0
         }
@@ -127,12 +127,12 @@ extension FoundationUI.Config {
         private var multiplier: CGFloat
         private var base: CGFloat
         
-        private var _xsmall: CGFloat?
+        private var _xSmall: CGFloat?
         private var _small: CGFloat?
         private var _regular: CGFloat?
         private var _large: CGFloat?
-        private var _xlarge: CGFloat?
-        private var _xxlarge: CGFloat?
+        private var _xLarge: CGFloat?
+        private var _xxLarge: CGFloat?
     }
     
 }

@@ -16,7 +16,7 @@ import UIKit
 import FoundationUICore
 
 extension Color {
-    // TODO: visionOS
+    // TODO: visionOS?
     #if os(iOS)
     init(light: UIColor, lightAccessible: UIColor? = nil, dark: UIColor, darkAccessible: UIColor? = nil) {
         #if os(watchOS)
@@ -68,13 +68,246 @@ extension Color {
 }
 
 internal extension Color {
-    static var colorSpace: NSColorSpace { .displayP3 }
-    private var isSaturated: Bool {
-        self.nsColor.usingColorSpace(Self.colorSpace)?.saturationComponent ?? 0 > 0
+#if os(macOS)
+    init(gray: CGFloat, grayDark: CGFloat? = nil) {
+        self.init(
+            light: .init(colorSpace: Self.colorSpace, hue: 0, saturation: 0, brightness: gray, alpha: 1),
+            dark: .init(colorSpace: Self.colorSpace, hue: 0, saturation: 0, brightness: grayDark ?? gray, alpha: 1)
+        )
     }
+    init(light: HSBA, dark: HSBA?) {
+        let dark = dark ?? light
+        self.init(light: .init(colorSpace: Self.colorSpace, hue: light.h, saturation: light.s, brightness: light.b, alpha: light.a),
+                  dark: .init(colorSpace: Self.colorSpace, hue: dark.h, saturation: dark.s, brightness: dark.b, alpha: dark.a))
+    }
+    
     private var nsColor: NSColor {
         NSColor(self)
     }
+    static var colorSpace: NSColorSpace { .displayP3 }
+    private var colorUsingColorSpace: NSColor? {
+        nsColor.usingColorSpace(Self.colorSpace)
+    }
+    private var colorNameComponent: NSColor.Name {
+        nsColor.colorNameComponent
+    }
+    private var isSaturated: Bool {
+        colorUsingColorSpace?.saturationComponent ?? 0 > 0
+    }
+    
+    private func getComponents() -> HSBA {
+        var h: CGFloat = 0,
+            s: CGFloat = 0,
+            b: CGFloat = 0,
+            a: CGFloat = 0
+        
+        colorUsingColorSpace?.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return (h, s, b, a)
+    }
+    
+    private func settingComponents(
+        light: OptionalHSBA,
+        lightAccessible: OptionalHSBA? = nil,
+        dark: OptionalHSBA,
+        darkAccessible: OptionalHSBA? = nil
+    ) -> Color {
+        .init(NSColor(name: colorNameComponent, dynamicProvider: { appearance in
+            var (h, s, b, a) = getComponents()
+            switch appearance.name {
+            case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
+                let lightAccessible = lightAccessible ?? light
+                h = lightAccessible.h ?? h
+                s = lightAccessible.s ?? s
+                b = lightAccessible.b ?? b
+                a = lightAccessible.a ?? a
+            case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
+                let darkAccessible = darkAccessible ?? dark
+                h = darkAccessible.h ?? h
+                s = darkAccessible.s ?? s
+                b = darkAccessible.b ?? b
+                a = darkAccessible.a ?? a
+            case .darkAqua, .vibrantDark:
+                h = dark.h ?? h
+                s = dark.s ?? s
+                b = dark.b ?? b
+                a = dark.a ?? a
+            default:
+                h = light.h ?? h
+                s = light.s ?? s
+                b = light.b ?? b
+                a = light.a ?? a
+            }
+            return .init(colorSpace: Self.colorSpace,
+                         hue: clamp(h),
+                         saturation: clamp(s),
+                         brightness: clamp(b),
+                         alpha: clamp(a))
+        }))
+    }
+    private func adjustingComponents(
+        light: HSBA,
+        lightAccessible: HSBA? = nil,
+        dark: HSBA,
+        darkAccessible: HSBA? = nil
+    ) -> Color {
+        .init(NSColor(name: colorNameComponent, dynamicProvider: { appearance in
+            var (h, s, b, a) = getComponents()
+            switch appearance.name {
+            case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
+                let lightAccessible = lightAccessible ?? light
+                h *= lightAccessible.h
+                s *= lightAccessible.s
+                b *= lightAccessible.b
+                a *= lightAccessible.a
+            case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
+                let darkAccessible = darkAccessible ?? dark
+                h *= darkAccessible.h
+                s *= darkAccessible.s
+                b *= darkAccessible.b
+                a *= darkAccessible.a
+            case .darkAqua, .vibrantDark:
+                h *= dark.h
+                s *= dark.s
+                b *= dark.b
+                a *= dark.a
+            default:
+                h *= light.h
+                s *= light.s
+                b *= light.b
+                a *= light.a
+                
+            }
+            return .init(colorSpace: Self.colorSpace,
+                         hue: clamp(h),
+                         saturation: clamp(s),
+                         brightness: clamp(b),
+                         alpha: clamp(a))
+        }))
+    }
+#elseif os(iOS)
+    init(gray: CGFloat, grayDark: CGFloat? = nil) {
+        self.init(
+            light: .init(hue: 0, saturation: 0, brightness: gray, alpha: 1),
+            dark: .init(hue: 0, saturation: 0, brightness: grayDark ?? gray, alpha: 1)
+        )
+    }
+    init(light: HSBA, dark: HSBA?) {
+        let dark = dark ?? light
+        self.init(
+            light: .init(hue: light.h, saturation: light.s, brightness: light.b, alpha: light.a),
+            dark: .init(hue: dark.h, saturation: dark.s, brightness: dark.b, alpha: dark.a)
+        )
+    }
+    private var uiColor: UIColor {
+        UIColor(self)
+    }
+    private func getComponents() -> HSBA {
+        var h: CGFloat = 0,
+            s: CGFloat = 0,
+            b: CGFloat = 0,
+            a: CGFloat = 0
+        
+        uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return (h, s, b, a)
+    }
+    private var isSaturated: Bool {
+        getComponents().s > 0
+    }
+    
+    private func adjustingComponents(
+        light: HSBA,
+        lightAccessible: HSBA? = nil,
+        dark: HSBA,
+        darkAccessible: HSBA? = nil
+    ) -> Color {
+        .init(uiColor: .init(dynamicProvider: { trait in
+            var (h, s, b, a) = getComponents()
+            switch trait.userInterfaceStyle {
+            case .dark:
+                switch trait.accessibilityContrast {
+                case .high:
+                    let darkAccessible = darkAccessible ?? dark
+                    h *= darkAccessible.h
+                    s *= darkAccessible.s
+                    b *= darkAccessible.b
+                    a *= darkAccessible.a
+                default:
+                    h *= dark.h
+                    s *= dark.s
+                    b *= dark.b
+                    a *= dark.a
+                }
+            default:
+                switch trait.accessibilityContrast {
+                case .high:
+                    let lightAccessible = lightAccessible ?? light
+                    h *= lightAccessible.h
+                    s *= lightAccessible.s
+                    b *= lightAccessible.b
+                    a *= lightAccessible.a
+                default:
+                    h *= light.h
+                    s *= light.s
+                    b *= light.b
+                    a *= light.a
+                }
+            }
+            return .init(hue: clamp(h),
+                         saturation: clamp(s),
+                         brightness: clamp(b),
+                         alpha: clamp(a))
+        }))
+    }
+    private func settingComponents(
+        light: OptionalHSBA,
+        lightAccessible: OptionalHSBA? = nil,
+        dark: OptionalHSBA,
+        darkAccessible: OptionalHSBA? = nil
+    ) -> Color {
+        .init(uiColor: .init(dynamicProvider: { trait in
+            var (h, s, b, a) = getComponents()
+            switch trait.userInterfaceStyle {
+            case .dark:
+                switch trait.accessibilityContrast {
+                case .high:
+                    let darkAccessible = darkAccessible ?? dark
+                    h = darkAccessible.h ?? h
+                    s = darkAccessible.s ?? s
+                    b = darkAccessible.b ?? b
+                    a = darkAccessible.a ?? a
+                default:
+                    h = dark.h ?? h
+                    s = dark.s ?? s
+                    b = dark.b ?? b
+                    a = dark.a ?? a
+                }
+            default:
+                switch trait.accessibilityContrast {
+                case .high:
+                    let lightAccessible = lightAccessible ?? light
+                    h = lightAccessible.h ?? h
+                    s = lightAccessible.s ?? s
+                    b = lightAccessible.b ?? b
+                    a = lightAccessible.a ?? a
+                default:
+                    h = light.h ?? h
+                    s = light.s ?? s
+                    b = light.b ?? b
+                    a = light.a ?? a
+                }
+            }
+            return .init(hue: clamp(h),
+                         saturation: clamp(s),
+                         brightness: clamp(b),
+                         alpha: clamp(a))
+        }))
+    }
+#endif
+}
+
+
+internal extension Color {
+    
     
     private func swatch(_ index: Int, transparent: Bool = false) -> Self {
         (transparent ? transparentScale : baseScale)[index] ?? self
@@ -151,109 +384,21 @@ private extension Color {
     private func clamp(_ value: CGFloat) -> CGFloat {
         max(0, min(1, value))
     }
-    private func getComponents() -> HSBA {
-        var h: CGFloat = 0,
-            s: CGFloat = 0,
-            b: CGFloat = 0,
-            a: CGFloat = 0
-        
-        self.nsColor.usingColorSpace(Self.colorSpace)?.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-        return (h, s, b, a)
-    }
-    private func settingComponents(
-        light: OptionalHSBA,
-        lightAccessible: OptionalHSBA? = nil,
-        dark: OptionalHSBA,
-        darkAccessible: OptionalHSBA? = nil
-    ) -> Color {
-        .init(NSColor(name: self.nsColor.colorNameComponent, dynamicProvider: { appearance in
-            var (h, s, b, a) = getComponents()
-            switch appearance.name {
-            case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
-                let lightAccessible = lightAccessible ?? light
-                h = lightAccessible.h ?? h
-                s = lightAccessible.s ?? s
-                b = lightAccessible.b ?? b
-                a = lightAccessible.a ?? a
-            case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
-                let darkAccessible = darkAccessible ?? dark
-                h = darkAccessible.h ?? h
-                s = darkAccessible.s ?? s
-                b = darkAccessible.b ?? b
-                a = darkAccessible.a ?? a
-            case .darkAqua, .vibrantDark:
-                h = dark.h ?? h
-                s = dark.s ?? s
-                b = dark.b ?? b
-                a = dark.a ?? a
-            default:
-                h = light.h ?? h
-                s = light.s ?? s
-                b = light.b ?? b
-                a = light.a ?? a
-            }
-            return .init(colorSpace: Self.colorSpace,
-                         hue: clamp(h),
-                         saturation: clamp(s),
-                         brightness: clamp(b),
-                         alpha: clamp(a))
-        }))
-    }
-    private func adjustingComponents(
-        light: HSBA,
-        lightAccessible: HSBA? = nil,
-        dark: HSBA,
-        darkAccessible: HSBA? = nil
-    ) -> Color {
-        .init(NSColor(name: self.nsColor.colorNameComponent, dynamicProvider: { appearance in
-            var (h, s, b, a) = getComponents()
-            switch appearance.name {
-            case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
-                let lightAccessible = lightAccessible ?? light
-                h *= lightAccessible.h
-                s *= lightAccessible.s
-                b *= lightAccessible.b
-                a *= lightAccessible.a
-            case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
-                let darkAccessible = darkAccessible ?? dark
-                h *= darkAccessible.h
-                s *= darkAccessible.s
-                b *= darkAccessible.b
-                a *= darkAccessible.a
-            case .darkAqua, .vibrantDark:
-                h *= dark.h
-                s *= dark.s
-                b *= dark.b
-                a *= dark.a
-            default:
-                h *= light.h
-                s *= light.s
-                b *= light.b
-                a *= light.a
-                
-            }
-            return .init(colorSpace: Self.colorSpace,
-                         hue: clamp(h),
-                         saturation: clamp(s),
-                         brightness: clamp(b),
-                         alpha: clamp(a))
-        }))
-    }
     private func adjustingBrightness(light: CGFloat, dark: CGFloat? = nil) -> Color {
         let dark = dark ?? light
-        return self.adjustingComponents(light: (1, 1, light, 1), dark: (1, 1, dark, 1))
+        return adjustingComponents(light: (1, 1, light, 1), dark: (1, 1, dark, 1))
     }
     private func adjustingSaturation(light: CGFloat, dark: CGFloat? = nil) -> Color {
         let dark = dark ?? light
-        return self.adjustingComponents(light: (1, light, 1, 1), dark: (1, dark, 1, 1))
+        return adjustingComponents(light: (1, light, 1, 1), dark: (1, dark, 1, 1))
     }
     private func settingBrightness(light: CGFloat, dark: CGFloat? = nil) -> Color {
         let dark = dark ?? light
-        return self.settingComponents(light: (nil, nil, light, nil), dark: (nil, nil, dark, nil))
+        return settingComponents(light: (nil, nil, light, nil), dark: (nil, nil, dark, nil))
     }
     private func settingOpacity(light: CGFloat, dark: CGFloat? = nil) -> Color {
         let dark = dark ?? light
-        return self.settingComponents(light: (nil, nil, nil, light), dark: (nil, nil, nil, dark))
+        return settingComponents(light: (nil, nil, nil, light), dark: (nil, nil, nil, dark))
     }
 }
 
@@ -261,18 +406,6 @@ private extension Color {
 public extension Color {
     typealias HSBA = (h: CGFloat, s: CGFloat, b: CGFloat, a: CGFloat)
     typealias OptionalHSBA = (h: CGFloat?, s: CGFloat?, b: CGFloat?, a: CGFloat?)
-    
-    init(gray: CGFloat, grayDark: CGFloat? = nil) {
-        self.init(
-            light: .init(colorSpace: Self.colorSpace, hue: 0, saturation: 0, brightness: gray, alpha: 1),
-            dark: .init(colorSpace: Self.colorSpace, hue: 0, saturation: 0, brightness: grayDark ?? gray, alpha: 1)
-        )
-    }
-    init(light: HSBA, dark: HSBA?) {
-        let dark = dark ?? light
-        self.init(light: .init(colorSpace: Self.colorSpace, hue: light.h, saturation: light.s, brightness: light.b, alpha: light.a),
-                  dark: .init(colorSpace: Self.colorSpace, hue: dark.h, saturation: dark.s, brightness: dark.b, alpha: dark.a))
-    }
 }
 
 public extension Color {
@@ -324,10 +457,10 @@ private struct ColorScalePreviews: View {
         var body: some View {
             VStack(spacing: .theme.padding.small) {
                 Rectangle()
-                    .frame(width: 40, height: 20)
+                    .frame(width: 25, height: 20)
                     .foregroundColor(color.baseScale[colorIndex])
                 Rectangle()
-                    .frame(width: 40, height: 20)
+                    .frame(width: 25, height: 20)
                     .foregroundColor(color.transparentScale[colorIndex])
             }
         }
@@ -337,7 +470,7 @@ private struct ColorScalePreviews: View {
         var body: some View {
             HStack(spacing: .theme.padding.small) {
                 ForEach(Array(color.baseScale.keys.sorted()), id: \.self) { index in
-                    VStack(spacing: .theme.padding.xsmall) {
+                    VStack(spacing: .theme.padding.xSmall) {
                         Text("\(index)")
                         Swatch(color: color, colorIndex: index)
                     }
