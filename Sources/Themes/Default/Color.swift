@@ -13,6 +13,9 @@ import AppKit
 import UIKit
 #endif
 
+// TODO: Split Default Color theme into separate packaged
+// To import modifiers, but not colors
+
 import FoundationUICore
 
 extension Color {
@@ -342,6 +345,7 @@ internal extension Color {
             10: self
                 .adjustingSaturation(light: 1.1, dark: 0.95)
                 .adjustingBrightness(light: 0.9, dark: 1.1),
+            // TODO: Increase contrast for color swatches
             11: self
                 .adjustingSaturation(light: 0.9, dark: 0.7)
                 .adjustingBrightness(light: 0.76, dark: isSaturated ? 1.8 : 1.5),
@@ -411,7 +415,7 @@ public extension Color {
     var scale: Scale {
         Scale(color: self, transparent: false)
     }
-    var scaleA: Scale {
+    var scaleTransparent: Scale {
         Scale(color: self, transparent: true)
     }
     
@@ -464,9 +468,9 @@ private struct ColorScalePreviews: View {
                 Rectangle()
                     .frame(width: 25, height: 20)
                     .foregroundColor(swatchColor)
-                Rectangle()
-                    .frame(width: 25, height: 20)
-                    .foregroundColor(swatchTransparentColor)
+//                Rectangle()
+//                    .frame(width: 25, height: 20)
+//                    .foregroundColor(swatchTransparentColor)
             }
         }
     }

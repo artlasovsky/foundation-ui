@@ -18,8 +18,8 @@ extension FoundationUI.Modifier.Background {
 
 extension FoundationUI.Modifier.Shadow: FoundationUISize {
     private static let color = Color.black.opacity(0.35)
-    public static var xSmall    = Self(.init(Self.color.opacity(0.8), radius: 3, x: 0, y: 3))
-    public static var small     = Self(.init(Self.color, radius: 4, x: 0, y: 4))
+    public static var xSmall    = Self(.init(Self.color.opacity(0.5), radius: 2, x: 0, y: 2))
+    public static var small     = Self(.init(Self.color.opacity(0.78), radius: 2.5, x: 0, y: 2))
     public static var regular   = Self(.init(Self.color, radius: 5, x: 0, y: 5))
     public static var large     = Self(.init(Self.color, radius: 7, x: 0, y: 6))
     public static var xLarge    = Self(.init(Self.color, radius: 8, x: 0, y: 6))
@@ -39,13 +39,15 @@ extension FoundationUI.Modifier {
 }
 
 #Preview {
-    VStack {
+    let color = Color.theme.accent
+    return VStack {
         Text("Hello")
             .padding()
+            .foregroundStyle(color.scale.text.blendMode(.plusLighter).opacity(0.6))
             .theme.border(.default)
-//            .theme.background(.theme.accent.scale.background, cornerRadius: .theme.radius.regular)
-            .theme.background(.window)
-            .theme.shadow(.regular)
+            .theme.background(color.scale.elementActive,
+                              cornerRadius: .theme.radius.regular,
+                              shadow: .regular)
     }
     .padding()
     .theme.background(.theme.primary.scale.background)

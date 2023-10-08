@@ -77,11 +77,13 @@ extension FoundationUI.Modifier {
         private let style: AnyShapeStyle
         private let cornerRadius: CGFloat
         private let cornerRadiusStyle: RoundedCornerStyle
+        private let shadow: Shadow?
         
-        public init(style: some ShapeStyle, cornerRadius: CGFloat = 0, cornerRadiusStyle: RoundedCornerStyle = .continuous) {
+        public init(style: some ShapeStyle, cornerRadius: CGFloat = 0, cornerRadiusStyle: RoundedCornerStyle = .continuous, shadow: Shadow? = nil) {
             self.style = AnyShapeStyle(style)
             self.cornerRadius = cornerRadius
             self.cornerRadiusStyle = cornerRadiusStyle
+            self.shadow = shadow
         }
         
         public func body(content: Content) -> some View {
@@ -90,6 +92,7 @@ extension FoundationUI.Modifier {
                 .background {
                     RoundedRectangle(cornerRadius: cornerRadius, style: cornerRadiusStyle)
                         .foregroundStyle(style)
+                        .theme.shadow(shadow)
                 }
         }
     }
@@ -105,17 +108,33 @@ extension FoundationUI.Modifier {
                            y: style.y)
         }
     }
+    public struct Foreground: ViewModifier {
+        private let style: AnyShapeStyle
+        public func body(content: Content) -> some View {
+            content
+                .foregroundStyle(style.blendMode(.normal))
+        }
+    }
 }
 
 extension FoundationUI.Modifier {
-    public func background(_ style: some ShapeStyle, cornerRadius: CGFloat = 0, cornerRadiusStyle: RoundedCornerStyle = .continuous) -> some View {
-        content.modifier(Background(style: style, cornerRadius: cornerRadius, cornerRadiusStyle: cornerRadiusStyle))
+    public func background(
+        _ style: some ShapeStyle,
+        cornerRadius: CGFloat = 0,
+        cornerRadiusStyle: RoundedCornerStyle = .continuous,
+        shadow: Shadow? = nil
+    ) -> some View {
+        content
+            .modifier(Background(style: style, cornerRadius: cornerRadius, cornerRadiusStyle: cornerRadiusStyle, shadow: shadow))
     }
     public func border(color: SwiftUI.Color, width: CGFloat) -> some View {
         content.modifier(Border(color: color, width: width))
     }
-    public func shadow(_ style: FoundationUI.Shadow) -> some View {
-        content.modifier(Shadow(style))
+    @ViewBuilder
+    public func shadow(_ style: Shadow?) -> some View {
+        if let style {
+            content.modifier(style)
+        }
     }
 }
 
@@ -125,7 +144,7 @@ extension FoundationUI.Modifier {
             .padding()
             .theme.border(color: .white, width: 1)
             .theme.background(.blue, cornerRadius: 12)
-            .foregroundStyle(.primary)
+//            .foregroundStyle(.primary.blendMode(.normal))
     }
     .padding()
 }
