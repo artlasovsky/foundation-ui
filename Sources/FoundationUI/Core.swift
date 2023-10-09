@@ -15,18 +15,6 @@ public struct FoundationUI {
     
     // TODO: Not Implemented yet
     public struct Font { internal init() {} }
-    public struct Shadow {
-        public let color: SwiftUI.Color
-        public let radius: CGFloat
-        public let x: CGFloat
-        public let y: CGFloat
-        public init(_ color: SwiftUI.Color = .black, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) {
-            self.color = color
-            self.radius = radius
-            self.x = x
-            self.y = y
-        }
-    }
 }
 
 

@@ -17,13 +17,14 @@ extension FoundationUI.Modifier.Background {
 }
 
 extension FoundationUI.Modifier.Shadow: FoundationUISize {
+    public typealias V = Self
     private static let color = Color.black.opacity(0.35)
-    public static var xSmall    = Self(.init(Self.color.opacity(0.5), radius: 2, x: 0, y: 2))
-    public static var small     = Self(.init(Self.color.opacity(0.78), radius: 2.5, x: 0, y: 2))
-    public static var regular   = Self(.init(Self.color, radius: 5, x: 0, y: 5))
-    public static var large     = Self(.init(Self.color, radius: 7, x: 0, y: 6))
-    public static var xLarge    = Self(.init(Self.color, radius: 8, x: 0, y: 6))
-    public static var xxLarge   = Self(.init(Self.color, radius: 10, x: 0, y: 7))
+    public static var xSmall    = Self(Self.color.opacity(0.5), radius: 2, x: 0, y: 2)
+    public static var small     = Self(Self.color.opacity(0.78), radius: 2.5, x: 0, y: 2)
+    public static var regular   = Self(Self.color, radius: 5, x: 0, y: 5)
+    public static var large     = Self(Self.color, radius: 7, x: 0, y: 6)
+    public static var xLarge    = Self(Self.color, radius: 8, x: 0, y: 6)
+    public static var xxLarge   = Self(Self.color, radius: 10, x: 0, y: 7)
 }
 
 extension FoundationUI.Modifier {
@@ -43,11 +44,18 @@ extension FoundationUI.Modifier {
     return VStack {
         Text("Hello")
             .padding()
-            .foregroundStyle(color.scale.text.blendMode(.plusLighter).opacity(0.6))
+            .foregroundStyle(color.scale.text)
             .theme.border(.default)
             .theme.background(color.scale.elementActive,
                               cornerRadius: .theme.radius.regular,
                               shadow: .regular)
+        Text("Hello")
+            .padding()
+            .foregroundStyle(color.scale.text)
+            .theme.border(.default)
+            .theme.background(color.scale.elementActive,
+                              cornerRadius: .theme.radius.regular,
+                              shadow: nil)
     }
     .padding()
     .theme.background(.theme.primary.scale.background)
