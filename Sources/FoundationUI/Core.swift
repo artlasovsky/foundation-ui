@@ -12,19 +12,18 @@ public struct FoundationUI {
     public struct Radius {}
     
     public struct Color: ShapeStyle {
-        public typealias Color = SwiftUI.Color
-        public let light: Color
-        public let lightAccessible: Color?
-        public let dark: Color
-        public let darkAccessible: Color?
+        public let light: SwiftUI.Color
+        public let lightAccessible: SwiftUI.Color?
+        public let dark: SwiftUI.Color
+        public let darkAccessible: SwiftUI.Color?
         
-        public init(light: Color, lightAccessible: Color? = nil, dark: Color, darkAccessible: Color? = nil) {
+        public init(light: SwiftUI.Color, lightAccessible: SwiftUI.Color? = nil, dark: SwiftUI.Color, darkAccessible: SwiftUI.Color? = nil) {
             self.light = light
             self.lightAccessible = lightAccessible
             self.dark = dark
             self.darkAccessible = darkAccessible
         }
-        public init(_ universal: Color, accessible: Color? = nil) {
+        public init(_ universal: SwiftUI.Color, accessible: SwiftUI.Color? = nil) {
             self.light = universal
             self.lightAccessible = accessible
             self.dark = universal

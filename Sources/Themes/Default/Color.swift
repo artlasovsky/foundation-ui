@@ -13,28 +13,26 @@ import SwiftUI
 import FoundationUICore
 
 internal extension FoundationUI.Color {
-        typealias AdjustStyle = (_ source: HSBA) -> HSBA
-        
-        private func getComponents(color: Color) -> HSBA? {
-            guard let components = NSColor(color).usingColorSpace(.deviceRGB) else { return nil }
-            return .init(components.hueComponent, components.saturationComponent, components.brightnessComponent, components.alphaComponent)
-        }
-        private init(light: HSBA, dark: HSBA) {
-            self.init(
-                light: .init(hue: light.hue, saturation: light.saturation, brightness: light.brightness, opacity: light.alpha),
-                dark: .init(hue: dark.hue, saturation: dark.saturation, brightness: dark.brightness, opacity: dark.alpha)
-            )
-        }
-        private func adjust(light: @escaping AdjustStyle, dark: @escaping AdjustStyle) -> Self {
-            guard let lightComponents = getComponents(color: self.light),
-                  let darkComponents = getComponents(color: self.dark)
-            else { return self }
-            return .init(light: light(lightComponents), dark: dark(darkComponents))
-        }
+    private func getComponents(color: Color) -> Components? {
+        guard let components = NSColor(color).usingColorSpace(.deviceRGB) else { return nil }
+        return .init(components.hueComponent, components.saturationComponent, components.brightnessComponent, components.alphaComponent)
+    }
+    private init(light: Components, dark: Components) {
+        self.init(
+            light: .init(hue: light.hue, saturation: light.saturation, brightness: light.brightness, opacity: light.alpha),
+            dark: .init(hue: dark.hue, saturation: dark.saturation, brightness: dark.brightness, opacity: dark.alpha)
+        )
+    }
+    private func adjust(light: @escaping (_ source: Components) -> Components, dark: @escaping (_ source: Components) -> Components) -> Self {
+        guard let lightComponents = getComponents(color: self.light),
+              let darkComponents = getComponents(color: self.dark)
+        else { return self }
+        return .init(light: light(lightComponents), dark: dark(darkComponents))
+    }
 }
 
 extension FoundationUI.Color {
-    public struct HSBA {
+    public struct Components {
         let hue: CGFloat
         let saturation: CGFloat
         let brightness: CGFloat
@@ -155,16 +153,16 @@ extension FoundationUI.Color {
     }
 }
 
-
 struct ShapeStylePreview: PreviewProvider {
     struct SelectedColor: View {
         let style: FoundationUI.Color
+        
         var body: some View {
             HStack {
                 ForEach(Array(style.scale.keys.sorted()), id: \.self) { index in
                     VStack {
                         Text("\(index)")
-                            .foregroundStyle(style.getScale(12))
+                            .foregroundStyle(style.text)
                         Rectangle()
                             .frame(width: 50, height: 50)
                             .foregroundStyle(style.getScale(index))
@@ -180,14 +178,14 @@ struct ShapeStylePreview: PreviewProvider {
                 SelectedColor(style: .accent)
             }
             .padding()
-            .background(.theme.primary.background)
+            .background(.theme.primary.backgroundFaded)
             .colorScheme(.light)
             VStack {
                 SelectedColor(style: .primary)
                 SelectedColor(style: .accent)
             }
             .padding()
-            .background(.theme.primary.background)
+            .background(.theme.primary.backgroundFaded)
             .colorScheme(.dark)
         }
     }
