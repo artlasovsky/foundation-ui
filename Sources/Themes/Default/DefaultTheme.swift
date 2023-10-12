@@ -27,7 +27,7 @@ extension FoundationUI.Font: FoundationUISize {
 }
 
 extension FoundationUI {
-    internal static var config: FoundationUI.Config = .init(
+    internal static let config: FoundationUI.Config = .init(
         padding: .init(multiplier: 2, base: 8),
         radius: .init(multiplier: 2, base: 8)
     )
@@ -51,6 +51,16 @@ extension FoundationUI.Padding: FoundationUISize {
     public static let large     = config.large
     public static let xLarge    = config.xLarge
     public static let xxLarge   = config.xxLarge
+    public struct Fill: FoundationUISize {
+        private init() {}
+        private static let config = FoundationUI.config.padding
+        public static let xSmall    = config.getFill(config.xSmall)
+        public static let small     = config.getFill(config.small)
+        public static let regular   = config.getFill(config.regular)
+        public static let large     = config.getFill(config.large)
+        public static let xLarge    = config.getFill(config.xLarge)
+        public static let xxLarge   = config.getFill(config.xxLarge)
+    }
 }
 
 extension FoundationUI.Radius: FoundationUISize {
@@ -68,6 +78,7 @@ public extension FoundationUI.Radius {
     static let window: CGFloat = 10
 }
 #endif
+
 
 public protocol FoundationUISize {
     associatedtype V
@@ -88,6 +99,10 @@ extension FoundationUI.Config {
         public var large: CGFloat   { _large ?? regular * multiplier }
         public var xLarge: CGFloat  { _xLarge ?? large * multiplier }
         public var xxLarge: CGFloat { _xxLarge ?? xLarge * multiplier }
+        
+        func getFill(_ value: CGFloat) -> CGFloat {
+            value - (value / multiplier / 2)
+        }
         
         public init(multiplier: CGFloat, base: CGFloat) {
             self.multiplier = multiplier

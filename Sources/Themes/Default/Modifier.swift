@@ -70,6 +70,8 @@ extension FoundationUI.Modifier {
             }
             VStack {
                 Text("Content")
+                Text("\(FoundationUI.Padding.Fill.xxLarge)")
+                Text("\(FoundationUI.Padding.xxLarge)")
             }
         }
         .theme.padding(.theme.padding.large)
