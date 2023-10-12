@@ -10,8 +10,11 @@ import FoundationUICore
 import SwiftUI
 
 public extension FoundationUI.Color {
-    static var primary: Color { .init(gray: 0.43, grayDark: 0.55) }
-    static var accent: Color { .blue }
+    static var primary: Self { 
+        .init(light: .init(hue: 0, saturation: 0, brightness: 0.43),
+              dark: .init(hue: 0, saturation: 0, brightness: 0.55))
+    }
+    static var accent: Self { .init(.blue) }
 }
 
 extension FoundationUI.Font: FoundationUISize {

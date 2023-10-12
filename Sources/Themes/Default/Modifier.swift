@@ -10,10 +10,10 @@ import FoundationUICore
 import SwiftUI
 
 extension FoundationUI.Modifier.Border {
-    static let `default` = Self(color: .primary.scale.border)
+    static let `default` = Self(style: .theme.primary.borderFaded.opacity(0.5))
 }
 extension FoundationUI.Modifier.Background {
-    static let window = Self(style: .theme.accent.scale.background, cornerRadius: .theme.radius.regular, cornerRadiusStyle: .continuous)
+    static let window = Self(style: .theme.accent.backgroundFaded, cornerRadius: .theme.radius.regular, cornerRadiusStyle: .continuous)
 }
 
 extension FoundationUI.Modifier.Shadow: FoundationUISize {
@@ -43,20 +43,38 @@ extension FoundationUI.Modifier {
     let color = Color.theme.accent
     return VStack {
         Text("Hello")
-            .padding()
-            .foregroundStyle(color.scale.text)
+            .foregroundStyle(color.text)
+            .theme.padding(.theme.padding.regular)
             .theme.border(.default)
-            .theme.background(color.scale.elementActive,
+            .theme.background(color.elementActive,
                               cornerRadius: .theme.radius.regular,
                               shadow: .regular)
         Text("Hello")
             .padding()
-            .foregroundStyle(color.scale.text)
+            .foregroundStyle(color.text)
             .theme.border(.default)
-            .theme.background(color.scale.elementActive,
+            .theme.background(color.elementActive,
                               cornerRadius: .theme.radius.regular,
                               shadow: nil)
     }
     .padding()
-    .theme.background(.theme.primary.scale.background)
+    .theme.background(.theme.primary.background)
+}
+
+
+#Preview("Window") {
+    VStack {
+        HStack(spacing: .theme.padding.large) {
+            VStack {
+                Text("Sidebar")
+            }
+            VStack {
+                Text("Content")
+            }
+        }
+        .theme.padding(.theme.padding.large)
+        .theme.border(.theme.primary.border.opacity(0.5).blendMode(.plusLighter))
+        .theme.background(.theme.primary.background, cornerRadius: .theme.radius.regular)
+    }
+    .theme.padding(.theme.padding.xxLarge)
 }

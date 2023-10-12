@@ -26,54 +26,6 @@ extension View {
 }
 
 extension FoundationUI.Modifier {
-    public struct Border: ViewModifier {
-        public enum Placement {
-            case inside
-            case outside
-            case center
-        }
-        @Environment(\.foundationRadius) private var env
-        @Environment(\.foundationPadding) private var envPadding
-        @Environment(\.colorScheme) private var colorScheme
-        
-        private let color: SwiftUI.Color
-        private let width: CGFloat
-        private let placement: Placement
-        private let opacity: CGFloat
-        private let blend: Bool
-        
-        public init(color: SwiftUI.Color, width: CGFloat = 1, placement: Placement = .inside, opacity: CGFloat = 0.1, blend: Bool = true) {
-            self.color = color
-            self.width = width
-            self.placement = placement
-            self.opacity = opacity
-            self.blend = blend
-        }
-        
-        public func body(content: Content) -> some View {
-            content.overlay {
-                RoundedRectangle(cornerRadius: cornerRadius, style: env?.style ?? .continuous)
-                    .stroke(lineWidth: width)
-                    .padding(placementPadding)
-                    .opacity(opacity)
-                    .blendMode(blendMode)
-            }
-        }
-        
-        private var placementPadding: CGFloat {
-            switch placement {
-            case .inside:   width / 2
-            case .outside:  -width / 2
-            case .center:   0
-            }
-        }
-        private var cornerRadius: CGFloat {
-            env?.radius ?? 0 - placementPadding
-        }
-        private var blendMode: BlendMode {
-            blend ? colorScheme == .dark ? .plusLighter : .plusDarker : .normal
-        }
-    }
     public struct Shadow: ViewModifier {
         public let color: SwiftUI.Color
         public let radius: CGFloat
@@ -105,6 +57,84 @@ extension FoundationUI.Modifier {
 }
 
 extension FoundationUI.Modifier {
+    public func border(_ style: any ShapeStyle = Color.white.opacity(0.2), width: CGFloat = 1, placement: Border.Placement = .inside) -> some View {
+        content.modifier(Border(style: style, width: width, placement: placement, blend: false))
+    }
+    public struct Border: ViewModifier {
+        public enum Placement {
+            case inside
+            case outside
+            case center
+        }
+        @Environment(\.foundationRadius) private var env
+        @Environment(\.foundationPadding) private var envPadding
+        @Environment(\.colorScheme) private var colorScheme
+        
+        private let style: AnyShapeStyle
+        private let width: CGFloat
+        private let placement: Placement
+        private let blend: Bool
+        
+        public init(style: any ShapeStyle, width: CGFloat = 1, placement: Placement = .inside, blend: Bool = false) {
+            self.style = AnyShapeStyle(style)
+            self.width = width
+            self.placement = placement
+            self.blend = blend
+        }
+        
+        public func body(content: Content) -> some View {
+            content.overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: env?.style ?? .continuous)
+                    .stroke(lineWidth: width)
+                    .foregroundStyle(style)
+                    .padding(placementPadding)
+                    .blendMode(blendMode)
+            }
+        }
+        
+        private var placementPadding: CGFloat {
+            switch placement {
+            case .inside:   width / 2
+            case .outside:  -width / 2
+            case .center:   0
+            }
+        }
+        private var cornerRadius: CGFloat {
+            env?.radius ?? 0 - placementPadding
+        }
+        private var blendMode: BlendMode {
+            blend ? colorScheme == .dark ? .plusLighter : .plusDarker : .normal
+        }
+    }
+}
+
+extension FoundationUI.Modifier {
+    public func background(
+        _ style: some ShapeStyle,
+        cornerRadius: CGFloat = 0,
+        cornerRadiusStyle: RoundedCornerStyle = .continuous,
+        shadow: Shadow? = nil
+    ) -> some View {
+        content.modifier(Background(style: style,
+                                    cornerRadius: cornerRadius,
+                                    cornerRadiusStyle: cornerRadiusStyle,
+                                    shadow: shadow))
+    }
+    public enum CornerRadius {
+        case concentric
+    }
+    public func background(
+        _ style: some ShapeStyle,
+        cornerRadius: CornerRadius,
+        cornerRadiusStyle: RoundedCornerStyle = .continuous,
+        shadow: Shadow? = nil
+    ) -> some View {
+        content
+            .modifier(Background(style: style,
+                                    cornerRadiusStyle: cornerRadiusStyle,
+                                    shadow: shadow))
+            .environment(\.foundationConcentricRadius, cornerRadius == .concentric)
+    }
     public struct Background: ViewModifier {
         @Environment(\.foundationRadius) private var env
         @Environment(\.foundationPadding) private var envPadding
@@ -148,38 +178,9 @@ extension FoundationUI.Modifier {
         
         private var roundedRect: RoundedRectangle { RoundedRectangle(cornerRadius: cornerRadius, style: cornerRadiusStyle) }
     }
-    public func background(
-        _ style: some ShapeStyle,
-        cornerRadius: CGFloat = 0,
-        cornerRadiusStyle: RoundedCornerStyle = .continuous,
-        shadow: Shadow? = nil
-    ) -> some View {
-        content.modifier(Background(style: style,
-                                    cornerRadius: cornerRadius,
-                                    cornerRadiusStyle: cornerRadiusStyle,
-                                    shadow: shadow))
-    }
-    public enum CornerRadius {
-        case concentric
-    }
-    public func background(
-        _ style: some ShapeStyle,
-        cornerRadius: CornerRadius,
-        cornerRadiusStyle: RoundedCornerStyle = .continuous,
-        shadow: Shadow? = nil
-    ) -> some View {
-        content
-            .modifier(Background(style: style,
-                                    cornerRadiusStyle: cornerRadiusStyle,
-                                    shadow: shadow))
-            .environment(\.foundationConcentricRadius, cornerRadius == .concentric)
-    }
 }
 
 extension FoundationUI.Modifier {
-    public func border(color: SwiftUI.Color = .white.opacity(0.2), width: CGFloat = 1) -> some View {
-        content.modifier(Border(color: color, width: width))
-    }
     public func padding(_ length: CGFloat, _ edges: Edge.Set = .all) -> some View {
         content.modifier(Padding(edges: edges, length: length))
     }
@@ -196,7 +197,7 @@ extension FoundationUI.Modifier {
         VStack {
             Text("Foundation")
                 .theme.padding(8)
-                .theme.border(color: .white, width: 1)
+                .theme.border(.white, width: 1)
                 .theme.background(.blue, cornerRadius: .concentric)
         }
         .theme.padding(12)
