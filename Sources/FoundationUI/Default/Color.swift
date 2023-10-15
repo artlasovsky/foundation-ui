@@ -4,30 +4,75 @@
 //
 //  Created by Art Lasovsky on 10/6/23.
 //
+
 import Foundation
 import SwiftUI
 
-// TODO: Split Default Color theme into separate packaged
-// To import modifiers, but not colors
+// MARK: - Extension
+public extension Color {
+    typealias foundation = FoundationUI.Color
+    typealias theme = Self.foundation
+}
 
-import FoundationUICore
+public extension ShapeStyle {
+    typealias foundation = FoundationUI.Color
+    typealias theme = Self.foundation
+}
+
+
+// MARK: - Color
+public extension FoundationUI.Color {
+    static var primary: Self {
+        .init(light: .init(hue: 0, saturation: 0, brightness: 0.43),
+              dark: .init(hue: 0, saturation: 0, brightness: 0.55))
+    }
+    static var accent: Self { .init(.blue) }
+}
 
 internal extension FoundationUI.Color {
-    private func getComponents(color: Color) -> Components? {
-        guard let components = NSColor(color).usingColorSpace(.deviceRGB) else { return nil }
+    private func getComponents(color: Color?) -> Components? {
+        guard let color, let components = NSColor(color).usingColorSpace(.deviceRGB) else { return nil }
         return .init(components.hueComponent, components.saturationComponent, components.brightnessComponent, components.alphaComponent)
     }
-    private init(light: Components, dark: Components) {
-        self.init(
-            light: .init(hue: light.hue, saturation: light.saturation, brightness: light.brightness, opacity: light.alpha),
-            dark: .init(hue: dark.hue, saturation: dark.saturation, brightness: dark.brightness, opacity: dark.alpha)
-        )
+    private init(
+        light: Components,
+        lightAccessible: Components? = nil,
+        dark: Components,
+        darkAccessible: Components? = nil
+    ) {
+        let light = Color(hue: light.hue, saturation: light.saturation, brightness: light.brightness, opacity: light.alpha)
+        let dark = Color(hue: dark.hue, saturation: dark.saturation, brightness: dark.brightness, opacity: dark.alpha)
+        func getAccessible(_ components: Components? = nil) -> Color? {
+            guard let components else { return nil }
+            return .init(hue: components.hue, saturation: components.saturation, brightness: components.brightness, opacity: components.alpha)
+        }
+        let lightAccessible = getAccessible(lightAccessible)
+        let darkAccessible = getAccessible(darkAccessible)
+        self.init(light: light, lightAccessible: lightAccessible, dark: dark, darkAccessible: darkAccessible)
     }
-    private func adjust(light: @escaping (_ source: Components) -> Components, dark: @escaping (_ source: Components) -> Components) -> Self {
+    private func adjust(
+        light: @escaping (_ source: Components) -> Components,
+        lightAccessible: ((_ source: Components?) -> Components)? = nil,
+        dark: @escaping (_ source: Components) -> Components,
+        darkAccessible: ((_ source: Components?) -> Components)? = nil
+    ) -> Self {
         guard let lightComponents = getComponents(color: self.light),
               let darkComponents = getComponents(color: self.dark)
         else { return self }
-        return .init(light: light(lightComponents), dark: dark(darkComponents))
+        return .init(
+            light: light(lightComponents),
+            lightAccessible: lightAccessible?(getComponents(color: self.lightAccessible)),
+            dark: dark(darkComponents),
+            darkAccessible: darkAccessible?(getComponents(color: self.darkAccessible))
+        )
+    }
+}
+
+public extension FoundationUI.Color {
+    func opacity(_ value: CGFloat) -> Self {
+        self.adjust(
+            light: { $0.set(alpha: value)},
+            dark: { $0.set(alpha: value)})
     }
 }
 

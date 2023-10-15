@@ -7,11 +7,24 @@
 import Foundation
 import SwiftUI
 
-public struct FoundationUI {
-    public struct Padding {}
-    public struct Radius {}
-    
-    public struct Color: ShapeStyle {
+public struct FoundationUI: FoundationUIDefault {
+    private init() {}
+    public struct Variable {}
+    public struct Modifier {
+        internal let content: AnyView
+        internal init(_ content: some View) {
+            self.content = AnyView(content)
+        }
+    }
+    public struct Component {}
+}
+
+// Using protocol to have overridable default theme
+public protocol FoundationUIDefault {}
+
+// MARK: - Configuration
+public extension FoundationUI {
+    struct Color : ShapeStyle {
         public let light: SwiftUI.Color
         public let lightAccessible: SwiftUI.Color?
         public let dark: SwiftUI.Color
@@ -29,7 +42,10 @@ public struct FoundationUI {
             self.dark = universal
             self.darkAccessible = accessible
         }
-        public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
+        public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {            
+            return resolveColor(in: environment)
+        }
+        public func resolveColor(in environment: EnvironmentValues) -> SwiftUI.Color {
             // TODO: Accessibility
             var color = environment.colorScheme == .light ? light : dark
             let accessibility = (
@@ -45,30 +61,49 @@ public struct FoundationUI {
             return color
         }
     }
-    
-    // TODO: Not Implemented yet
-    public struct Font {}
 }
 
-
-// MARK: - Value Extensions
-// Set of several different value sets
-public enum ThemeCGFloatProperties {
-    public typealias padding = FoundationUI.Padding
-    public typealias radius = FoundationUI.Radius
+public struct VariableConfig<Value> {
+    let xxSmall: Value
+    let xSmall: Value
+    let small: Value
+    let regular: Value
+    let large: Value
+    let xLarge: Value
+    let xxLarge: Value
 }
 
-public extension CGFloat {
-    typealias theme = ThemeCGFloatProperties
-    typealias foundation = ThemeCGFloatProperties
+extension VariableConfig where Value == CGFloat {
+    public init(regular: Value, multiplier: Value) {
+        let small = regular / multiplier
+        let xSmall = small / multiplier
+        let xxSmall = xSmall / multiplier
+        let large = regular * multiplier
+        let xLarge = large * multiplier
+        let xxLarge = xLarge * multiplier
+        self.init(
+            xxSmall: xxSmall,
+            xSmall: xSmall,
+            small: small,
+            regular: regular,
+            large: large,
+            xLarge: xLarge,
+            xxLarge: xxLarge)
+    }
 }
 
-public extension Color {
-    typealias theme = FoundationUI.Color
-    typealias foundation = FoundationUI.Color
+internal protocol VariableScale<Value> {
+    associatedtype Value
+    typealias Config = any VariableScale<Value>
+    var config: VariableConfig<Value> { get }
 }
 
-public extension ShapeStyle {
-    typealias theme = FoundationUI.Color
-    typealias foundation = FoundationUI.Color
+extension VariableScale {
+    var xxSmall: Value { config.xxSmall }
+    var xSmall: Value { config.xSmall }
+    var small: Value { config.small }
+    var regular: Value { config.regular }
+    var large: Value { config.large }
+    var xLarge: Value { config.xLarge }
+    var xxLarge: Value { config.xxLarge }
 }

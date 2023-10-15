@@ -12,10 +12,10 @@ let package = Package(
     products: [
         .library(
             name: "FoundationUI",
-            targets: ["FoundationUI"]),
-        .library(
-            name: "FoundationUICore",
-            targets: ["FoundationUICore"])
+            targets: ["FoundationUI"])
+//        .library(
+//            name: "FoundationUICore",
+//            targets: ["FoundationUICore"])
     ],
     dependencies: [
     ],
@@ -23,13 +23,13 @@ let package = Package(
         // Default theme – Native experience
         .target(
             name: "FoundationUI",
-            dependencies: ["FoundationUICore"],
-            path: "Sources/Themes/Default"),
-        // Core
-        .target(
-            name: "FoundationUICore",
             dependencies: [],
             path: "Sources/FoundationUI"),
+        // Core
+//        .target(
+//            name: "FoundationUICore",
+//            dependencies: [],
+//            path: "Sources/FoundationUI"),
         .testTarget(
             name: "FoundationUITests",
             dependencies: ["FoundationUI"]),
