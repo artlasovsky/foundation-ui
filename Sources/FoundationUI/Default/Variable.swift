@@ -117,7 +117,7 @@ extension FoundationUI.Variable.Font {
             .frame(width: 20, height: 20)
         Text("FoundationUI \(Int(FoundationUI.padding.regular))")
             .font(.theme.body)
-            .theme.padding(.all).regular()
+            .theme.padding(.all).custom(20)
 //            .theme.padding(.horizontal).large
 //            .theme.padding(.vertical).regular
             .animation(.theme.default, value: 0)

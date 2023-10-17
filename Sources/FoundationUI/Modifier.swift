@@ -37,6 +37,11 @@ extension FoundationUI.Modifier {
             self.view = AnyView(view)
             self.edges = edges
         }
+        
+        public func custom(_ length: CGFloat) -> some View {
+            modifier(length)()
+        }
+        
         public var config: VariableFunctionConfig<some View> {
             .init(
                 xxSmall: modifier(.theme.padding.xxSmall),
@@ -79,7 +84,7 @@ public extension FoundationUI.Modifier {
     var shadow: Shadow { Shadow(content) }
     
     struct Shadow: VariableFunctionScale {
-        private struct Style {
+        public struct Style {
             var radius: CGFloat
             var color: FoundationUI.Color = .theme.primary.text.opacity(1)
             var x: CGFloat = 0
@@ -102,6 +107,10 @@ public extension FoundationUI.Modifier {
                 large: modifier(.init(radius: 6)),
                 xLarge: modifier(.init(radius: 7)),
                 xxLarge: modifier(.init(radius: 8)))
+        }
+        
+        public func custom(_ style: Style) -> some View {
+            modifier(style)()
         }
         
         @ViewBuilder
