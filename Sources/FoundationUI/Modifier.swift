@@ -64,6 +64,7 @@ extension FoundationUI.Modifier {
             init(_ length: CGFloat, edges: Edge.Set) {
                 self.length = length
                 self.edges = edges
+                print("get padding")
             }
             public func body(content: Content) -> some View {
                 content
