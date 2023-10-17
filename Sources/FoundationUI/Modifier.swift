@@ -18,42 +18,55 @@ import SwiftUI
 //}
 
 // MARK: - View extension
-extension View {
+public extension View {
     var theme: FoundationUI.Modifier { self.foundation }
     var foundation: FoundationUI.Modifier { .init(self) }
 }
 
 // MARK: - Shadow
 extension FoundationUI.Modifier {
-    var padding: Padding { self.padding(.all) }
-    func padding(_ edges: Edge.Set) -> Padding { .init(content, edges: edges) }
+    public var padding: Padding { Padding(content) }
+    public func padding(_ edges: Edge.Set) -> Padding { .init(content, edges: edges) }
     
-    struct Padding: VariableScale {
+    public struct Padding: VariableFunctionScale {
         private let view: AnyView
-        private let edges: Edge.Set
-        init(_ view: some View, edges: Edge.Set) {
+        private var edges: Edge.Set = .all
+        private var length: CGFloat = 0
+        
+        init(_ view: some View, edges: Edge.Set = .all) {
             self.view = AnyView(view)
             self.edges = edges
+            print("init")
         }
-        @ViewBuilder
-        private func getPaddingView(_ value: CGFloat) -> some View {
-            AnyView(view.modifier(PaddingModifier(length: value, edges: edges)))
-        }
-        internal var config: VariableConfig<some View> {
+        public var config: VariableFunctionConfig<some View> {
             .init(
-                xxSmall: getPaddingView(.theme.padding.xxSmall),
-                xSmall: getPaddingView(.theme.padding.xSmall),
-                small: getPaddingView(.theme.padding.small),
-                regular: getPaddingView(.theme.padding.regular),
-                large: getPaddingView(.theme.padding.large),
-                xLarge: getPaddingView(.theme.padding.xLarge),
-                xxLarge: getPaddingView(.theme.padding.xxLarge)
+                xxSmall: modifier(.theme.padding.xxSmall),
+                xSmall: modifier(.theme.padding.xxSmall),
+                small: modifier(.theme.padding.xxSmall),
+                regular: modifier(.theme.padding.regular),
+                large: modifier(.theme.padding.xxSmall),
+                xLarge: modifier(.theme.padding.xxSmall),
+                xxLarge: modifier(.theme.padding.xxSmall)
             )
         }
+        @ViewBuilder private func body() -> some View {
+            view.modifier(PaddingModifier(length, edges: edges))
+        }
+        private func modifier(_ length: CGFloat) -> () -> some View {
+            var copy = self
+            copy.length = length
+            return copy.body
+        }
+        
         private struct PaddingModifier: ViewModifier {
             @Environment(\.self) private var env
             let length: CGFloat
             let edges: Edge.Set
+            init(_ length: CGFloat, edges: Edge.Set) {
+                self.length = length
+                self.edges = edges
+                print("get padding")
+            }
             public func body(content: Content) -> some View {
                 content
                     .environment(\.foundationPadding, length)
@@ -64,44 +77,55 @@ extension FoundationUI.Modifier {
 }
 
 // MARK: - Shadow
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     var shadow: Shadow { Shadow(content) }
     
-    struct Shadow: VariableScale {
+    struct Shadow: VariableFunctionScale {
         private struct Style {
             var radius: CGFloat
-            var color: FoundationUI.Color = .theme.primary.solid.opacity(0.5)
+            var color: FoundationUI.Color = .theme.primary.text.opacity(1)
             var x: CGFloat = 0
             var y: CGFloat = 0
         }
         
         private let view: AnyView
+        private var style: Style = .init(radius: 0)
+        
         init(_ view: some View) {
             self.view = AnyView(view)
         }
-        @ViewBuilder
-        private func getShadowView(_ style: Style) -> some View {
-            AnyView(view.modifier(ShadowModifier(style)))
-        }
-        internal var config: VariableConfig<some View> {
+        
+        public var config: VariableFunctionConfig<some View> {
             .init(
-                xxSmall: getShadowView(.init(radius: 1)),
-                xSmall: getShadowView(.init(radius: 2)),
-                small: getShadowView(.init(radius: 3)),
-                regular: getShadowView(.init(radius: 4)),
-                large: getShadowView(.init(radius: 6)),
-                xLarge: getShadowView(.init(radius: 7)),
-                xxLarge: getShadowView(.init(radius: 8)))
+                xxSmall: modifier(.init(radius: 1)),
+                xSmall: modifier(.init(radius: 2)),
+                small: modifier(.init(radius: 3)),
+                regular: modifier(.init(radius: 4)),
+                large: modifier(.init(radius: 6)),
+                xLarge: modifier(.init(radius: 7)),
+                xxLarge: modifier(.init(radius: 8)))
+        }
+        
+        @ViewBuilder
+        private func body() -> some View {
+            view.modifier(ShadowModifier(style))
+        }
+        
+        private func modifier(_ style: Style) -> () -> some View {
+            var copy = self
+            copy.style = style
+            return copy.body
         }
         private struct ShadowModifier: ViewModifier {
             @Environment(\.self) private var env
             let style: Shadow.Style
             init(_ style: Shadow.Style) {
                 self.style = style
+                print("get shadow")
             }
             public func body(content: Content) -> some View {
                 content
-                    .shadow(color: style.color.resolveColor(in: env),
+                    .shadow(color: style.color.light,
                             radius: style.radius,
                             x: style.x,
                             y: style.y)
@@ -114,7 +138,7 @@ extension FoundationUI.Modifier {
 extension FoundationUI.Modifier {
     var border: some View { Border(content, width: 1, placement: .inside).view }
     func border(_ style: any ShapeStyle = .theme.primary.border, width: CGFloat = 1, placement: Border.Modifier.Placement = .inside) -> some View {
-        Border(content, width: 1, style: style, placement: placement).view
+        Border(content, width: width, style: style, placement: placement).view
     }
     struct Border {
         let placement: Modifier.Placement
@@ -131,7 +155,7 @@ extension FoundationUI.Modifier {
         
         @ViewBuilder
         var view: some View {
-            content.modifier(Modifier(style: style))
+            content.modifier(Modifier(style: style, width: width, placement: placement))
         }
         public struct Modifier: ViewModifier {
             public enum Placement {
@@ -154,6 +178,7 @@ extension FoundationUI.Modifier {
                 self.width = width
                 self.placement = placement
                 self.blend = blend
+                print("init border")
             }
     
             public func body(content: Content) -> some View {

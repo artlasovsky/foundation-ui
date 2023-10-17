@@ -26,8 +26,8 @@ public extension FoundationUIDefault {
 
 // Set of several different value sets
 public enum ThemeCGFloatProperties {
-    static let padding = FoundationUI.padding
-    static let radius = FoundationUI.radius
+    public static let padding = FoundationUI.padding
+    public static let radius = FoundationUI.radius
 }
 
 public extension CGFloat {
@@ -111,19 +111,27 @@ extension FoundationUI.Variable.Font {
             .map({ String(format: "%.2f", $0 )}).joined(separator: " "))
         RoundedRectangle.theme.small
             .frame(width: 20, height: 20)
-            .theme.shadow.large
+            .foregroundStyle(.white)
+            .theme.shadow.regular()
+        RoundedRectangle.theme.small
+            .frame(width: 20, height: 20)
         Text("FoundationUI \(Int(FoundationUI.padding.regular))")
             .font(.theme.body)
-            .theme.padding(.horizontal).large
-            .theme.padding(.vertical).regular
+            .theme.padding(.all).regular()
+//            .theme.padding(.horizontal).large
+//            .theme.padding(.vertical).regular
             .animation(.theme.default, value: 0)
-            .theme.border(.theme.accent.border)
-        // TODO: Background 
+            .theme.border(.theme.accent.border, width: 2)
+        // TODO: Background
         // TODO: Corner Radius
 //            .overlay {
 //                RoundedRectangle.theme.regular
 //                    .stroke(lineWidth: 2)
 //                    .foregroundStyle(.theme.primary.border)
 //            }
-    }.padding()
+    }
+    .padding()
+//    .background {
+//        Color.white
+//    }
 }
