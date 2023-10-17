@@ -11,7 +11,7 @@ import SwiftUI
 
 // MARK: - Rounded Rectangle
 public extension FoundationUI.Component {
-    static var roundedRect: RoundedRect { .init() }
+    static let roundedRect = RoundedRect()
     struct RoundedRect: VariableScale {
         public var config: VariableConfig<RoundedRectangle>
         private static func getRoundedRect(_ cornerRadius: CGFloat) -> RoundedRectangle {

@@ -92,13 +92,13 @@ extension VariableConfig where Value == CGFloat {
     }
 }
 
-internal protocol VariableScale<Value> {
+public protocol VariableScale<Value> {
     associatedtype Value
     typealias Config = any VariableScale<Value>
     var config: VariableConfig<Value> { get }
 }
 
-extension VariableScale {
+public extension VariableScale {
     var xxSmall: Value { config.xxSmall }
     var xSmall: Value { config.xSmall }
     var small: Value { config.small }
@@ -106,4 +106,31 @@ extension VariableScale {
     var large: Value { config.large }
     var xLarge: Value { config.xLarge }
     var xxLarge: Value { config.xxLarge }
+}
+
+public struct VariableFunctionConfig<Value> {
+    let xxSmall: () -> Value
+    let xSmall: () -> Value
+    let small: () -> Value
+    let regular: () -> Value
+    let large: () -> Value
+    let xLarge: () -> Value
+    let xxLarge: () -> Value
+}
+
+
+public protocol VariableFunctionScale<Value> {
+    associatedtype Value
+    typealias Config = any VariableFunctionScale<Value>
+    var config: VariableFunctionConfig<Value> { get }
+}
+
+public extension VariableFunctionScale {
+    func xxSmall() -> Value { config.xxSmall() }
+    func xSmall() -> Value { config.xSmall() }
+    func small() -> Value { config.small() }
+    func regular() -> Value { config.regular() }
+    func large() -> Value { config.large() }
+    func xLarge() -> Value { config.xLarge() }
+    func xxLarge() -> Value { config.xxLarge() }
 }
