@@ -13,9 +13,6 @@ let package = Package(
         .library(
             name: "FoundationUI",
             targets: ["FoundationUI"])
-//        .library(
-//            name: "FoundationUICore",
-//            targets: ["FoundationUICore"])
     ],
     dependencies: [
     ],
@@ -24,12 +21,11 @@ let package = Package(
         .target(
             name: "FoundationUI",
             dependencies: [],
-            path: "Sources/FoundationUI"),
-        // Core
-//        .target(
-//            name: "FoundationUICore",
-//            dependencies: [],
-//            path: "Sources/FoundationUI"),
+            path: "Sources/FoundationUI",
+            swiftSettings: [
+                SwiftSetting.unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
+            ]
+        ),
         .testTarget(
             name: "FoundationUITests",
             dependencies: ["FoundationUI"]),

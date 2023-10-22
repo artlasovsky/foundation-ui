@@ -8,10 +8,18 @@
 import Foundation
 import SwiftUI
 
+extension FoundationUI {
+    public struct Component {}
+}
 
 // MARK: - Rounded Rectangle
 public extension FoundationUI.Component {
-    static let roundedRect = RoundedRect()
+    static func roundedRectangle(_ radius: CGFloat) -> RoundedRectangle {
+        RoundedRectangle(cornerRadius: radius, style: FoundationUI.Style.cornerRadiusStyle)
+    }
+    static func roundedRectangle(_ radius: KeyPath<FoundationUI.Variable.Radius.Type, CGFloat>) -> RoundedRectangle {
+        self.roundedRectangle(FoundationUI.Variable.Radius.self[keyPath: radius])
+    }
     struct RoundedRect: VariableScale {
         public var config: VariableConfig<RoundedRectangle>
         private static func getRoundedRect(_ cornerRadius: CGFloat) -> RoundedRectangle {
@@ -32,6 +40,6 @@ public extension FoundationUI.Component {
 }
 
 public extension RoundedRectangle {
-    static let foundation = FoundationUI.Component.roundedRect
-    static let theme = Self.foundation
+    static func foundation(_ radius: CGFloat) -> Self { FoundationUI.Component.roundedRectangle(radius) }
+    static func theme(_ radius: CGFloat) -> Self { foundation(radius) }
 }

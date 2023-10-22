@@ -18,7 +18,7 @@ public extension ShapeStyle {
     typealias foundation = FoundationUI.Color
     typealias theme = Self.foundation
 }
-
+#warning("TODO: Vibrancy (plusBlend) variant based on color scheme")
 
 // MARK: - Color
 public extension FoundationUI.Color {
@@ -31,7 +31,18 @@ public extension FoundationUI.Color {
 
 internal extension FoundationUI.Color {
     private func getComponents(color: Color?) -> Components? {
+        #if os(iOS)
+        guard let color else { return nil }
+        var hue: CGFloat = 0,
+            saturation: CGFloat = 0,
+            brightness: CGFloat = 0,
+            alpha: CGFloat = 0
+        UIColor(color).getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+        let components = (hueComponent: hue, saturationComponent: saturation, brightnessComponent: brightness, alphaComponent: alpha)
+        #endif
+        #if os(macOS)
         guard let color, let components = NSColor(color).usingColorSpace(.deviceRGB) else { return nil }
+        #endif
         return .init(components.hueComponent, components.saturationComponent, components.brightnessComponent, components.alphaComponent)
     }
     private init(

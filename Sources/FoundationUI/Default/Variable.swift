@@ -8,8 +8,18 @@
 import Foundation
 import SwiftUI
 
+
+extension FoundationUI {
+    public struct Variable: FoundationUIVariableDefaults {}
+    public struct Style: FoundationUIStyleDefaults {}
+}
+
+public extension FoundationUIStyleDefaults {
+    static var cornerRadiusStyle: RoundedCornerStyle { .continuous }
+}
+
 // Default Theme implementation
-public extension FoundationUIDefault {
+public extension FoundationUIVariableDefaults {
     static var padding: FoundationUI.Variable.Padding { .init(.init(regular: 8, multiplier: 2)) }
 //    static var paddingFine: FoundationUI.Config.Padding { .init(.init(regular: 6, multiplier: 2)) }
     
@@ -26,8 +36,8 @@ public extension FoundationUIDefault {
 
 // Set of several different value sets
 public enum ThemeCGFloatProperties {
-    public static let padding = FoundationUI.padding
-    public static let radius = FoundationUI.radius
+    public static let padding = FoundationUI.Variable.padding
+    public static let radius = FoundationUI.Variable.radius
 }
 
 public extension CGFloat {
@@ -36,12 +46,12 @@ public extension CGFloat {
 }
 
 public extension Font {
-    static let foundation = FoundationUI.font
+    static let foundation = FoundationUI.Variable.font
     static let theme = Self.foundation
 }
 
 public extension Animation {
-    static let theme = FoundationUI.animation
+    static let theme = FoundationUI.Variable.animation
 }
 
 // MARK: - Variables
@@ -76,7 +86,7 @@ public extension FoundationUI.Variable {
 #if os(macOS)
 public extension FoundationUI.Variable.Radius {
     /// Default macOS window radius
-    static let window: CGFloat = 10
+    var window: CGFloat { 10 }
 }
 #endif
 
@@ -85,53 +95,49 @@ public extension FoundationUI.Variable.Radius {
 
 // Default Theme Overrides
 
-// Override default `VariableScale`:
-public extension FoundationUI {
-    static var padding: Variable.Padding { .init(.init(regular: 6, multiplier: 2)) } // 3 4 6 8 12 16 24 32
+// Override Theme `VariableScale`:
+extension FoundationUI.Variable {
+//    public static var padding: Padding { .init(.init(regular: 6, multiplier: 2)) }
 }
-// Extend scale with custom value:
-public extension FoundationUI.Variable.Padding {
-    var window: CGFloat { self.xxLarge }
-}
+// Extend Theme
 extension FoundationUI.Variable.Font {
     var body: Value { .body.bold() }
 }
 
-#Preview("Test") {
-    VStack {
-        Text([
-            FoundationUI.padding.xxSmall,
-            FoundationUI.padding.xSmall,
-            FoundationUI.padding.small,
-            FoundationUI.padding.regular,
-            FoundationUI.padding.large,
-            FoundationUI.padding.xLarge,
-            FoundationUI.padding.xxLarge
-        ]
-            .map({ String(format: "%.2f", $0 )}).joined(separator: " "))
-        RoundedRectangle.theme.small
-            .frame(width: 20, height: 20)
-            .foregroundStyle(.white)
-            .theme.shadow.regular()
-        RoundedRectangle.theme.small
-            .frame(width: 20, height: 20)
-        Text("FoundationUI \(Int(FoundationUI.padding.regular))")
-            .font(.theme.body)
-            .theme.padding(.all).custom(20)
-//            .theme.padding(.horizontal).large
-//            .theme.padding(.vertical).regular
-            .animation(.theme.default, value: 0)
-            .theme.border(.theme.accent.border, width: 2)
-        // TODO: Background
-        // TODO: Corner Radius
-//            .overlay {
-//                RoundedRectangle.theme.regular
-//                    .stroke(lineWidth: 2)
-//                    .foregroundStyle(.theme.primary.border)
-//            }
+// Extending Modifiers
+extension FoundationUI.Modifier {
+    func backgroundWithBorder(_ color: FoundationUI.Color, cornerRadius: CGFloat = 0) -> some View {
+        content
+            .theme().background(color.background, cornerRadius: cornerRadius)
+            .theme().border(color.border, width: 2, cornerRadius: cornerRadius)
     }
-    .padding()
-//    .background {
-//        Color.white
-//    }
+    // Usage example:
+    // - control label padding
+    // - control background
+    // - combine with ViewModifiers
+}
+
+struct Preview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+//            RoundedRectangle.theme.small
+//                .frame(width: 20, height: 20)
+//                .foregroundStyle(.white)
+            HStack(spacing: .theme.padding.small) {
+                Text("FoundationUI")
+                    .padding(.vertical, .theme.padding.regular)
+                    .padding(.horizontal, .theme.padding.large)
+                    .theme().border(.theme.accent.border, width: 2, cornerRadius: .theme.radius.large - .theme.padding.regular)
+                Text("Button")
+                    .padding(.vertical, .theme.padding.regular)
+                    .padding(.horizontal, .theme.padding.large)
+                    .theme().backgroundWithBorder(.theme.accent, cornerRadius: .theme.radius.large - .theme.padding.regular)
+            }
+            .theme().padding(\.regular)
+//            .theme().background(.theme.primary.background, cornerRadius: .theme.radius.large)
+//            .theme().background(.theme.primary.background, cornerRadius: \.large)
+            .theme().border(width: 2, cornerRadius: \.large)
+        }
+        .padding()
+    }
 }

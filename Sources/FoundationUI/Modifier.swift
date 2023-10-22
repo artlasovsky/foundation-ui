@@ -8,280 +8,158 @@
 import Foundation
 import SwiftUI
 
-//extension FoundationUI {
-//    public struct Modifier {
-//        public var content: AnyView
-//        internal init(_ content: some View) {
-//            self.content = AnyView(content)
-//        }
-//    }
-//}
+extension FoundationUI {
+    public struct Modifier {
+        public var content: AnyView
+        internal init(_ content: some View) {
+            self.content = AnyView(content)
+        }
+    }
+}
 
 // MARK: - View extension
 public extension View {
-    var theme: FoundationUI.Modifier { self.foundation }
-    var foundation: FoundationUI.Modifier { .init(self) }
+    func foundation() -> FoundationUI.Modifier { .init(self) }
+    func theme() -> FoundationUI.Modifier { foundation() }
 }
 
 // MARK: - Shadow
-extension FoundationUI.Modifier {
-    public var padding: Padding { Padding(content) }
-    public func padding(_ edges: Edge.Set) -> Padding { .init(content, edges: edges) }
+public extension FoundationUI.Modifier {
+    func shadow(_ color: FoundationUI.Color, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) -> some View {
+        content.modifier(Shadow(configuration: .init(radius: radius, color: color, x: x, y: y)))
+    }
     
-    public struct Padding: VariableFunctionScale {
-        private let view: AnyView
-        private var edges: Edge.Set = .all
-        private var length: CGFloat = 0
-        
-        init(_ view: some View, edges: Edge.Set = .all) {
-            self.view = AnyView(view)
-            self.edges = edges
+    struct Shadow: ViewModifier {
+        public struct Configuration {
+            var radius: CGFloat
+            var color: FoundationUI.Color = .theme.primary.text.opacity(1)
+            var x: CGFloat = 0
+            var y: CGFloat = 0
         }
-        
-        public func custom(_ length: CGFloat) -> some View {
-            modifier(length)()
-        }
-        
-        public var config: VariableFunctionConfig<some View> {
-            .init(
-                xxSmall: modifier(.theme.padding.xxSmall),
-                xSmall: modifier(.theme.padding.xxSmall),
-                small: modifier(.theme.padding.xxSmall),
-                regular: modifier(.theme.padding.regular),
-                large: modifier(.theme.padding.xxSmall),
-                xLarge: modifier(.theme.padding.xxSmall),
-                xxLarge: modifier(.theme.padding.xxSmall)
-            )
-        }
-        @ViewBuilder private func body() -> some View {
-            view.modifier(PaddingModifier(length, edges: edges))
-        }
-        private func modifier(_ length: CGFloat) -> () -> some View {
-            var copy = self
-            copy.length = length
-            return copy.body
-        }
-        
-        private struct PaddingModifier: ViewModifier {
-            @Environment(\.self) private var env
-            let length: CGFloat
-            let edges: Edge.Set
-            init(_ length: CGFloat, edges: Edge.Set) {
-                self.length = length
-                self.edges = edges
-            }
-            public func body(content: Content) -> some View {
-                content
-                    .environment(\.foundationPadding, length)
-                    .padding(edges, length)
-            }
+        public let configuration: Configuration
+        public func body(content: Content) -> some View {
+            content
+                .shadow(color: configuration.color.light,
+                        radius: configuration.radius,
+                        x: configuration.x,
+                        y: configuration.y)
         }
     }
 }
 
 // MARK: - Shadow
 public extension FoundationUI.Modifier {
-    var shadow: Shadow { Shadow(content) }
-    
-    struct Shadow: VariableFunctionScale {
-        public struct Style {
-            var radius: CGFloat
-            var color: FoundationUI.Color = .theme.primary.text.opacity(1)
-            var x: CGFloat = 0
-            var y: CGFloat = 0
-        }
-        
-        private let view: AnyView
-        private var style: Style = .init(radius: 0)
-        
-        init(_ view: some View) {
-            self.view = AnyView(view)
-        }
-        
-        public var config: VariableFunctionConfig<some View> {
-            .init(
-                xxSmall: modifier(.init(radius: 1)),
-                xSmall: modifier(.init(radius: 2)),
-                small: modifier(.init(radius: 3)),
-                regular: modifier(.init(radius: 4)),
-                large: modifier(.init(radius: 6)),
-                xLarge: modifier(.init(radius: 7)),
-                xxLarge: modifier(.init(radius: 8)))
-        }
-        
-        public func custom(_ style: Style) -> some View {
-            modifier(style)()
-        }
-        
-        @ViewBuilder
-        private func body() -> some View {
-            view.modifier(ShadowModifier(style))
-        }
-        
-        private func modifier(_ style: Style) -> () -> some View {
-            var copy = self
-            copy.style = style
-            return copy.body
-        }
-        private struct ShadowModifier: ViewModifier {
-            @Environment(\.self) private var env
-            let style: Shadow.Style
-            init(_ style: Shadow.Style) {
-                self.style = style
+    @ViewBuilder
+    func padding(_ length: CGFloat, _ edges: Edge.Set = .all) -> some View {
+        content
+            .padding(edges, length)
+    }
+    @ViewBuilder
+    func padding(_ padding: KeyPath<FoundationUI.Variable.Padding, CGFloat> = \.regular, _ edges: Edge.Set = .all) -> some View {
+        self.padding(FoundationUI.Variable.padding[keyPath: padding], edges)
+    }
+}
+
+// MARK: - Border
+public extension FoundationUI.Modifier {
+    func border(
+        _ style: any ShapeStyle = .theme.primary.border,
+        width: CGFloat = 1,
+        placement: Border.Configuration.Placement = .inside,
+        cornerRadius: CGFloat = 0
+    ) -> some View {
+        content.modifier(Border(configuration: .init(style: style, width: width, placement: placement, cornerRadius: cornerRadius)))
+    }
+    func border(
+        _ style: any ShapeStyle = .theme.primary.border,
+        width: CGFloat = 1,
+        placement: Border.Configuration.Placement = .inside,
+        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+    ) -> some View {
+        self.border(
+            style,
+            width: width,
+            placement: placement,
+            cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
+    }
+    struct Border: ViewModifier {
+        public struct Configuration {
+            public enum Placement {
+                case inside
+                case outside
+                case center
             }
-            public func body(content: Content) -> some View {
-                content
-                    .shadow(color: style.color.light,
-                            radius: style.radius,
-                            x: style.x,
-                            y: style.y)
+            let placement: Placement
+            let style: AnyShapeStyle
+            let width: CGFloat
+            let cornerRadius: CGFloat
+            init(style: any ShapeStyle, width: CGFloat, placement: Placement, cornerRadius: CGFloat) {
+                self.placement = placement
+                self.style = AnyShapeStyle(style)
+                self.width = width
+                self.cornerRadius = cornerRadius
+            }
+        }
+        
+        public let configuration: Configuration
+        
+        public func body(content: Content) -> some View {
+            content.overlay {
+                RoundedRectangle.foundation(configuration.cornerRadius)
+                    .stroke(lineWidth: configuration.width)
+                    .foregroundStyle(configuration.style)
+                    .padding(placementPadding)
+            }
+        }
+        
+        private var placementPadding: CGFloat {
+            switch configuration.placement {
+            case .inside: configuration.width / 2
+            case .outside: -configuration.width / 2
+            case .center: 0
             }
         }
     }
 }
 
 // MARK: - Border
-extension FoundationUI.Modifier {
-    var border: some View { Border(content, width: 1, placement: .inside).view }
-    func border(_ style: any ShapeStyle = .theme.primary.border, width: CGFloat = 1, placement: Border.Modifier.Placement = .inside) -> some View {
-        Border(content, width: width, style: style, placement: placement).view
+public extension FoundationUI.Modifier {
+    @ViewBuilder
+    func background(
+        _ style: any ShapeStyle = .theme.primary.border,
+        cornerRadius: CGFloat = 0
+    ) -> some View {
+        content.modifier(Background(configuration: .init(style: style, cornerRadius: cornerRadius)))
     }
-    struct Border {
-        let placement: Modifier.Placement
-        let style: any ShapeStyle
-        let width: CGFloat
-        let content: AnyView
-        
-        init(_ content: some View, width: CGFloat, style: any ShapeStyle = .theme.primary.border, placement: Modifier.Placement) {
-            self.style = style
-            self.content = AnyView(content)
-            self.placement = placement
-            self.width = width
-        }
-        
-        @ViewBuilder
-        var view: some View {
-            content.modifier(Modifier(style: style, width: width, placement: placement))
-        }
-        public struct Modifier: ViewModifier {
-            public enum Placement {
-                case inside
-                case outside
-                case center
-            }
-            @Environment(\.foundationRadius) private var env
-            @Environment(\.foundationPadding) private var envPadding
-            @Environment(\.colorScheme) private var colorScheme
-    
-            private let style: AnyShapeStyle
-            private let width: CGFloat
-            private let placement: Placement
-            // TODO: Change blend to `vibrant`?
-            private let blend: Bool
-    
-            public init(style: any ShapeStyle, width: CGFloat = 1, placement: Placement = .inside, blend: Bool = false) {
+    @ViewBuilder
+    func background(
+        _ style: any ShapeStyle = .theme.primary.border,
+        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+    ) -> some View {
+        self.background(style, cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
+    }
+    struct Background: ViewModifier {
+        public struct Configuration {
+            let style: AnyShapeStyle
+            let cornerRadius: CGFloat
+            init(style: any ShapeStyle, cornerRadius: CGFloat) {
                 self.style = AnyShapeStyle(style)
-                self.width = width
-                self.placement = placement
-                self.blend = blend
-            }
-    
-            public func body(content: Content) -> some View {
-                content.overlay {
-                    RoundedRectangle(cornerRadius: cornerRadius, style: env?.style ?? .continuous)
-                        .stroke(lineWidth: width)
-                        .foregroundStyle(style)
-                        .padding(placementPadding)
-                }
-            }
-    
-            private var placementPadding: CGFloat {
-                switch placement {
-                case .inside:   width / 2
-                case .outside:  -width / 2
-                case .center:   0
-                }
-            }
-            private var cornerRadius: CGFloat {
-                env?.radius ?? 0 - placementPadding
-            }
-            private var blendMode: BlendMode {
-                blend ? colorScheme == .dark ? .plusLighter : .plusDarker : .normal
+                self.cornerRadius = cornerRadius
             }
         }
         
-//        static let `default` = Self.init(content)
+        public let configuration: Configuration
         
-        //    public func border(_ style: any ShapeStyle = Color.white.opacity(0.2), width: CGFloat = 1, placement: Border.Placement = .inside) -> some View {
-        //        content.modifier(Border(style: style, width: width, placement: placement, blend: false))
-        //    }
-        //}
+        public func body(content: Content) -> some View {
+            content.background {
+                RoundedRectangle.foundation(configuration.cornerRadius)
+                    .fill(configuration.style)
+            }
+        }
     }
 }
-
-
 
 // MARK: - LEGACY
-
-// TODO: Animations
-// TODO: ForegroundColor
-
-extension View {
-//    public var theme: FoundationUI.Modifier { FoundationUI.Modifier(self) }
-//    public var foundation: FoundationUI.Modifier { FoundationUI.Modifier(self) }
-}
-//
-//extension FoundationUI.Modifier {
-//    public func border(_ style: any ShapeStyle = Color.white.opacity(0.2), width: CGFloat = 1, placement: Border.Placement = .inside) -> some View {
-//        content.modifier(Border(style: style, width: width, placement: placement, blend: false))
-//    }
-//    public struct Border: ViewModifier {
-//        public enum Placement {
-//            case inside
-//            case outside
-//            case center
-//        }
-//        @Environment(\.foundationRadius) private var env
-//        @Environment(\.foundationPadding) private var envPadding
-//        @Environment(\.colorScheme) private var colorScheme
-//        
-//        private let style: AnyShapeStyle
-//        private let width: CGFloat
-//        private let placement: Placement
-//        private let blend: Bool
-//        
-//        public init(style: any ShapeStyle, width: CGFloat = 1, placement: Placement = .inside, blend: Bool = false) {
-//            self.style = AnyShapeStyle(style)
-//            self.width = width
-//            self.placement = placement
-//            self.blend = blend
-//        }
-//        
-//        public func body(content: Content) -> some View {
-//            content.overlay {
-//                RoundedRectangle(cornerRadius: cornerRadius, style: env?.style ?? .continuous)
-//                    .stroke(lineWidth: width)
-//                    .foregroundStyle(style)
-//                    .padding(placementPadding)
-//                    .blendMode(blendMode)
-//            }
-//        }
-//        
-//        private var placementPadding: CGFloat {
-//            switch placement {
-//            case .inside:   width / 2
-//            case .outside:  -width / 2
-//            case .center:   0
-//            }
-//        }
-//        private var cornerRadius: CGFloat {
-//            env?.radius ?? 0 - placementPadding
-//        }
-//        private var blendMode: BlendMode {
-//            blend ? colorScheme == .dark ? .plusLighter : .plusDarker : .normal
-//        }
-//    }
-//}
 //
 //extension FoundationUI.Modifier {
 //    public func background(
@@ -381,31 +259,3 @@ extension View {
 //    }
 //    .padding()
 //}
-
-// MARK: - Environment Values
-private struct FoundationConcentricRadiusKey: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-private struct FoundationRadiusKey: EnvironmentKey {
-    static let defaultValue: (radius: CGFloat, style: RoundedCornerStyle)? = nil
-}
-
-private struct FoundationPaddingKey: EnvironmentKey {
-    static let defaultValue: CGFloat? = 0
-}
-
-extension EnvironmentValues {
-    public var foundationRadius: (radius: CGFloat, style: RoundedCornerStyle)? {
-        get { self[FoundationRadiusKey.self] }
-        set { self[FoundationRadiusKey.self] = newValue }
-    }
-    public var foundationConcentricRadius: Bool {
-        get { self[FoundationConcentricRadiusKey.self] }
-        set { self[FoundationConcentricRadiusKey.self] = newValue }
-    }
-    public var foundationPadding: CGFloat? {
-        get { self[FoundationPaddingKey.self] }
-        set { self[FoundationPaddingKey.self] = newValue }
-    }
-}
