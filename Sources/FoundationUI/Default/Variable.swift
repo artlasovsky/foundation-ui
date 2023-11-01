@@ -18,12 +18,29 @@ public extension FoundationUIStyleDefaults {
     static var cornerRadiusStyle: RoundedCornerStyle { .continuous }
 }
 
+internal enum VariableDefaults {
+    static var multiplier: CGFloat { 2 }
+    static var regular: CGFloat { 8 }
+}
+
 // Default Theme implementation
 public extension FoundationUIVariableDefaults {
-    static var padding: FoundationUI.Variable.Padding { .init(.init(regular: 8, multiplier: 2)) }
-//    static var paddingFine: FoundationUI.Config.Padding { .init(.init(regular: 6, multiplier: 2)) }
+    static var padding: FoundationUI.Variable.Padding { .init(.init(regular: VariableDefaults.regular, multiplier: VariableDefaults.multiplier)) }
+    static var spacing: FoundationUI.Variable.Spacing { .init(.init(regular: VariableDefaults.regular / 2, multiplier: VariableDefaults.multiplier)) }
+    static var radius: FoundationUI.Variable.Radius { .init(.init(regular: VariableDefaults.regular, multiplier: VariableDefaults.multiplier)) }
     
-    static var radius: FoundationUI.Variable.Radius { .init(.init(regular: 8, multiplier: 2)) }
+    static var shadow: FoundationUI.Variable.Shadow {
+        let color: FoundationUI.Color = .primary.text
+        return .init(.init(
+            xxSmall: .init(radius: 0.5, color: color.opacity(0.1), x: 0, y: 0.5),
+            xSmall: .init(radius: 1, color: color.opacity(0.15), x: 0, y: 1),
+            small: .init(radius: 1.5, color: color.opacity(0.2), x: 0, y: 1),
+            regular: .init(radius: 2.5, color: color.opacity(0.25), x: 0, y: 1),
+            large: .init(radius: 3.5, color: color.opacity(0.3), x: 0, y: 1),
+            xLarge: .init(radius: 4, color: color.opacity(0.4), x: 0, y: 1),
+            xxLarge: .init(radius: 5, color: color.opacity(0.4), x: 0, y: 1)
+        ))
+    }
     
     static var animation: FoundationUI.Variable.Animation { .init(default: .interactiveSpring(duration: 0.2)) }
     
@@ -32,10 +49,30 @@ public extension FoundationUIVariableDefaults {
     )) }
 }
 
+struct ShadowPreview: PreviewProvider {
+    static var previews: some View {
+        let rect: some View = RoundedRectangle(cornerRadius: .theme.radius.xSmall).frame(width: 20, height: 20)
+        let style: some ShapeStyle = .foundation.primary.background
+        VStack(spacing: 20) {
+            rect.foundation().shadow(\.xxSmall)
+            rect.foundation().shadow(\.xSmall)
+            rect.foundation().shadow(\.small)
+            rect.foundation().shadow(\.regular)
+            rect.foundation().shadow(\.large)
+            rect.foundation().shadow(\.xLarge)
+            rect.foundation().shadow(\.xxLarge)
+        }
+        .foregroundStyle(style)
+        .padding()
+        .theme().background(style)
+    }
+}
+
 // MARK: - Extensions
 
 // Set of several different value sets
 public enum ThemeCGFloatProperties {
+    public static let spacing = FoundationUI.Variable.spacing
     public static let padding = FoundationUI.Variable.padding
     public static let radius = FoundationUI.Variable.radius
 }
@@ -57,6 +94,12 @@ public extension Animation {
 // MARK: - Variables
 public extension FoundationUI.Variable {
     struct Padding: VariableScale {
+        public var config: VariableConfig<CGFloat>
+        public init(_ config: VariableConfig<CGFloat>) {
+            self.config = config
+        }
+    }
+    struct Spacing: VariableScale {
         public var config: VariableConfig<CGFloat>
         public init(_ config: VariableConfig<CGFloat>) {
             self.config = config
@@ -89,55 +132,3 @@ public extension FoundationUI.Variable.Radius {
     var window: CGFloat { 10 }
 }
 #endif
-
-
-// MARK: - Demo
-
-// Default Theme Overrides
-
-// Override Theme `VariableScale`:
-extension FoundationUI.Variable {
-//    public static var padding: Padding { .init(.init(regular: 6, multiplier: 2)) }
-}
-// Extend Theme
-extension FoundationUI.Variable.Font {
-    var body: Value { .body.bold() }
-}
-
-// Extending Modifiers
-extension FoundationUI.Modifier {
-    func backgroundWithBorder(_ color: FoundationUI.Color, cornerRadius: CGFloat = 0) -> some View {
-        content
-            .theme().background(color.background, cornerRadius: cornerRadius)
-            .theme().border(color.border, width: 2, cornerRadius: cornerRadius)
-    }
-    // Usage example:
-    // - control label padding
-    // - control background
-    // - combine with ViewModifiers
-}
-
-struct Preview: PreviewProvider {
-    static var previews: some View {
-        VStack {
-//            RoundedRectangle.theme.small
-//                .frame(width: 20, height: 20)
-//                .foregroundStyle(.white)
-            HStack(spacing: .theme.padding.small) {
-                Text("FoundationUI")
-                    .padding(.vertical, .theme.padding.regular)
-                    .padding(.horizontal, .theme.padding.large)
-                    .theme().border(.theme.accent.border, width: 2, cornerRadius: .theme.radius.large - .theme.padding.regular)
-                Text("Button")
-                    .padding(.vertical, .theme.padding.regular)
-                    .padding(.horizontal, .theme.padding.large)
-                    .theme().backgroundWithBorder(.theme.accent, cornerRadius: .theme.radius.large - .theme.padding.regular)
-            }
-            .theme().padding(\.regular)
-//            .theme().background(.theme.primary.background, cornerRadius: .theme.radius.large)
-//            .theme().background(.theme.primary.background, cornerRadius: \.large)
-            .theme().border(width: 2, cornerRadius: \.large)
-        }
-        .padding()
-    }
-}

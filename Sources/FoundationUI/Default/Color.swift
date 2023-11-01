@@ -87,8 +87,8 @@ public extension FoundationUI.Color {
     }
 }
 
-extension FoundationUI.Color {
-    public struct Components {
+public extension FoundationUI.Color {
+    struct Components {
         let hue: CGFloat
         let saturation: CGFloat
         let brightness: CGFloat
@@ -123,33 +123,33 @@ extension FoundationUI.Color {
     }
 }
 
-extension FoundationUI.Color {
+public extension FoundationUI.Color {
     /// App background
-    public var backgroundFaded: Self { getScale(0) }
+    var backgroundFaded: Self { getScale(0) }
     /// Content background
-    public var background: Self { getScale(1) }
+    var background: Self { getScale(1) }
     /// Subtle background
-    public var backgroundEmphasized: Self { getScale(2) }
+    var backgroundEmphasized: Self { getScale(2) }
     /// UI element background
-    public var element: Self { getScale(3) }
+    var element: Self { getScale(3) }
     /// Hovered UI element background
-    public var elementHovered: Self { getScale(4) }
+    var elementHovered: Self { getScale(4) }
     /// Active / Selected UI element background
-    public var elementActive: Self { getScale(5) }
+    var elementActive: Self { getScale(5) }
     /// Subtle borders and separators
-    public var borderFaded: Self { getScale(6) }
+    var borderFaded: Self { getScale(6) }
     /// UI element border and focus rings
-    public var border: Self { getScale(7) }
+    var border: Self { getScale(7) }
     /// Hovered UI element border
-    public var borderEmphasized: Self { getScale(8) }
+    var borderEmphasized: Self { getScale(8) }
     /// Solid backgrounds
-    public var solid: Self { getScale(9) }
+    var solid: Self { getScale(9) }
     /// Hovered solid backgrounds
-    public var solidEmphasized: Self { getScale(10) }
+    var solidEmphasized: Self { getScale(10) }
     /// Low-contrast text
-    public var textFaded: Self { getScale(11) }
+    var textFaded: Self { getScale(11) }
     /// High-contrast text
-    public var text: Self { getScale(12) }
+    var text: Self { getScale(12) }
     
     internal func getScale(_ index: Int) -> Self {
         scale[index] ?? self
@@ -209,7 +209,7 @@ extension FoundationUI.Color {
     }
 }
 
-struct ShapeStylePreview: PreviewProvider {
+#Preview {
     struct SelectedColor: View {
         let style: FoundationUI.Color
         
@@ -227,8 +227,8 @@ struct ShapeStylePreview: PreviewProvider {
             }
         }
     }
-    static var previews: some View {
-        VStack(spacing: 0) {
+    return VStack(spacing: 0) {
+        Text("123")
             VStack {
                 SelectedColor(style: .primary)
                 SelectedColor(style: .accent)
@@ -243,6 +243,5 @@ struct ShapeStylePreview: PreviewProvider {
             .padding()
             .background(.theme.primary.backgroundFaded)
             .colorScheme(.dark)
-        }
     }
 }

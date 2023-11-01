@@ -19,8 +19,9 @@ public protocol FoundationUIStyleDefaults {
 // Using protocol to have overridable default theme
 public protocol FoundationUIVariableDefaults {
     static var padding: FoundationUI.Variable.Padding { get }
-    
+    static var spacing: FoundationUI.Variable.Spacing { get }
     static var radius: FoundationUI.Variable.Radius { get }
+    static var shadow: FoundationUI.Variable.Shadow { get }
     
     static var animation: FoundationUI.Variable.Animation { get }
     
