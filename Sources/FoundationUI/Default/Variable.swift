@@ -20,25 +20,27 @@ public extension FoundationUIStyleDefaults {
 
 internal enum VariableDefaults {
     static var multiplier: CGFloat { 2 }
-    static var regular: CGFloat { 8 }
+    static var base: CGFloat { 8 }
 }
 
 // Default Theme implementation
 public extension FoundationUIVariableDefaults {
-    static var padding: FoundationUI.Variable.Padding { .init(.init(regular: VariableDefaults.regular, multiplier: VariableDefaults.multiplier)) }
-    static var spacing: FoundationUI.Variable.Spacing { .init(.init(regular: VariableDefaults.regular / 2, multiplier: VariableDefaults.multiplier)) }
-    static var radius: FoundationUI.Variable.Radius { .init(.init(regular: VariableDefaults.regular, multiplier: VariableDefaults.multiplier)) }
+    static var padding: FoundationUI.Variable.Padding { .init(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
+    static var spacing: FoundationUI.Variable.Spacing { .init(.init(regular: VariableDefaults.base / 2, multiplier: VariableDefaults.multiplier)) }
+    static var radius: FoundationUI.Variable.Radius { .init(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
+    
+    static var size: FoundationUI.Variable.Size { .init(.init(regular: VariableDefaults.base * 4, multiplier: 1.32)) }
     
     static var shadow: FoundationUI.Variable.Shadow {
-        let color: FoundationUI.Color = .primary.text
+        let scale: FoundationUI.ColorScale = .backgroundFaded.colorScheme(.dark)
         return .init(.init(
-            xxSmall: .init(radius: 0.5, color: color.opacity(0.1), x: 0, y: 0.5),
-            xSmall: .init(radius: 1, color: color.opacity(0.15), x: 0, y: 1),
-            small: .init(radius: 1.5, color: color.opacity(0.2), x: 0, y: 1),
-            regular: .init(radius: 2.5, color: color.opacity(0.25), x: 0, y: 1),
-            large: .init(radius: 3.5, color: color.opacity(0.3), x: 0, y: 1),
-            xLarge: .init(radius: 4, color: color.opacity(0.4), x: 0, y: 1),
-            xxLarge: .init(radius: 5, color: color.opacity(0.4), x: 0, y: 1)
+            xxSmall: .init(radius: 0.5, scale: scale.opacity(0.1), x: 0, y: 0.5),
+            xSmall: .init(radius: 1, scale: scale.opacity(0.15), x: 0, y: 1),
+            small: .init(radius: 1.5, scale: scale.opacity(0.2), x: 0, y: 1),
+            regular: .init(radius: 2.5, scale: scale.opacity(0.25), x: 0, y: 1),
+            large: .init(radius: 3.5, scale: scale.opacity(0.3), x: 0, y: 1),
+            xLarge: .init(radius: 4, scale: scale.opacity(0.4), x: 0, y: 1),
+            xxLarge: .init(radius: 5, scale: scale.opacity(0.4), x: 0, y: 1)
         ))
     }
     
@@ -51,16 +53,17 @@ public extension FoundationUIVariableDefaults {
 
 struct ShadowPreview: PreviewProvider {
     static var previews: some View {
-        let rect: some View = RoundedRectangle(cornerRadius: .theme.radius.xSmall).frame(width: 20, height: 20)
-        let style: some ShapeStyle = .foundation.primary.background
+        let rect: some View = RoundedRectangle(cornerRadius: .theme.radius.xSmall)
+            .theme().size(\.small)
+        let style: some ShapeStyle = .scale.text
         VStack(spacing: 20) {
-            rect.foundation().shadow(\.xxSmall)
-            rect.foundation().shadow(\.xSmall)
-            rect.foundation().shadow(\.small)
-            rect.foundation().shadow(\.regular)
-            rect.foundation().shadow(\.large)
-            rect.foundation().shadow(\.xLarge)
-            rect.foundation().shadow(\.xxLarge)
+            rect.theme().shadow(\.xxSmall)
+            rect.theme().shadow(\.xSmall)
+            rect.theme().shadow(\.small)
+            rect.theme().shadow(\.regular)
+            rect.theme().shadow(\.large)
+            rect.theme().shadow(\.xLarge)
+            rect.theme().shadow(\.xxLarge)
         }
         .foregroundStyle(style)
         .padding()
@@ -75,6 +78,7 @@ public enum ThemeCGFloatProperties {
     public static let spacing = FoundationUI.Variable.spacing
     public static let padding = FoundationUI.Variable.padding
     public static let radius = FoundationUI.Variable.radius
+    public static let size = FoundationUI.Variable.size
 }
 
 public extension CGFloat {
@@ -100,6 +104,13 @@ public extension FoundationUI.Variable {
         }
     }
     struct Spacing: VariableScale {
+        public var config: VariableConfig<CGFloat>
+        public init(_ config: VariableConfig<CGFloat>) {
+            self.config = config
+        }
+    }
+    
+    struct Size: VariableScale {
         public var config: VariableConfig<CGFloat>
         public init(_ config: VariableConfig<CGFloat>) {
             self.config = config
