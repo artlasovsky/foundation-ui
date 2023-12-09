@@ -286,11 +286,15 @@ public extension FoundationUI.Modifier {
         
         public func body(content: Content) -> some View {
             content.overlay {
-                RoundedRectangle.foundation(configuration.cornerRadius - placementPadding)
+                RoundedRectangle.foundation(cornerRadius - placementPadding)
                     .stroke(lineWidth: configuration.width)
                     .foregroundStyle(foregroundStyle)
                     .padding(placementPadding)
             }
+        }
+        
+        private var cornerRadius: CGFloat {
+            environment.foundationUICornerRadius ?? configuration.cornerRadius
         }
         
         private var foregroundStyle: AnyShapeStyle {
@@ -388,14 +392,20 @@ public extension FoundationUI.Modifier {
             }
         }
         
+        @Environment(\.foundationUICornerRadius) private var envCornerRadius
+        
         public let configuration: Configuration
         
         public func body(content: Content) -> some View {
             content.background {
-                RoundedRectangle.foundation(configuration.cornerRadius)
+                RoundedRectangle.foundation(cornerRadius)
                     .fill(configuration.style)
                     .theme().shadow(configuration.shadow)
             }
+        }
+        
+        private var cornerRadius: CGFloat {
+            envCornerRadius ?? configuration.cornerRadius
         }
     }
 }
@@ -424,9 +434,42 @@ public extension FoundationUI.Modifier {
         
         public let configuration: Configuration
         
+        @Environment(\.foundationUICornerRadius) private var envCornerRadius
+        
         public func body(content: Content) -> some View {
             content
-                .clipShape(RoundedRectangle.foundation(configuration.cornerRadius))
+                .clipShape(RoundedRectangle.foundation(envCornerRadius ?? configuration.cornerRadius))
+        }
+    }
+}
+
+// MARK: - Corner Radius
+public extension FoundationUI.Modifier {
+    @ViewBuilder
+    func cornerRadius(
+        _ cornerRadius: CGFloat = 0
+    ) -> some View {
+        content.modifier(CornerRadius(configuration: .init(cornerRadius: cornerRadius)))
+    }
+    @ViewBuilder
+    func cornerRadius(
+        _ cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+    ) -> some View {
+        self.cornerRadius(FoundationUI.Variable.radius[keyPath: cornerRadius])
+    }
+    struct CornerRadius: ViewModifier {
+        public struct Configuration {
+            let cornerRadius: CGFloat
+            init(cornerRadius: CGFloat) {
+                self.cornerRadius = cornerRadius
+            }
+        }
+        
+        public let configuration: Configuration
+        
+        public func body(content: Content) -> some View {
+            content
+                .environment(\.foundationUICornerRadius, configuration.cornerRadius)
         }
     }
 }

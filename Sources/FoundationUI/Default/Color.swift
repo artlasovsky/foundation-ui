@@ -18,7 +18,6 @@ public extension ShapeStyle {
     typealias scale = FoundationUI.ColorScale
     typealias tint = FoundationUI.Tint
 }
-//#warning("TODO: Vibrancy (plusBlend) variant based on color scheme")
 
 // MARK: - Theme
 // TODO: Extract it to the "Theme"
@@ -119,8 +118,8 @@ public extension FoundationUI.ColorScale {
         .backgroundFaded, .background, .backgroundEmphasized,
         .fillFaded, .fill, .fillEmphasized,
         .borderFaded, .border, .borderEmphasized,
-        .solid, .solidEmphasized,
-        .textFaded, .text
+        .solid, .solidEmphasized, /*.textFaded,*/
+        .text, .textEmphasized
     ]
 }
 
@@ -164,43 +163,4 @@ public extension FoundationUI.ColorScale {
         ColorScale().environment(\.colorScheme, .dark)
             .theme().tint(color: .blue)
     }
-//    .padding()
-//    .background(.black)
 }
-
-//#Preview {
-//    struct SelectedColor: View {
-//        let style: FoundationUI.Color
-//        
-//        var body: some View {
-//            HStack {
-//                ForEach(Array(style.scale.keys.sorted()), id: \.self) { index in
-//                    VStack {
-//                        Text("\(index)")
-//                            .foregroundStyle(style.text)
-//                        Rectangle()
-//                            .frame(width: 50, height: 50)
-//                            .foregroundStyle(style.getScale(index))
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    return VStack(spacing: 0) {
-//        Text("123")
-//            VStack {
-//                SelectedColor(style: .primary)
-//                SelectedColor(style: .accent)
-//            }
-//            .padding()
-//            .background(.theme.primary.backgroundFaded)
-//            .colorScheme(.light)
-//            VStack {
-//                SelectedColor(style: .primary)
-//                SelectedColor(style: .accent)
-//            }
-//            .padding()
-//            .background(.theme.primary.backgroundFaded)
-//            .colorScheme(.dark)
-//    }
-//}

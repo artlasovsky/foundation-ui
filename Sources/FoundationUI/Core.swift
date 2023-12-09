@@ -309,9 +309,16 @@ private struct FoundationUITintKey: EnvironmentKey {
         dark: .init(hue: 0, saturation: 0, brightness: 0.55)
     )
 }
+private struct FoundationUICornerRadiusKey: EnvironmentKey {
+    static let defaultValue: CGFloat? = nil
+}
 extension EnvironmentValues {
     var foundationUITint: FoundationUI.Tint {
         get { self[FoundationUITintKey.self] }
         set { self[FoundationUITintKey.self] = newValue }
+    }
+    var foundationUICornerRadius: CGFloat? {
+        get { self[FoundationUICornerRadiusKey.self] }
+        set { self[FoundationUICornerRadiusKey.self] = newValue }
     }
 }

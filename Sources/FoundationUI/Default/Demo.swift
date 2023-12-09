@@ -180,6 +180,15 @@ struct MacOSApp_Preview: PreviewProvider {
                         .theme().foreground(.text)
                     Text("Text Faded")
                         .theme().foreground(.textFaded)
+                    Button("Clipped Button", action: {})
+                        .buttonStyle(.plain)
+                        .fixedSize()
+                        .theme().size(width: \.regular, height: \.small)
+                        .theme().clip()
+                        .theme().background()
+                        .theme().border()
+                        .theme().cornerRadius(\.regular)
+                        .theme().tint(.accent)
                     RoundedRectangle
                         .foundation(\.regular)
                         .theme().size(width: \.xxLarge, height: \.small)
@@ -194,6 +203,7 @@ struct MacOSApp_Preview: PreviewProvider {
                                                 cornerRadius: \.regular)
                                 .theme().size(height: \.small)
                         }
+                        .theme().tint(color: .blue)
                 }
                 Spacer()
             }
