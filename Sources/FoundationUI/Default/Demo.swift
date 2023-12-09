@@ -172,7 +172,7 @@ struct MacOSApp_Preview: PreviewProvider {
             }
             Rectangle().frame(height: 1)
                 .theme().foreground(.divider)
-            HStack {
+            HStack(alignment: .top, spacing: .theme.spacing.xLarge) {
                 VStack(alignment: .leading) {
                     Text("Text Emphasized")
                         .theme().foreground(.textEmphasized)
@@ -180,19 +180,24 @@ struct MacOSApp_Preview: PreviewProvider {
                         .theme().foreground(.text)
                     Text("Text Faded")
                         .theme().foreground(.textFaded)
+                }
+                VStack(alignment: .leading) {
                     Button("Clipped Button", action: {})
                         .buttonStyle(.plain)
                         .fixedSize()
-                        .theme().size(width: \.regular, height: \.small)
+                        .theme().size(width: \.xLarge, height: \.small)
                         .theme().clip()
                         .theme().background()
                         .theme().border()
+                        /// `.cornerRadius(.\regular)` will be applied to the `.theme()` elements above
                         .theme().cornerRadius(\.regular)
                         .theme().tint(.accent)
-                    RoundedRectangle
-                        .foundation(\.regular)
-                        .theme().size(width: \.xxLarge, height: \.small)
-                        .theme().foreground(.background)
+                    Button("Button", action: {})
+                        .buttonStyle(.plain)
+                        .theme().padding(\.regular, .horizontal)
+                        .theme().size(height: \.small)
+                        .theme().background(.fillFaded.opacity(0.3), cornerRadius: \.regular)
+                        .theme().foreground(.text.tint(.primary))
                         .theme().border(.backgroundFaded, width: 0.5, placement: .outside, cornerRadius: \.regular)
                         .theme().border(.fillFaded.opacity(0.9), cornerRadius: \.regular)
                         // Top glare gradient
@@ -205,6 +210,15 @@ struct MacOSApp_Preview: PreviewProvider {
                         }
                         .theme().tint(color: .blue)
                 }
+                VStack(alignment: .leading) {
+                    Text("Blend Mode")
+                    Rectangle().theme().size(\.regular)
+                        .theme().foreground(.fill)
+                    Rectangle().theme().size(\.regular)
+                        .theme().foreground(.text.blendMode(.overlay))
+                        .offset(x: 10, y: -20)
+                }
+                .theme().tint(color: .red)
                 Spacer()
             }
             .theme().padding()

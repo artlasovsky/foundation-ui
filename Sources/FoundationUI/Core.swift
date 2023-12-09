@@ -137,6 +137,8 @@ public extension FoundationUI {
         }
         private var overrides = Overrides()
         
+        private var blendMode: BlendMode?
+        
         // TODO:
         // vibrant variant – plusBlend
         // transparent variant (here or in the theme?)
@@ -156,6 +158,12 @@ public extension FoundationUI {
         public func opacity(_ value: CGFloat) -> Self {
             var copy = self
             copy.overrides.opacity = .init(light: value)
+            return copy
+        }
+        
+        public func blendMode(_ value: BlendMode) -> Self {
+            var copy = self
+            copy.blendMode = value
             return copy
         }
         
@@ -187,7 +195,11 @@ public extension FoundationUI {
         }
         
         public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-            resolveColor(in: environment)
+            var color: any ShapeStyle = resolveColor(in: environment)
+            if let blendMode {
+                color = color.blendMode(blendMode)
+            }
+            return AnyShapeStyle(color)
         }
         
         internal func resolveComponents(in environment: EnvironmentValues) -> Components? {
@@ -236,7 +248,7 @@ public extension FoundationUI {
             }
             
             if let opacityOverride = overrides.opacity {
-                return color.opacity(lightColorScheme ? opacityOverride.light : opacityOverride.dark)
+                color = color.opacity(lightColorScheme ? opacityOverride.light : opacityOverride.dark)
             }
             
             return color
