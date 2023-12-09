@@ -40,7 +40,7 @@ public extension FoundationUIVariableDefaults {
             regular: .init(radius: 2.5, scale: scale.opacity(0.25), x: 0, y: 1),
             large: .init(radius: 3.5, scale: scale.opacity(0.3), x: 0, y: 1),
             xLarge: .init(radius: 4, scale: scale.opacity(0.4), x: 0, y: 1),
-            xxLarge: .init(radius: 5, scale: scale.opacity(0.4), x: 0, y: 1)
+            xxLarge: .init(radius: 12, scale: scale.opacity(0.6), x: 0, y: 1)
         ))
     }
     

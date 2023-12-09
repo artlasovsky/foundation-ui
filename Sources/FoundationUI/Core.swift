@@ -96,6 +96,7 @@ public extension FoundationUI {
             self.dark = dark
             self.darkAccessible = darkAccessible
         }
+        
         public init(_ universal: SwiftUI.Color, accessible: SwiftUI.Color? = nil) {
             self.light = universal
             self.lightAccessible = accessible
@@ -120,9 +121,21 @@ public extension FoundationUI {
         public var adjust: Adjust?
         
         // Overrides
-        private var tint: FoundationUI.Tint?
-        private var opacity: CGFloat?
-        private var colorScheme: ColorScheme?
+        struct Overrides {
+            struct OpacityOverride {
+                let light: CGFloat
+                let dark: CGFloat
+                
+                init(light: CGFloat, dark: CGFloat? = nil) {
+                    self.light = light
+                    self.dark = dark ?? light
+                }
+            }
+            var tint: FoundationUI.Tint?
+            var opacity: OpacityOverride?
+            var colorScheme: ColorScheme?
+        }
+        private var overrides = Overrides()
         
         // TODO:
         // vibrant variant – plusBlend
@@ -130,19 +143,25 @@ public extension FoundationUI {
         
         public func tint(_ tint: FoundationUI.Tint) -> Self {
             var copy = self
-            copy.tint = tint
+            copy.overrides.tint = tint
+            return copy
+        }
+        
+        public func tint(color: Color) -> Self {
+            var copy = self
+            copy.overrides.tint = .init(color)
             return copy
         }
         
         public func opacity(_ value: CGFloat) -> Self {
             var copy = self
-            copy.opacity = value
+            copy.overrides.opacity = .init(light: value)
             return copy
         }
         
         public func colorScheme(_ colorScheme: ColorScheme) -> Self {
             var copy = self
-            copy.colorScheme = colorScheme
+            copy.overrides.colorScheme = colorScheme
             return copy
         }
         
@@ -154,18 +173,35 @@ public extension FoundationUI {
                 darkAccessible: darkAccessible)
         }
         
+        
+        
+        public init(light: ColorScale, lightAccessible: ColorScale? = nil, dark: ColorScale, darkAccessible: ColorScale? = nil) {
+            self.adjust = .init(
+                light: light.adjust?.light,
+                dark: dark.adjust?.dark
+            )
+            
+            self.overrides.opacity = .init(
+                light: light.overrides.opacity?.light ?? self.overrides.opacity?.light ?? 1,
+                dark: dark.overrides.opacity?.dark ?? self.overrides.opacity?.dark ?? 1)
+        }
+        
         public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
             resolveColor(in: environment)
         }
         
+        internal func resolveComponents(in environment: EnvironmentValues) -> Components? {
+            getComponents(color: resolveColor(in: environment))
+        }
+        
         public func resolveColor(in environment: EnvironmentValues) -> Color {
-            let tint = tint ?? environment.foundationUITint
+            let tint = overrides.tint ?? environment.foundationUITint
             let adjustLight = adjust?.light
             let adjustLightAccessible = adjust?.lightAccessible ?? adjust?.light
             let adjustDark = adjust?.dark
             let adjustDarkAccessible = adjust?.darkAccessible ?? adjust?.dark
             
-            let colorScheme = colorScheme ?? environment.colorScheme
+            let colorScheme = overrides.colorScheme ?? environment.colorScheme
             
             let lightColorScheme = colorScheme == .light
             let accessibility = (
@@ -198,7 +234,12 @@ public extension FoundationUI {
                          ? adjustDarkAccessible?(components).color()
                          : adjustDark?(components).color()) ?? color
             }
-            return color.opacity(opacity ?? 1)
+            
+            if let opacityOverride = overrides.opacity {
+                return color.opacity(lightColorScheme ? opacityOverride.light : opacityOverride.dark)
+            }
+            
+            return color
         }
     }
 }

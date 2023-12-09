@@ -10,7 +10,52 @@ import SwiftUI
 
 // MARK: - Demo
 
-// Default Theme Overrides
+
+// MARK: macOS Extensions
+extension FoundationUI.ColorScale {
+    static let windowInnerBorder = FoundationUI.ColorScale(
+        light: .backgroundFaded.opacity(0.5),
+        dark: .border.opacity(0.5)
+    )
+    static let windowOuterBorder = FoundationUI.ColorScale(
+        light: .border.opacity(0.5),
+        dark: .backgroundFaded
+    )
+    static let windowToolbarBackground = FoundationUI.ColorScale(
+        light: .backgroundFaded,
+        dark: .fillFaded
+    )
+    static let windowToolbarElementBackground = Self.windowToolbarElementBackground()
+    static func windowToolbarElementBackground(_ isPressed: Bool = false) -> FoundationUI.ColorScale {
+        return .init(
+            light: .fill.opacity(isPressed ? 0.4 : 0.2),
+            dark: .fill.opacity(isPressed ? 1 : 0.6)
+        )
+    }
+    static let windowBackground = FoundationUI.ColorScale(light: .background,
+                                                          dark: .backgroundEmphasized)
+    static let divider = FoundationUI.ColorScale(light: .backgroundEmphasized,
+                              dark: .backgroundFaded)
+    
+}
+
+extension FoundationUI.Modifier {
+    @ViewBuilder func windowBorder() -> some View {
+        content
+            .theme().border(.windowInnerBorder, placement: .inside, cornerRadius: \.window)
+            .theme().border(.windowOuterBorder, width: 0.5, placement: .outside, cornerRadius: \.window)
+    }
+}
+
+extension FoundationUI.Variable.Size {
+    var toolbarElementHeight: CGFloat { .theme.size.small }
+}
+
+extension FoundationUI.Variable.Radius {
+    var toolbarElementRadius: CGFloat { .theme.radius.halfStep.small }
+}
+
+// MARK: Default Theme Overrides
 
 // Override Theme `VariableScale`:
 private extension FoundationUI.Variable {
@@ -23,62 +68,138 @@ private extension FoundationUI.Variable.Font {
 
 // Extending Modifiers
 extension FoundationUI.Modifier {
-//    func backgroundWithBorder(_ color: FoundationUI.Color, cornerRadius: CGFloat = 0) -> some View {
-//        content
-//            .theme().background(color.background, cornerRadius: cornerRadius)
-//            .theme().border(color.border, width: 2, cornerRadius: cornerRadius)
-//    }
+    func backgroundWithBorder(_ tint: FoundationUI.Tint, cornerRadius: CGFloat = 0) -> some View {
+        content
+            .theme().background(.background.tint(tint), cornerRadius: cornerRadius)
+            .theme().border(.border.tint(tint), width: 2, cornerRadius: cornerRadius)
+    }
     // Usage example:
     // - control label padding
     // - control background
     // - combine with ViewModifiers
 }
 
-struct MacOSApp_Preview: PreviewProvider {
-    static var previews: some View {
+struct macOSWindow<Content: View>: View {
+    let content: Content
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    var body: some View {
         VStack {
             VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    HStack {
-                        Text("Window")
-                        Image(systemName: "chevron.compact.right")
-                        Text("Content")
-                    }
-                        .font(.theme.small)
-                        .theme().foreground(.text)
-                        .theme().padding(\.xSmall, .vertical)
-                        .theme().padding(\.regular, .horizontal)
-                        .theme().size(height: \.small)
-                        .theme().background(.solid.opacity(0.2), cornerRadius: \.regular)
-                    Spacer()
-                }
-                .overlay(alignment: .leading) {
-                    HStack {
-                        Circle().theme().size(12).foregroundStyle(.red)
-                        Circle().theme().size(12).foregroundStyle(.yellow)
-                        Circle().theme().size(12).foregroundColor(.green)
-                    }.saturation(0.75)
-                }
-                .theme().padding(\.halfStep.regular, .horizontal)
-                .theme().size(height: \.large)
-                .theme().background(.element)
-                Rectangle().frame(height: 1)
-                    .theme().foreground(.backgroundFaded)
-                HStack {
-                    Text("Sidebar")
-                    Spacer()
-                }
-                .theme().padding()
-                Spacer()
+                content
             }
             .theme().clip(cornerRadius: \.window)
-            .theme().background(cornerRadius: \.window, shadow: \.xxLarge)
-            .theme().border(.scale.border.opacity(0.5), placement: .inside, cornerRadius: \.window)
-            .theme().border(.scale.backgroundFaded, width: 0.5, placement: .outside, cornerRadius: \.window)
+            .theme().background(.windowBackground, cornerRadius: \.window, shadow: \.xxLarge)
+            .theme().windowBorder()
         }
-        .theme().padding(\.large)
+        .theme().padding(\.xLarge)
         .frame(width: 500, height: 350)
+    }
+}
+
+struct macOSToolbarButton: View {
+    let systemImage: String
+    struct macOSToolbarButtonStyle: ButtonStyle {
+        @State private var isHovered: Bool = false
+        func makeBody(configuration: Configuration) -> some View {
+            let isPressed = configuration.isPressed
+            configuration.label
+                .labelStyle(.iconOnly)
+                .buttonStyle(.borderless)
+                .theme().foreground(isPressed ? .text : .textFaded)
+                .theme().font(\.xLarge)
+                .theme().padding(\.halfStep.xSmall, .vertical)
+                .theme().padding(\.small, .horizontal)
+                .theme().size(height: \.toolbarElementHeight)
+                .theme().background(isHovered ? .windowToolbarElementBackground(isPressed) : .clear,
+                                    cornerRadius: \.toolbarElementRadius)
+                .contentShape(Rectangle())
+                .onHover { isHovered = $0 }
+        }
+    }
+    var body: some View {
+        Button("Sidebar", systemImage: systemImage, action: {})
+            .buttonStyle(macOSToolbarButtonStyle())
+    }
+}
+
+struct macOSToolbar<Content: View>: View {
+    let content: () -> Content
+    var body: some View {
+        HStack {
+            Spacer()
+            content()
+            Spacer()
+        }
+        .overlay(alignment: .trailing) {
+            macOSToolbarButton(systemImage: "sidebar.right")
+                .offset(x: .theme.spacing.halfStep.small)
+        }
+        .overlay(alignment: .leading) {
+            HStack {
+                Circle()
+                    .theme().size(12)
+                    .theme().foreground(.solid)
+                    .theme().tint(color: .red)
+                Circle().theme().size(12).foregroundStyle(.yellow)
+                Circle().theme().size(12).foregroundColor(.green)
+            }.saturation(0.75)
+        }
+        .theme().padding(\.halfStep.regular, .horizontal)
+        .theme().size(height: \.large)
+        .theme().background(.windowToolbarBackground)
+    }
+}
+
+struct MacOSApp_Preview: PreviewProvider {
+    static var previews: some View {
+        macOSWindow {
+            macOSToolbar {
+                HStack {
+                    Text("Window")
+                    Image(systemName: "chevron.compact.right")
+                    Text("Content")
+                }
+                    .font(.theme.small)
+                    .theme().foreground(.text)
+                    .theme().padding(\.xSmall, .vertical)
+                    .theme().padding(\.regular, .horizontal)
+                    .theme().size(height: \.toolbarElementHeight)
+                    .theme().background(.windowToolbarElementBackground,
+                                        cornerRadius: \.toolbarElementRadius)
+            }
+            Rectangle().frame(height: 1)
+                .theme().foreground(.divider)
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("Text Emphasized")
+                        .theme().foreground(.textEmphasized)
+                    Text("Text")
+                        .theme().foreground(.text)
+                    Text("Text Faded")
+                        .theme().foreground(.textFaded)
+                    RoundedRectangle
+                        .foundation(\.regular)
+                        .theme().size(width: \.xxLarge, height: \.small)
+                        .theme().foreground(.background)
+                        .theme().border(.backgroundFaded, width: 0.5, placement: .outside, cornerRadius: \.regular)
+                        .theme().border(.fillFaded.opacity(0.9), cornerRadius: \.regular)
+                        // Top glare gradient
+                        .overlay(alignment: .top) {
+                            Color.clear
+                                .theme().border(gradient: .init([.borderFaded.opacity(0.5), .clear, .clear, .clear],
+                                                                startPoint: .top),
+                                                cornerRadius: \.regular)
+                                .theme().size(height: \.small)
+                        }
+                }
+                Spacer()
+            }
+            .theme().padding()
+            Spacer()
+        }
     }
 }
 
@@ -90,15 +211,18 @@ struct Demo_Preview: PreviewProvider {
             VStack {
                 HStack(spacing: .theme.spacing.regular) {
                     Text("FoundationUI")
-                        .font(.theme.body)
-                        .padding(.vertical, .theme.padding.regular)
-                        .padding(.horizontal, .theme.padding.large)
-                        .theme().background(cornerRadius: .theme.radius.large - .theme.padding.regular)
-//                        .theme().border(.theme.accent.border, width: 2, cornerRadius: .theme.radius.large - .theme.padding.regular)
+                        .theme().font(\.body)
+                        .theme().padding(\.regular, .vertical)
+                        .theme().padding(\.large, .horizontal)
+//                        .theme().tint(.primary)
+//                        .theme().border(cornerRadius: .theme.radius.large - .theme.radius.regular)
+//                        .theme().background(.fillFaded, cornerRadius: .theme.radius.large - .theme.padding.regular)
+//                        .theme().foreground(.text)
+//                        .theme().tint(.accent)
                     Text("Button")
-                        .padding(.vertical, .theme.padding.regular)
-                        .padding(.horizontal, .theme.padding.large)
-//                        .theme().backgroundWithBorder(.theme.accent, cornerRadius: .theme.radius.large - .theme.padding.regular)
+                        .theme().padding(\.regular, .vertical)
+                        .theme().padding(\.large, .horizontal)
+                        .theme().backgroundWithBorder(.accent, cornerRadius: .theme.radius.large - .theme.padding.regular)
                 }
                 .theme().padding(\.regular)
                 .theme().border(width: 2, cornerRadius: \.large)
