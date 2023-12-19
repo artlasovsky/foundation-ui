@@ -112,7 +112,7 @@ Add a new color to the theme by extending `FoundationUIColor`:
 import FoundationUI
 
 public extension Theme.Color {
-    static var customColor: FoundationUI.Config.Color { .init(hue: 0.5, saturation: 1, brightness: 0.5) }
+    static var customColor: FoundationUI.Config.Color { FoundationUI.Config.Color(hue: 0.5, saturation: 1, brightness: 0.5) }
 }
 ```
 
@@ -120,6 +120,6 @@ To override the default theme color just declare the new computed property with 
 ```swift
 import FoundationUI
 public extension Theme.Color {
-    static var accent: FoundationUI.Config.Color { .init(hue: 0.32, saturation: 0.5, brightness: 1) }
+    static var accent: FoundationUI.Config.Color { FoundationUI.Config.Color(hue: 0.32, saturation: 0.5, brightness: 1) }
 }
 ``` 

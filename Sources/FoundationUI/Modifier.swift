@@ -19,8 +19,8 @@ extension FoundationUI {
 
 // MARK: - View extension
 public extension View {
-    func foundation() -> FoundationUI.Modifier { .init(self) }
-    func theme() -> FoundationUI.Modifier { .init(self) }
+    func foundation() -> FoundationUI.Modifier { FoundationUI.Modifier(self) }
+    func theme() -> FoundationUI.Modifier { FoundationUI.Modifier(self) }
 }
 
 // MARK: - Font
@@ -447,7 +447,7 @@ public extension FoundationUI.Modifier {
 public extension FoundationUI.Modifier {
     @ViewBuilder
     func cornerRadius(
-        _ cornerRadius: CGFloat = 0
+        _ cornerRadius: CGFloat?
     ) -> some View {
         content.modifier(CornerRadius(configuration: .init(cornerRadius: cornerRadius)))
     }
@@ -459,8 +459,8 @@ public extension FoundationUI.Modifier {
     }
     struct CornerRadius: ViewModifier {
         public struct Configuration {
-            let cornerRadius: CGFloat
-            init(cornerRadius: CGFloat) {
+            let cornerRadius: CGFloat?
+            init(cornerRadius: CGFloat?) {
                 self.cornerRadius = cornerRadius
             }
         }

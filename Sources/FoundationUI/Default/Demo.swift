@@ -13,12 +13,16 @@ import SwiftUI
 
 // MARK: macOS Extensions
 extension FoundationUI.ColorScale {
+    static let windowTopGlare = FoundationUI.ColorScale(
+        light: .backgroundFaded.opacity(0.8),
+        dark: .border.opacity(0.9)
+    )
     static let windowInnerBorder = FoundationUI.ColorScale(
         light: .backgroundFaded.opacity(0.5),
         dark: .border.opacity(0.5)
     )
     static let windowOuterBorder = FoundationUI.ColorScale(
-        light: .border.opacity(0.5),
+        light: .border.opacity(0.2),
         dark: .backgroundFaded
     )
     static let windowToolbarBackground = FoundationUI.ColorScale(
@@ -27,14 +31,14 @@ extension FoundationUI.ColorScale {
     )
     static let windowToolbarElementBackground = Self.windowToolbarElementBackground()
     static func windowToolbarElementBackground(_ isPressed: Bool = false) -> FoundationUI.ColorScale {
-        return .init(
+        return FoundationUI.ColorScale(
             light: .fill.opacity(isPressed ? 0.4 : 0.2),
             dark: .fill.opacity(isPressed ? 1 : 0.6)
         )
     }
     static let windowBackground = FoundationUI.ColorScale(light: .background,
                                                           dark: .backgroundEmphasized)
-    static let divider = FoundationUI.ColorScale(light: .backgroundEmphasized,
+    static let divider = FoundationUI.ColorScale(light: .border.opacity(0.2),
                               dark: .backgroundFaded)
     
 }
@@ -42,8 +46,16 @@ extension FoundationUI.ColorScale {
 extension FoundationUI.Modifier {
     @ViewBuilder func windowBorder() -> some View {
         content
-            .theme().border(.windowInnerBorder, placement: .inside, cornerRadius: \.window)
-            .theme().border(.windowOuterBorder, width: 0.5, placement: .outside, cornerRadius: \.window)
+            .theme().cornerRadius(nil)
+            .theme().border(.windowOuterBorder, placement: .outside)
+            .theme().border(.windowInnerBorder, placement: .inside)
+            .overlay(alignment: .top) {
+                Color.clear
+                    .theme().size(height: \.small)
+                    .theme().border(gradient: .init([.windowTopGlare, .clear, .clear], startPoint: .top),
+                                    placement: .inside)
+            }
+            .theme().cornerRadius(\.window)
     }
 }
 
@@ -87,9 +99,7 @@ struct macOSWindow<Content: View>: View {
     }
     var body: some View {
         VStack {
-            VStack(spacing: 0) {
-                content
-            }
+            VStack(spacing: 0) { content }
             .theme().clip(cornerRadius: \.window)
             .theme().background(.windowBackground, cornerRadius: \.window, shadow: \.xxLarge)
             .theme().windowBorder()

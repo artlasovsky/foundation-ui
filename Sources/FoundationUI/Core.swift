@@ -120,6 +120,10 @@ public extension FoundationUI {
         }
         public var adjust: Adjust?
         
+        // TODO:
+        // vibrant variant – plusBlend
+        // transparent variant (here or in the theme?)
+        
         // Overrides
         struct Overrides {
             struct OpacityOverride {
@@ -139,9 +143,24 @@ public extension FoundationUI {
         
         private var blendMode: BlendMode?
         
-        // TODO:
-        // vibrant variant – plusBlend
-        // transparent variant (here or in the theme?)
+        init(light: Adjust.Closure? = nil, lightAccessible: Adjust.Closure? = nil, dark: Adjust.Closure? = nil, darkAccessible: Adjust.Closure? = nil) {
+            self.adjust = .init(
+                light: light,
+                lightAccessible: lightAccessible,
+                dark: dark,
+                darkAccessible: darkAccessible)
+        }
+        
+        public init(light: ColorScale, lightAccessible: ColorScale? = nil, dark: ColorScale, darkAccessible: ColorScale? = nil) {
+            self.adjust = .init(
+                light: light.adjust?.light,
+                dark: dark.adjust?.dark
+            )
+            
+            self.overrides.opacity = .init(
+                light: light.overrides.opacity?.light ?? self.overrides.opacity?.light ?? 1,
+                dark: dark.overrides.opacity?.dark ?? self.overrides.opacity?.dark ?? 1)
+        }
         
         public func tint(_ tint: FoundationUI.Tint) -> Self {
             var copy = self
@@ -171,27 +190,6 @@ public extension FoundationUI {
             var copy = self
             copy.overrides.colorScheme = colorScheme
             return copy
-        }
-        
-        init(light: Adjust.Closure? = nil, lightAccessible: Adjust.Closure? = nil, dark: Adjust.Closure? = nil, darkAccessible: Adjust.Closure? = nil) {
-            self.adjust = .init(
-                light: light,
-                lightAccessible: lightAccessible,
-                dark: dark,
-                darkAccessible: darkAccessible)
-        }
-        
-        
-        
-        public init(light: ColorScale, lightAccessible: ColorScale? = nil, dark: ColorScale, darkAccessible: ColorScale? = nil) {
-            self.adjust = .init(
-                light: light.adjust?.light,
-                dark: dark.adjust?.dark
-            )
-            
-            self.overrides.opacity = .init(
-                light: light.overrides.opacity?.light ?? self.overrides.opacity?.light ?? 1,
-                dark: dark.overrides.opacity?.dark ?? self.overrides.opacity?.dark ?? 1)
         }
         
         public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {

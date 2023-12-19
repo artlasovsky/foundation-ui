@@ -25,28 +25,30 @@ internal enum VariableDefaults {
 
 // Default Theme implementation
 public extension FoundationUIVariableDefaults {
-    static var padding: FoundationUI.Variable.Padding { .init(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
-    static var spacing: FoundationUI.Variable.Spacing { .init(.init(regular: VariableDefaults.base / 2, multiplier: VariableDefaults.multiplier)) }
-    static var radius: FoundationUI.Variable.Radius { .init(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
+    typealias Variable = FoundationUI.Variable
+    static var padding: Variable.Padding { Variable.Padding(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
+    static var spacing: Variable.Spacing { Variable.Spacing(.init(regular: VariableDefaults.base / 2, multiplier: VariableDefaults.multiplier)) }
+    static var radius: Variable.Radius { Variable.Radius(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
     
     static var size: FoundationUI.Variable.Size { .init(.init(regular: VariableDefaults.base * 4, multiplier: 1.32)) }
     
-    static var shadow: FoundationUI.Variable.Shadow {
+    static var shadow: Variable.Shadow {
         let scale: FoundationUI.ColorScale = .backgroundFaded.colorScheme(.dark)
-        return .init(.init(
-            xxSmall: .init(radius: 0.5, scale: scale.opacity(0.1), x: 0, y: 0.5),
-            xSmall: .init(radius: 1, scale: scale.opacity(0.15), x: 0, y: 1),
-            small: .init(radius: 1.5, scale: scale.opacity(0.2), x: 0, y: 1),
-            regular: .init(radius: 2.5, scale: scale.opacity(0.25), x: 0, y: 1),
-            large: .init(radius: 3.5, scale: scale.opacity(0.3), x: 0, y: 1),
-            xLarge: .init(radius: 4, scale: scale.opacity(0.4), x: 0, y: 1),
-            xxLarge: .init(radius: 12, scale: scale.opacity(0.6), x: 0, y: 1)
-        ))
+        return Variable.Shadow(
+            Variable.Shadow.Config(
+                xxSmall: .init(radius: 0.5, scale: scale.opacity(0.1), x: 0, y: 0.5),
+                xSmall: .init(radius: 1, scale: scale.opacity(0.15), x: 0, y: 1),
+                small: .init(radius: 1.5, scale: scale.opacity(0.2), x: 0, y: 1),
+                regular: .init(radius: 2.5, scale: scale.opacity(0.25), x: 0, y: 1),
+                large: .init(radius: 3.5, scale: scale.opacity(0.3), x: 0, y: 1),
+                xLarge: .init(radius: 4, scale: scale.opacity(0.4), x: 0, y: 1),
+                xxLarge: .init(radius: 12, scale: scale.opacity(0.6), x: 0, y: 1)
+            ))
     }
     
-    static var animation: FoundationUI.Variable.Animation { .init(default: .interactiveSpring(duration: 0.2)) }
+    static var animation: Variable.Animation { Variable.Animation(default: .interactiveSpring(duration: 0.2)) }
     
-    static var font: FoundationUI.Variable.Font { .init(.init(
+    static var font: Variable.Font { Variable.Font(.init(
         xxSmall: .caption, xSmall: .callout, small: .callout, regular: .body, large: .title3, xLarge: .title2, xxLarge: .title
     )) }
 }
@@ -73,7 +75,7 @@ struct ShadowPreview: PreviewProvider {
 
 // MARK: - Extensions
 
-// Set of several different value sets
+// Set of different value sets
 public enum ThemeCGFloatProperties {
     public static let spacing = FoundationUI.Variable.spacing
     public static let padding = FoundationUI.Variable.padding

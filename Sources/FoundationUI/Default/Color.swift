@@ -22,99 +22,103 @@ public extension ShapeStyle {
 // MARK: - Theme
 // TODO: Extract it to the "Theme"
 public extension FoundationUI.Tint {
-    static var primary: Self {
-        .init(light: .init(hue: 0, saturation: 0, brightness: 0.43),
-              dark: .init(hue: 0, saturation: 0, brightness: 0.55))
+    static var primary: FoundationUI.Tint {
+        FoundationUI.Tint(
+            light: Color(hue: 0, saturation: 0, brightness: 0.43),
+            dark: Color(hue: 0, saturation: 0, brightness: 0.55))
     }
-    static var gray: Self {
-        .init(light: .init(hue: 0, saturation: 0, brightness: 0.43),
-              dark: .init(hue: 0, saturation: 0, brightness: 0.55))
+    static var gray: FoundationUI.Tint {
+        FoundationUI.Tint(
+            light: Color(hue: 0, saturation: 0, brightness: 0.43),
+            dark: Color(hue: 0, saturation: 0, brightness: 0.55))
     }
-    static var darkGray: Self {
-        .init(light: .init(hue: 0, saturation: 0, brightness: 0.43),
-              dark: .init(hue: 0, saturation: 0, brightness: 0.55))
+    static var darkGray: FoundationUI.Tint {
+        FoundationUI.Tint(
+            light: Color(hue: 0, saturation: 0, brightness: 0.43),
+            dark: Color(hue: 0, saturation: 0, brightness: 0.55))
     }
-    static var lightGray: Self {
-        .init(light: .init(hue: 0, saturation: 0, brightness: 0.43),
-              dark: .init(hue: 0, saturation: 0, brightness: 0.55))
+    static var lightGray: FoundationUI.Tint {
+        FoundationUI.Tint(
+            light: Color(hue: 0, saturation: 0, brightness: 0.43),
+            dark: Color(hue: 0, saturation: 0, brightness: 0.55))
     }
     static let accent = Self(.blue)
 }
 public extension FoundationUI.ColorScale {
     /// Transparent
-    static let clear = Self(
+    static let clear = FoundationUI.ColorScale(
         light: { $0.set(alpha: 0) },
         dark: { $0.set(alpha: 0) }
     )
     /// App background
-    static let backgroundFaded = Self(
+    static let backgroundFaded = FoundationUI.ColorScale(
         light: { $0.multiply(saturation: 0.03).set(brightness: $0.isSaturated ? 1 : 0.99) },
         dark: { $0.multiply(saturation: 0.3).set(brightness: $0.isSaturated ? 0.06 : 0.05) }
     )
     /// Content background
-    static let background = Self(
+    static let background = FoundationUI.ColorScale(
         light: { $0.multiply(saturation: 0.06, brightness: 2.18 ) },
         dark: { $0.multiply(saturation: 0.35, brightness: 0.2)}
     )
     /// Subtle background
-    static let backgroundEmphasized = Self(
+    static let backgroundEmphasized = FoundationUI.ColorScale(
         light: { $0.multiply( saturation: 0.2, brightness: 2.1 ) },
         dark: { $0.multiply( saturation: 0.45, brightness: 0.25 ) }
     )
     /// UI element background
-    static let fillFaded = Self(
+    static let fillFaded = FoundationUI.ColorScale(
         light: { $0.multiply( saturation: 0.3, brightness: 1.9 ) },
         dark: { $0.multiply( saturation: 0.5, brightness: 0.32 ) }
     )
     /// Hovered UI element background
-    static let fill = Self(
+    static let fill = FoundationUI.ColorScale(
         light: { $0.multiply( saturation: 0.4, brightness: 1.8 ) },
         dark: { $0.multiply( saturation: 0.6, brightness: 0.45 ) }
     )
     /// Active / Selected UI element background
-    static let fillEmphasized = Self(
+    static let fillEmphasized = FoundationUI.ColorScale(
         light: { $0.multiply( saturation: 0.5, brightness: 1.7 )},
         dark: { $0.multiply( saturation: 0.7, brightness: 0.55 ) }
     )
     /// Subtle borders and separators
-    static let borderFaded = Self(
+    static let borderFaded = FoundationUI.ColorScale(
         light: { $0.multiply( saturation: 0.7, brightness: 1.5 ) },
         dark: { $0.multiply( saturation: 0.75, brightness: 0.7 ) }
     )
     /// UI element border and focus rings
-    static let border = Self(
+    static let border = FoundationUI.ColorScale(
         light: { $0.multiply( saturation: 0.8, brightness: 1.4 ) },
         dark: { $0.multiply( saturation: 0.85, brightness: 0.8 ) }
     )
     /// Hovered UI element border
-    static let borderEmphasized = Self(
+    static let borderEmphasized = FoundationUI.ColorScale(
         light: { $0.multiply(saturation: 0.9, brightness: 1.1 ) },
         dark: { $0.multiply(saturation: 0.9, brightness: 0.9 ) }
     )
     /// Solid backgrounds
-    static let solid = Self(
+    static let solid = FoundationUI.ColorScale(
         light: { $0 },
         dark: { $0 }
     )
     /// Hovered solid backgrounds
-    static let solidEmphasized = Self(
+    static let solidEmphasized = FoundationUI.ColorScale(
         light: { $0.multiply(saturation: 1.1, brightness: 0.9) },
         dark: { $0.multiply(saturation: 0.95, brightness: 1.1) }
     )
     /// Low-contrast text
-    static let textFaded = Self.solidEmphasized
+    static let textFaded = FoundationUI.ColorScale.solidEmphasized
     /// Normal text
-    static let text = Self(
+    static let text = FoundationUI.ColorScale(
         light: { $0.multiply(saturation: 0.9, brightness: 0.76) },
         dark: { $0.multiply(saturation: 0.4, brightness: $0.isSaturated ? 1.2 : 1.5) }
     )
     /// High-contrast text
-    static let textEmphasized = Self(
+    static let textEmphasized = FoundationUI.ColorScale(
         light: { $0.multiply(saturation: 0.95, brightness: 0.35) },
         dark: { $0.multiply(saturation: 0.2, brightness: $0.isSaturated ? 1.9 : 1.7) }
     )
     
-    static internal let all: [Self] = [
+    static internal let all: [FoundationUI.ColorScale] = [
         .backgroundFaded, .background, .backgroundEmphasized,
         .fillFaded, .fill, .fillEmphasized,
         .borderFaded, .border, .borderEmphasized,

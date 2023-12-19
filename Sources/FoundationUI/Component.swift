@@ -23,7 +23,7 @@ public extension FoundationUI.Component {
     struct RoundedRect: VariableScale {
         public var config: VariableConfig<RoundedRectangle>
         private static func getRoundedRect(_ cornerRadius: CGFloat) -> RoundedRectangle {
-            .init(cornerRadius: cornerRadius, style: .continuous)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         }
         public init() {
             let getRoundedRect = Self.getRoundedRect
