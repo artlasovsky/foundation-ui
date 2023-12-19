@@ -21,10 +21,7 @@ let package = Package(
         .target(
             name: "FoundationUI",
             dependencies: [],
-            path: "Sources/FoundationUI",
-            swiftSettings: [
-                SwiftSetting.unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
-            ]
+            path: "Sources/FoundationUI"
         ),
         .testTarget(
             name: "FoundationUITests",

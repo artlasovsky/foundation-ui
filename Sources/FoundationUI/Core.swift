@@ -31,13 +31,13 @@ public protocol FoundationUIVariableDefaults {
 // MARK: - Configuration
 
 public struct VariableConfig<Value> {
-    let xxSmall: Value
-    let xSmall: Value
-    let small: Value
-    let regular: Value
-    let large: Value
-    let xLarge: Value
-    let xxLarge: Value
+    public let xxSmall: Value
+    public let xSmall: Value
+    public let small: Value
+    public let regular: Value
+    public let large: Value
+    public let xLarge: Value
+    public let xxLarge: Value
 }
 
 extension VariableConfig where Value == CGFloat {

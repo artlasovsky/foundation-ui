@@ -240,12 +240,12 @@ public extension FoundationUI.Modifier {
                 let startPoint: GradientPoint
                 // TODO: Add stops (% of full height & absolute value)
                 
-                init(_ colors: [FoundationUI.ColorScale], startPoint: GradientPoint) {
+                public init(_ colors: [FoundationUI.ColorScale], startPoint: GradientPoint) {
                     self.colors = colors
                     self.swiftUIColors = []
                     self.startPoint = startPoint
                 }
-                init(colors: [Color], startPoint: GradientPoint) {
+                public init(colors: [Color], startPoint: GradientPoint) {
                     self.colors = []
                     self.swiftUIColors = colors
                     self.startPoint = startPoint
