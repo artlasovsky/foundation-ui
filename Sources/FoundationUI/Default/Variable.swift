@@ -72,13 +72,13 @@ public extension FoundationUI.Variable {
     }
     struct Spacing: CGFloatVariableScale {
         public var multiplier = VariableDefaults.multiplier
-        public var base = VariableDefaults.base / 2
+        public var base = VariableDefaults.base * 0.5
         public var rounded = false
     }
     
     struct Size: CGFloatVariableScale {
-        public var multiplier = VariableDefaults.multiplier * (2 / 3)
-        public var base = VariableDefaults.base * 8
+        public var multiplier: Value = 2
+        public var base: Value = 64
         public var rounded = true
     }
     

@@ -68,7 +68,13 @@ public extension CGFloatVariableScale {
         stepUp(1/3)
     }
     var thirdStepDown: Self {
-        stepDown(1/3)
+        stepDown(1/4)
+    }
+    var quarterStepUp: Self {
+        stepUp(1/4)
+    }
+    var quarterStepDown: Self {
+        stepDown(1/4)
     }
 }
 
@@ -79,15 +85,15 @@ internal extension CGFloatVariableScale {
 
 struct SimpleExample: View {
     struct Sample: View {
-        let padding = FoundationUI.Variable.padding
-        let variable: KeyPath<FoundationUI.Variable.Padding, CGFloat>
+        let scale = FoundationUI.Variable.size
+        let variable: KeyPath<FoundationUI.Variable.Size, CGFloat>
         var steps: [CGFloat] {
             [
-                padding.halfStepDown[keyPath: variable],
-                padding.thirdStepDown[keyPath: variable],
-                padding[keyPath: variable],
-                padding.thirdStepUp[keyPath: variable],
-                padding.halfStepUp[keyPath: variable]
+                scale.halfStepDown[keyPath: variable],
+                scale.thirdStepDown[keyPath: variable],
+                scale[keyPath: variable],
+                scale.thirdStepUp[keyPath: variable],
+                scale.halfStepUp[keyPath: variable]
             ]
         }
         var body: some View {
@@ -100,6 +106,7 @@ struct SimpleExample: View {
         }
     }
     var body: some View {
+        let scale = FoundationUI.Variable.size
         VStack(alignment: .leading) {
             Sample(variable: \.xxSmall)
             Sample(variable: \.xSmall)
@@ -107,7 +114,7 @@ struct SimpleExample: View {
             Sample(variable: \.regular)
             Sample(variable: \.large)
             Sample(variable: \.xxLarge)
-            Sample(variable: \.xxxLarge)
+            Sample(variable: \.xxxLarge).opacity(0.5)
         }
         .theme().size(400)
     }
