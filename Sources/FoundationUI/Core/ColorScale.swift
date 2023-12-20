@@ -1,88 +1,15 @@
 //
-//  Core.swift
+//  ColorScale.swift
 //
-//  Created by Art Lasovsky on 10/2/23.
+//
+//  Created by Art Lasovsky on 20/12/2023.
 //
 
 import Foundation
 import SwiftUI
 
-public struct FoundationUI {
-    private init() {}
-}
-
-
-public protocol FoundationUIStyleDefaults {
-    static var cornerRadiusStyle: RoundedCornerStyle { get }
-}
-
-// Using protocol to have overridable default theme
-public protocol FoundationUIVariableDefaults {
-    static var padding: FoundationUI.Variable.Padding { get }
-    static var spacing: FoundationUI.Variable.Spacing { get }
-    static var radius: FoundationUI.Variable.Radius { get }
-    static var shadow: FoundationUI.Variable.Shadow { get }
-    
-    static var animation: FoundationUI.Variable.Animation { get }
-    
-    static var font: FoundationUI.Variable.Font { get }
-}
-
-// MARK: - Configuration
-
-public struct VariableConfig<Value> {
-    public let xxSmall: Value
-    public let xSmall: Value
-    public let small: Value
-    public let regular: Value
-    public let large: Value
-    public let xLarge: Value
-    public let xxLarge: Value
-}
-
-extension VariableConfig where Value == CGFloat {
-    public init(regular: Value, multiplier: Value) {
-        let small = regular / multiplier
-        let xSmall = small / multiplier
-        let xxSmall = xSmall / multiplier
-        let large = regular * multiplier
-        let xLarge = large * multiplier
-        let xxLarge = xLarge * multiplier
-        self.init(
-            xxSmall: xxSmall.rounded(),
-            xSmall: xSmall.rounded(),
-            small: small.rounded(),
-            regular: regular.rounded(),
-            large: large.rounded(),
-            xLarge: xLarge.rounded(),
-            xxLarge: xxLarge.rounded())
-    }
-}
-
-public protocol VariableScale<Value> {
-    associatedtype Value
-    typealias Config = VariableConfig<Value>
-    var config: Config { get }
-}
-
-public extension VariableScale {
-    var xxSmall: Value { config.xxSmall }
-    var xSmall: Value { config.xSmall }
-    var small: Value { config.small }
-    var regular: Value { config.regular }
-    var large: Value { config.large }
-    var xLarge: Value { config.xLarge }
-    var xxLarge: Value { config.xxLarge }
-}
-
-public extension VariableScale where Value == CGFloat {
-    var halfStep: VariableConfig<Value> {
-        .init(regular: config.regular + ((config.large - config.regular) / 2),
-              multiplier: config.regular / (config.regular - config.small))
-    }
-}
-
 // MARK: - Tint & Color
+
 public extension FoundationUI {
     struct Tint: Sendable {
         public let light: SwiftUI.Color
@@ -254,6 +181,8 @@ public extension FoundationUI {
     }
 }
 
+// MARK: - Color Scale
+
 extension FoundationUI.ColorScale {
     private func getComponents(color: SwiftUI.Color?) -> Components? {
         #if os(iOS)
@@ -313,6 +242,8 @@ extension FoundationUI.ColorScale {
     }
 }
 
+// MARK: EnvironmentValues
+
 private struct FoundationUITintKey: EnvironmentKey {
     static let defaultValue: FoundationUI.Tint = .init(
         light: .init(hue: 0, saturation: 0, brightness: 0.43),
@@ -332,3 +263,4 @@ extension EnvironmentValues {
         set { self[FoundationUICornerRadiusKey.self] = newValue }
     }
 }
+

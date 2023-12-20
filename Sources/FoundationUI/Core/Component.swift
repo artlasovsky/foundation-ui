@@ -20,22 +20,18 @@ public extension FoundationUI.Component {
     static func roundedRectangle(_ radius: KeyPath<FoundationUI.Variable.Radius, CGFloat>) -> RoundedRectangle {
         self.roundedRectangle(FoundationUI.Variable.radius[keyPath: radius])
     }
-    struct RoundedRect: VariableScale {
-        public var config: VariableConfig<RoundedRectangle>
+    struct RoundedRect: GenericVariableScale {
         private static func getRoundedRect(_ cornerRadius: CGFloat) -> RoundedRectangle {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         }
-        public init() {
-            let getRoundedRect = Self.getRoundedRect
-            config = .init(
-                xxSmall: getRoundedRect(.theme.radius.xxSmall),
-                xSmall: getRoundedRect(.theme.radius.xSmall),
-                small: getRoundedRect(.theme.radius.small),
-                regular: getRoundedRect(.theme.radius.regular),
-                large: getRoundedRect(.theme.radius.large),
-                xLarge: getRoundedRect(.theme.radius.xLarge),
-                xxLarge: getRoundedRect(.theme.radius.xxLarge))
-        }
+        
+        public let xxSmall = getRoundedRect(.theme.radius.xxSmall)
+        public let xSmall = getRoundedRect(.theme.radius.xSmall)
+        public let small = getRoundedRect(.theme.radius.small)
+        public let regular = getRoundedRect(.theme.radius.regular)
+        public let large = getRoundedRect(.theme.radius.large)
+        public let xLarge = getRoundedRect(.theme.radius.xLarge)
+        public let xxLarge = getRoundedRect(.theme.radius.xxLarge)
     }
 }
 

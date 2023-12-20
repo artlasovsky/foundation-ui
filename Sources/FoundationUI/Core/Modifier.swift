@@ -77,16 +77,6 @@ public extension FoundationUI.Modifier {
     }
 }
 
-extension FoundationUI.Variable {
-    public struct Shadow: VariableScale {
-        public typealias Value = FoundationUI.Modifier.Shadow.Configuration
-        public var config: VariableConfig<Value>
-        public init(_ config: VariableConfig<Value>) {
-            self.config = config
-        }
-    }
-}
-
 // MARK: - Color
 public extension FoundationUI.Modifier {
     @ViewBuilder

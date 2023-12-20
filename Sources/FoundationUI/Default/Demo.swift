@@ -10,10 +10,21 @@ import SwiftUI
 
 // MARK: - Default Theme Overrides
 
-// Override Theme `VariableScale`:
+// Override default variable scale:
 private extension FoundationUI.Variable {
-//    public static var padding: Padding { .init(.init(regular: 6, multiplier: 2)) }
+    static var padding: Padding { .init(base: 20) }
 }
+
+// Extending variable scale:
+private extension FoundationUI.Variable.Padding {
+    // Adding `.xxxLarge` padding value,
+    // the value will be one step up from the existed `.xxLarge`
+    var xxxLarge: CGFloat { stepUp(1).xxLarge }
+    
+    // We can set constant value as well
+    var content: CGFloat { 12 }
+}
+
 // Extend Theme
 private extension FoundationUI.Variable.Font {
     var body: Value { .body.bold() }
@@ -38,22 +49,34 @@ struct Demo_Preview: PreviewProvider {
     static var previews: some View {
         VStack {
             Text("\(FoundationUI.Variable.padding.regular)")
-            Text("\(FoundationUI.Variable.padding.halfStep.regular)")
             VStack {
                 HStack(spacing: .theme.spacing.regular) {
-                    Text("FoundationUI")
-                        .theme().font(\.body)
-                        .theme().padding(\.regular, .vertical)
-                        .theme().padding(\.large, .horizontal)
+                    Rectangle()
+                        .theme().size(\.xLarge)
+                        .theme().border()
+                        .overlay {
+                            HStack {
+                                Rectangle()
+                                    .theme().padding(\.regular, .top)
+                                    .theme().foreground(.fill)
+                                Rectangle()
+                                    .theme().padding(FoundationUI.Variable.padding.regular, .top)
+                                    .theme().foreground(.fill)
+                            }
+                        }
+//                    Text("FoundationUI")
+//                        .theme().font(\.body)
+//                        .theme().padding(\.regular, .vertical)
+//                        .theme().padding(\.large, .horizontal)
 //                        .theme().tint(.primary)
 //                        .theme().border(cornerRadius: .theme.radius.large - .theme.radius.regular)
 //                        .theme().background(.fillFaded, cornerRadius: .theme.radius.large - .theme.padding.regular)
 //                        .theme().foreground(.text)
 //                        .theme().tint(.accent)
-                    Text("Button")
-                        .theme().padding(\.regular, .vertical)
-                        .theme().padding(\.large, .horizontal)
-                        .theme().backgroundWithBorder(.accent, cornerRadius: .theme.radius.large - .theme.padding.regular)
+//                    Text("Button")
+//                        .theme().padding(\.regular, .vertical)
+//                        .theme().padding(\.large, .horizontal)
+//                        .theme().backgroundWithBorder(.accent, cornerRadius: .theme.radius.large - .theme.padding.regular)
                 }
                 .theme().padding(\.regular)
                 .theme().border(width: 2, cornerRadius: \.large)

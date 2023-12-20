@@ -26,51 +26,17 @@ internal enum VariableDefaults {
 // Default Theme implementation
 public extension FoundationUIVariableDefaults {
     typealias Variable = FoundationUI.Variable
-    static var padding: Variable.Padding { Variable.Padding(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
-    static var spacing: Variable.Spacing { Variable.Spacing(.init(regular: VariableDefaults.base / 2, multiplier: VariableDefaults.multiplier)) }
-    static var radius: Variable.Radius { Variable.Radius(.init(regular: VariableDefaults.base, multiplier: VariableDefaults.multiplier)) }
+    static var padding: Variable.Padding { .init() }
+    static var spacing: Variable.Spacing { .init() }
+    static var radius: Variable.Radius { .init() }
     
-    static var size: FoundationUI.Variable.Size { .init(.init(regular: VariableDefaults.base * 4, multiplier: 1.32)) }
+    static var size: Variable.Size { .init() }
     
-    static var shadow: Variable.Shadow {
-        let scale: FoundationUI.ColorScale = .backgroundFaded.colorScheme(.dark)
-        return Variable.Shadow(
-            Variable.Shadow.Config(
-                xxSmall: .init(radius: 0.5, scale: scale.opacity(0.1), x: 0, y: 0.5),
-                xSmall: .init(radius: 1, scale: scale.opacity(0.15), x: 0, y: 1),
-                small: .init(radius: 1.5, scale: scale.opacity(0.2), x: 0, y: 1),
-                regular: .init(radius: 2.5, scale: scale.opacity(0.25), x: 0, y: 1),
-                large: .init(radius: 3.5, scale: scale.opacity(0.3), x: 0, y: 1),
-                xLarge: .init(radius: 4, scale: scale.opacity(0.4), x: 0, y: 1),
-                xxLarge: .init(radius: 12, scale: scale.opacity(0.6), x: 0, y: 1)
-            ))
-    }
+    static var shadow: Variable.Shadow { .init() }
     
-    static var animation: Variable.Animation { Variable.Animation(default: .interactiveSpring(duration: 0.2)) }
+    static var animation: Variable.Animation { .init() }
     
-    static var font: Variable.Font { Variable.Font(.init(
-        xxSmall: .caption, xSmall: .callout, small: .callout, regular: .body, large: .title3, xLarge: .title2, xxLarge: .title
-    )) }
-}
-
-struct ShadowPreview: PreviewProvider {
-    static var previews: some View {
-        let rect: some View = RoundedRectangle(cornerRadius: .theme.radius.xSmall)
-            .theme().size(\.small)
-        let style: some ShapeStyle = .scale.text
-        VStack(spacing: 20) {
-            rect.theme().shadow(\.xxSmall)
-            rect.theme().shadow(\.xSmall)
-            rect.theme().shadow(\.small)
-            rect.theme().shadow(\.regular)
-            rect.theme().shadow(\.large)
-            rect.theme().shadow(\.xLarge)
-            rect.theme().shadow(\.xxLarge)
-        }
-        .foregroundStyle(style)
-        .padding()
-        .theme().background(style)
-    }
+    static var font: Variable.Font { .init() }
 }
 
 // MARK: - Extensions
@@ -99,42 +65,54 @@ public extension Animation {
 
 // MARK: - Variables
 public extension FoundationUI.Variable {
-    struct Padding: VariableScale {
-        public var config: VariableConfig<CGFloat>
-        public init(_ config: VariableConfig<CGFloat>) {
-            self.config = config
-        }
+    struct Padding: CGFloatVariableScale {
+        public var multiplier = VariableDefaults.multiplier
+        public var base = VariableDefaults.base
+        public var rounded = false
     }
-    struct Spacing: VariableScale {
-        public var config: VariableConfig<CGFloat>
-        public init(_ config: VariableConfig<CGFloat>) {
-            self.config = config
-        }
+    struct Spacing: CGFloatVariableScale {
+        public var multiplier = VariableDefaults.multiplier
+        public var base = VariableDefaults.base / 2
+        public var rounded = false
     }
     
-    struct Size: VariableScale {
-        public var config: VariableConfig<CGFloat>
-        public init(_ config: VariableConfig<CGFloat>) {
-            self.config = config
-        }
+    struct Size: CGFloatVariableScale {
+        public var multiplier = VariableDefaults.multiplier * (2 / 3)
+        public var base = VariableDefaults.base * 8
+        public var rounded = true
     }
     
-    struct Radius: VariableScale {
-        public var config: VariableConfig<CGFloat>
-        public init(_ config: VariableConfig<CGFloat>) {
-            self.config = config
-        }
+    struct Radius: CGFloatVariableScale {
+        public var multiplier = VariableDefaults.multiplier
+        public var base = VariableDefaults.base
+        public var rounded = false
     }
     
-    struct Font: VariableScale {
-        public var config: VariableConfig<SwiftUI.Font>
-        public init(_ config: VariableConfig<SwiftUI.Font>) {
-            self.config = config
-        }
+    struct Font: GenericVariableScale {
+        typealias Font = SwiftUI.Font
+        public let xxSmall = Font.caption
+        public let xSmall = Font.callout
+        public let small = Font.callout
+        public let regular = Font.body
+        public let large = Font.title3
+        public let xLarge = Font.title2
+        public let xxLarge = Font.title
     }
     
     struct Animation {
-        let `default`: SwiftUI.Animation
+        let `default`: SwiftUI.Animation = .interactiveSpring(duration: 0.2)
+    }
+    
+    struct Shadow: GenericVariableScale {
+        public typealias Shadow = FoundationUI.Modifier.Shadow.Configuration
+        static let scale: FoundationUI.ColorScale = .backgroundFaded.colorScheme(.dark)
+        public var xxSmall = Shadow(radius: 0.5, scale: scale.opacity(0.1), x: 0, y: 0.5)
+        public var xSmall = Shadow(radius: 1, scale: scale.opacity(0.15), x: 0, y: 1)
+        public var small = Shadow(radius: 1.5, scale: scale.opacity(0.2), x: 0, y: 1)
+        public var regular = Shadow(radius: 2.5, scale: Self.scale.opacity(0.25), x: 0, y: 1)
+        public var large = Shadow(radius: 3.5, scale: scale.opacity(0.3), x: 0, y: 1)
+        public var xLarge = Shadow(radius: 4, scale: scale.opacity(0.4), x: 0, y: 1)
+        public var xxLarge = Shadow(radius: 12, scale: scale.opacity(0.6), x: 0, y: 1)
     }
 }
 
@@ -145,3 +123,25 @@ public extension FoundationUI.Variable.Radius {
     var window: CGFloat { 10 }
 }
 #endif
+
+
+// MARK: Previews
+struct ShadowPreview: PreviewProvider {
+    static var previews: some View {
+        let rect: some View = RoundedRectangle.foundation(\.small)
+            .theme().size(\.small)
+        let style: some ShapeStyle = .scale.text
+        VStack(spacing: 20) {
+            rect.theme().shadow(\.xxSmall)
+            rect.theme().shadow(\.xSmall)
+            rect.theme().shadow(\.small)
+            rect.theme().shadow(\.regular)
+            rect.theme().shadow(\.large)
+            rect.theme().shadow(\.xLarge)
+            rect.theme().shadow(\.xxLarge)
+        }
+        .foregroundStyle(style)
+        .padding()
+        .theme().background(style)
+    }
+}
