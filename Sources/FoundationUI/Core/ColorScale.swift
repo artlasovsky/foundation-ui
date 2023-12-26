@@ -84,6 +84,7 @@ public extension FoundationUI {
                 dark: dark.adjust?.dark
             )
             
+            // TODO: All Overrides
             self.overrides.opacity = .init(
                 light: light.overrides.opacity?.light ?? self.overrides.opacity?.light ?? 1,
                 dark: dark.overrides.opacity?.dark ?? self.overrides.opacity?.dark ?? 1)
@@ -161,7 +162,6 @@ public extension FoundationUI {
                 return SwiftUI.Color.red
             }
             
-            // TODO: Simplify logic here, do not repeat
             if lightColorScheme {
                 color = (accessibility.contrast
                          ? adjustLightAccessible?(components).color()

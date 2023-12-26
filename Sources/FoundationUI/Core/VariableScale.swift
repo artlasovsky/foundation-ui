@@ -20,7 +20,6 @@ public protocol GenericVariableScale<Value> {
     var xxLarge: Value { get }
 }
 
-
 public protocol CGFloatVariableScale: GenericVariableScale<CGFloat> {
     var multiplier: Value { get set }
     var base: Value { get set }
@@ -84,9 +83,9 @@ internal extension CGFloatVariableScale {
 }
 
 struct SimpleExample: View {
-    struct Sample: View {
-        let scale = FoundationUI.Variable.size
-        let variable: KeyPath<FoundationUI.Variable.Size, CGFloat>
+    struct Sample<Scale: CGFloatVariableScale>: View {
+        let scale: Scale
+        let variable: KeyPath<Scale, CGFloat>
         var steps: [CGFloat] {
             [
                 scale.halfStepDown[keyPath: variable],
@@ -108,13 +107,13 @@ struct SimpleExample: View {
     var body: some View {
         let scale = FoundationUI.Variable.size
         VStack(alignment: .leading) {
-            Sample(variable: \.xxSmall)
-            Sample(variable: \.xSmall)
-            Sample(variable: \.small)
-            Sample(variable: \.regular)
-            Sample(variable: \.large)
-            Sample(variable: \.xxLarge)
-            Sample(variable: \.xxxLarge).opacity(0.5)
+            Sample(scale: scale, variable: \.xxSmall)
+            Sample(scale: scale, variable: \.xSmall)
+            Sample(scale: scale, variable: \.small)
+            Sample(scale: scale, variable: \.regular)
+            Sample(scale: scale, variable: \.large)
+            Sample(scale: scale, variable: \.xxLarge)
+            Sample(scale: scale, variable: \.xxxLarge).opacity(0.5)
         }
         .theme().size(400)
     }

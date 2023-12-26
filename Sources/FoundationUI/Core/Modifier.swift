@@ -116,22 +116,6 @@ public extension FoundationUI.Modifier {
 // MARK: - Border
 public extension FoundationUI.Modifier {
     func border(
-        gradient: Border.Configuration.Gradient,
-        width: CGFloat = 1,
-        placement: Border.Configuration.Placement = .inside,
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>? = nil
-    ) -> some View {
-        var cornerRadiusValue: CGFloat = 0
-        if let cornerRadius {
-            cornerRadiusValue = FoundationUI.Variable.radius[keyPath: cornerRadius]
-        }
-        return content.modifier(Border(
-            configuration: .init(gradient: gradient,
-                                 width: width,
-                                 placement: placement,
-                                 cornerRadius: cornerRadiusValue)))
-    }
-    func border(
         _ scale: FoundationUI.ColorScale = .border,
         width: CGFloat = 1,
         placement: Border.Configuration.Placement = .inside,
@@ -172,75 +156,7 @@ public extension FoundationUI.Modifier {
             cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
     }
     struct Border: ViewModifier {
-        public enum GradientPoint {
-            case top
-            case bottom
-            case leading
-            case trailing
-            case topLeading
-            case topTrailing
-            case bottomLeading
-            case bottomTrailing
-            
-            var opposite: Self {
-                switch self {
-                case .top:
-                    return .bottom
-                case .bottom:
-                    return .top
-                case .leading:
-                    return .trailing
-                case .trailing:
-                    return .leading
-                case .topLeading:
-                    return .bottomTrailing
-                case .topTrailing:
-                    return .bottomLeading
-                case .bottomLeading:
-                    return .topTrailing
-                case .bottomTrailing:
-                    return .topLeading
-                }
-            }
-            var unitPoint: UnitPoint {
-                switch self {
-                case .top:
-                    return .top
-                case .bottom:
-                    return .bottom
-                case .leading:
-                    return .leading
-                case .trailing:
-                    return .trailing
-                case .topLeading:
-                    return .topLeading
-                case .topTrailing:
-                    return .topTrailing
-                case .bottomLeading:
-                    return .bottomLeading
-                case .bottomTrailing:
-                    return .bottomTrailing
-                }
-            }
-        }
         public struct Configuration {
-            public struct Gradient {
-                let colors: [FoundationUI.ColorScale]
-                let swiftUIColors: [Color]
-                let startPoint: GradientPoint
-                // TODO: Add stops (% of full height & absolute value)
-                
-                public init(_ colors: [FoundationUI.ColorScale], startPoint: GradientPoint) {
-                    self.colors = colors
-                    self.swiftUIColors = []
-                    self.startPoint = startPoint
-                }
-                public init(colors: [Color], startPoint: GradientPoint) {
-                    self.colors = []
-                    self.swiftUIColors = colors
-                    self.startPoint = startPoint
-                }
-            }
             public enum Placement {
                 case inside
                 case outside
@@ -249,21 +165,11 @@ public extension FoundationUI.Modifier {
             let placement: Placement
             let side: Edge.Set
             let style: AnyShapeStyle
-            let gradient: Gradient?
             let width: CGFloat
             let cornerRadius: CGFloat
             init(style: any ShapeStyle, width: CGFloat, placement: Placement, cornerRadius: CGFloat, side: Edge.Set = .all) {
                 self.placement = placement
                 self.style = AnyShapeStyle(style)
-                self.width = width
-                self.cornerRadius = cornerRadius
-                self.side = side
-                self.gradient = nil
-            }
-            init(gradient: Gradient, width: CGFloat, placement: Placement, cornerRadius: CGFloat, side: Edge.Set = .all) {
-                self.placement = placement
-                self.style = AnyShapeStyle(Color.clear)
-                self.gradient = gradient
                 self.width = width
                 self.cornerRadius = cornerRadius
                 self.side = side
@@ -278,32 +184,13 @@ public extension FoundationUI.Modifier {
             content.overlay {
                 RoundedRectangle.foundation(cornerRadius - placementPadding)
                     .stroke(lineWidth: configuration.width)
-                    .foregroundStyle(foregroundStyle)
+                    .foregroundStyle(configuration.style)
                     .padding(placementPadding)
             }
         }
         
         private var cornerRadius: CGFloat {
             environment.foundationUICornerRadius ?? configuration.cornerRadius
-        }
-        
-        private var foregroundStyle: AnyShapeStyle {
-            if let gradient = configuration.gradient {
-                let startPoint = gradient.startPoint.unitPoint
-                let endPoint = gradient.startPoint.opposite.unitPoint
-                
-                var colors: [Color] {
-                    gradient.swiftUIColors.isEmpty 
-                    ? gradient.colors.map({ $0.resolveColor(in: environment) })
-                    : gradient.swiftUIColors
-                }
-                
-                return AnyShapeStyle(LinearGradient(
-                    colors: colors,
-                    startPoint: startPoint,
-                    endPoint: endPoint))
-            }
-            return configuration.style
         }
         
         private var placementPadding: CGFloat {

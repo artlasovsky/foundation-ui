@@ -17,6 +17,7 @@ public extension Color {
 public extension ShapeStyle {
     typealias scale = FoundationUI.ColorScale
     typealias tint = FoundationUI.Tint
+    typealias gradient = FoundationUI.Gradient
 }
 
 // MARK: - Theme
