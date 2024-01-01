@@ -83,14 +83,22 @@ public extension FoundationUI.Modifier {
 // MARK: - Color
 public extension FoundationUI.Modifier {
     @ViewBuilder
-    func tint(_ tint: Tint) -> some View {
-        content
-            .environment(\.foundationUITint, tint)
+    func tint(_ tint: Tint?) -> some View {
+        if let tint {
+            content
+                .environment(\.foundationUITint, tint)
+        } else {
+            content
+        }
     }
     @ViewBuilder
-    func tint(color: Color) -> some View {
-        content
-            .environment(\.foundationUITint, .init(color))
+    func tint(color: Color?) -> some View {
+        if let color {
+            content
+                .environment(\.foundationUITint, .init(color))
+        } else {
+            content
+        }
     }
     @ViewBuilder
     func foreground(_ scale: ColorScale) -> some View {
@@ -121,14 +129,15 @@ public extension FoundationUI.Modifier {
 
 // MARK: - Mask
 public extension FoundationUI.Modifier {
+    @ViewBuilder
     func mask(_ gradient: FoundationUI.Gradient?) -> some View {
-        content.mask {
-            if let gradient {
+        if let gradient {
+            content.mask {
                 Color.clear
                     .overlay(gradient)
-            } else {
-                Color.black
             }
+        } else {
+            content
         }
     }
 }
