@@ -91,9 +91,7 @@ public extension FoundationUI {
             let tint = overrides.tint ?? environment.foundationUITint
             var color = overrides.shapeStyle.resolveColor(in: environment) ?? tint.getColor(scheme: scheme)
             color = adjust?.updateColor(color, scheme: scheme) ?? color
-            if let opacityOverride = overrides.opacity {
-                color = color.opacity(opacityOverride)
-            }
+            color = overrides.updateColor(color)
             return color
         }
         
@@ -113,6 +111,26 @@ public extension FoundationUI {
 // MARK: Overrides
 
 public extension FoundationUI.ColorScale {
+    func brightness(_ brightness: CGFloat) -> Self {
+        var copy = self
+        copy.overrides.brightness = brightness
+        return copy
+    }
+    func hue(_ hue: CGFloat) -> Self {
+        var copy = self
+        copy.overrides.hue = hue
+        return copy
+    }
+    func saturation(_ saturation: CGFloat) -> Self {
+        var copy = self
+        copy.overrides.saturation = saturation
+        return copy
+    }
+    func opacity(_ opacity: CGFloat) -> Self {
+        var copy = self
+        copy.overrides.opacity = opacity
+        return copy
+    }
     func tint(_ tint: FoundationUI.Tint) -> Self {
         var copy = self
         copy.overrides.tint = tint
@@ -122,12 +140,6 @@ public extension FoundationUI.ColorScale {
     func tint(color: Color) -> Self {
         var copy = self
         copy.overrides.tint = .init(.init(color))
-        return copy
-    }
-    
-    func opacity(_ opacity: CGFloat) -> Self {
-        var copy = self
-        copy.overrides.opacity = opacity
         return copy
     }
     
@@ -202,10 +214,25 @@ internal extension FoundationUI.ColorScale {
     
     struct Overrides {
         var tint: FoundationUI.Tint?
+        var hue: CGFloat?
+        var saturation: CGFloat?
+        var brightness: CGFloat?
         var opacity: CGFloat?
         var colorScheme: ColorScheme?
         var blendMode: BlendMode?
         var shapeStyle = ShapeStyleOverride()
+        
+        func updateColor(_ color: Color) -> Color {
+            guard let components = FoundationUI.ColorScale.getComponents(color: color) else {
+                print("Can't get components")
+                return .red
+            }
+            var hue = hue ?? 1
+            var saturation = saturation ?? 1
+            var brightness = brightness ?? 1
+            var alpha = opacity ?? 1
+            return components.multiply(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha).color()
+        }
         
         struct ShapeStyleOverride {
             typealias Style = any ShapeStyle
