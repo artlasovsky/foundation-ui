@@ -117,9 +117,10 @@ public extension FoundationUI.Scale.Radius {
 // MARK: Previews
 struct ShadowPreview: PreviewProvider {
     static var previews: some View {
-        let rect: some View = RoundedRectangle.foundation(\.small)
+        let style: some ShapeStyle = .scale.textEmphasized
+        let rect: some View = Color.clear
             .theme().size(\.small)
-        let style: some ShapeStyle = .scale.text
+            .theme().background(style, cornerRadius: \.small)
         VStack(spacing: 20) {
             rect.theme().shadow(\.xxSmall)
             rect.theme().shadow(\.xSmall)

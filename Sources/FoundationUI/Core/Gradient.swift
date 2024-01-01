@@ -8,14 +8,14 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI {
+public extension FoundationUI {    
     struct Gradient: ShapeStyle {
         let colors: [FoundationUI.ColorScale]
         let swiftUIColors: [Color]
         let startPoint: Self.Point
         
-        public init(_ colors: [FoundationUI.ColorScale], startPoint: Self.Point = .top) {
-            self.colors = colors
+        public init(_ colorScale: [FoundationUI.ColorScale], startPoint: Self.Point = .top) {
+            self.colors = colorScale
             self.swiftUIColors = []
             self.startPoint = startPoint
         }
