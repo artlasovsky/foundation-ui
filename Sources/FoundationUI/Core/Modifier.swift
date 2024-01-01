@@ -10,6 +10,9 @@ import SwiftUI
 
 extension FoundationUI {
     public struct Modifier {
+        public typealias Tint = FoundationUI.Tint
+        public typealias ColorScale = FoundationUI.ColorScale
+        public typealias Scale = FoundationUI.Scale
         public var content: AnyView
         internal init(_ content: some View) {
             self.content = AnyView(content)
@@ -26,7 +29,7 @@ public extension View {
 // MARK: - Font
 public extension FoundationUI.Modifier {
     @ViewBuilder
-    func font(_ scale: KeyPath<FoundationUI.Variable.Font, Font>) -> some View {
+    func font(_ scale: Scale.Font.KeyPath) -> some View {
         self.font(.theme[keyPath: scale])
     }
     
@@ -39,14 +42,14 @@ public extension FoundationUI.Modifier {
 // MARK: - Shadow
 public extension FoundationUI.Modifier {
     @ViewBuilder
-    func shadow(_ scale: FoundationUI.ColorScale = .backgroundFaded, tint: FoundationUI.Tint = .primary, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) -> some View {
+    func shadow(_ scale: ColorScale = .backgroundFaded, tint: Tint = .primary, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) -> some View {
         content.modifier(Shadow(configuration: .init(radius: radius, scale: scale, tint: tint, x: x, y: y)))
     }
     
     @ViewBuilder
-    func shadow(_ variable: KeyPath<FoundationUI.Variable.Shadow, Shadow.Configuration>? = nil) -> some View {
+    func shadow(_ variable: Scale.Shadow.KeyPath? = nil) -> some View {
         if let variable {
-            let configuration = FoundationUI.Variable.shadow[keyPath: variable]
+            let configuration = Scale.shadow[keyPath: variable]
             shadow(configuration.scale,
                    tint: configuration.tint,
                    radius: configuration.radius,
@@ -61,8 +64,8 @@ public extension FoundationUI.Modifier {
         @Environment(\.self) private var environment
         public struct Configuration {
             var radius: CGFloat
-            var scale: FoundationUI.ColorScale = .backgroundFaded
-            var tint: FoundationUI.Tint = .primary
+            var scale: ColorScale = .backgroundFaded
+            var tint: Tint = .primary
             var x: CGFloat = 0
             var y: CGFloat = 0
         }
@@ -80,7 +83,7 @@ public extension FoundationUI.Modifier {
 // MARK: - Color
 public extension FoundationUI.Modifier {
     @ViewBuilder
-    func tint(_ tint: FoundationUI.Tint) -> some View {
+    func tint(_ tint: Tint) -> some View {
         content
             .environment(\.foundationUITint, tint)
     }
@@ -90,7 +93,7 @@ public extension FoundationUI.Modifier {
             .environment(\.foundationUITint, .init(color))
     }
     @ViewBuilder
-    func foreground(_ scale: FoundationUI.ColorScale) -> some View {
+    func foreground(_ scale: ColorScale) -> some View {
         content
             .foregroundStyle(scale)
     }
@@ -104,8 +107,11 @@ public extension FoundationUI.Modifier {
 // MARK: - Padding
 public extension FoundationUI.Modifier {
     @ViewBuilder
-    func padding(_ padding: KeyPath<FoundationUI.Variable.Padding, CGFloat> = \.regular, _ edges: Edge.Set = .all) -> some View {
-        self.padding(FoundationUI.Variable.padding[keyPath: padding], edges)
+    func padding(_ padding: Scale.Padding.KeyPath = \.regular, _ edges: Edge.Set = .all) -> some View {
+        self.padding(.theme.padding[keyPath: padding], edges)
+    }
+    static func getPadding(_ padding: Scale.Padding.KeyPath = \.regular, _ edges: Edge.Set = .all) -> CGFloat {
+        .theme.padding[keyPath: padding]
     }
     @ViewBuilder
     func padding(_ length: CGFloat, _ edges: Edge.Set = .all) -> some View {
@@ -116,7 +122,7 @@ public extension FoundationUI.Modifier {
 // MARK: - Border
 public extension FoundationUI.Modifier {
     func border(
-        _ scale: FoundationUI.ColorScale = .border,
+        _ scale: ColorScale = .border,
         width: CGFloat = 1,
         placement: Border.Configuration.Placement = .inside,
         cornerRadius: CGFloat = 0
@@ -132,28 +138,28 @@ public extension FoundationUI.Modifier {
         content.modifier(Border(configuration: .init(style: style, width: width, placement: placement, cornerRadius: cornerRadius)))
     }
     func border(
-        _ style: FoundationUI.ColorScale = .border,
+        _ style: ColorScale = .border,
         width: CGFloat = 1,
         placement: Border.Configuration.Placement = .inside,
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+        cornerRadius: Scale.Radius.KeyPath
     ) -> some View {
         self.border(
             style,
             width: width,
             placement: placement,
-            cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
+            cornerRadius: .theme.radius[keyPath: cornerRadius])
     }
     func border(
         _ style: any ShapeStyle = .scale.border,
         width: CGFloat = 1,
         placement: Border.Configuration.Placement = .inside,
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+        cornerRadius: Scale.Radius.KeyPath
     ) -> some View {
         self.border(
             style,
             width: width,
             placement: placement,
-            cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
+            cornerRadius: .theme.radius[keyPath: cornerRadius])
     }
     struct Border: ViewModifier {
         public struct Configuration {
@@ -214,7 +220,7 @@ public extension FoundationUI.Modifier {
     }
     @ViewBuilder
     func background(
-        _ scale: FoundationUI.ColorScale = .background,
+        _ scale: ColorScale = .background,
         cornerRadius: CGFloat = 0
     ) -> some View {
         content.modifier(Background(configuration: .init(style: scale, cornerRadius: cornerRadius)))
@@ -222,38 +228,38 @@ public extension FoundationUI.Modifier {
     @ViewBuilder
     func background(
         style: any ShapeStyle = .scale.background,
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+        cornerRadius: Scale.Radius.KeyPath
     ) -> some View {
-        self.background(style: style, cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
+        self.background(style: style, cornerRadius: .theme.radius[keyPath: cornerRadius])
     }
     @ViewBuilder
     func background(
-        _ scale: FoundationUI.ColorScale = .background,
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+        _ scale: ColorScale = .background,
+        cornerRadius: Scale.Radius.KeyPath
     ) -> some View {
-        self.background(scale, cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
+        self.background(scale, cornerRadius: .theme.radius[keyPath: cornerRadius])
     }
     @ViewBuilder
     func background(
-        _ style: FoundationUI.ColorScale = .background,
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>,
-        shadow: KeyPath<FoundationUI.Variable.Shadow, Shadow.Configuration>? = nil
+        _ style: ColorScale = .background,
+        cornerRadius: Scale.Radius.KeyPath,
+        shadow: Scale.Shadow.KeyPath? = nil
     ) -> some View {
         content.modifier(Background(configuration: .init(
             style: style,
-            cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius],
+            cornerRadius: .theme.radius[keyPath: cornerRadius],
             shadow: shadow
         )))
     }
     @ViewBuilder
     func background(
         _ style: any ShapeStyle = .scale.background,
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>,
-        shadow: KeyPath<FoundationUI.Variable.Shadow, Shadow.Configuration>? = nil
+        cornerRadius: Scale.Radius.KeyPath,
+        shadow: Scale.Shadow.KeyPath? = nil
     ) -> some View {
         content.modifier(Background(configuration: .init(
             style: style,
-            cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius],
+            cornerRadius: .theme.radius[keyPath: cornerRadius],
             shadow: shadow
         )))
     }
@@ -261,8 +267,8 @@ public extension FoundationUI.Modifier {
         public struct Configuration {
             let style: AnyShapeStyle
             let cornerRadius: CGFloat
-            let shadow: KeyPath<FoundationUI.Variable.Shadow, Shadow.Configuration>?
-            init(style: any ShapeStyle, cornerRadius: CGFloat, shadow: KeyPath<FoundationUI.Variable.Shadow, Shadow.Configuration>? = nil) {
+            let shadow: Scale.Shadow.KeyPath?
+            init(style: any ShapeStyle, cornerRadius: CGFloat, shadow: Scale.Shadow.KeyPath? = nil) {
                 self.style = AnyShapeStyle(style)
                 self.cornerRadius = cornerRadius
                 self.shadow = shadow
@@ -297,9 +303,9 @@ public extension FoundationUI.Modifier {
     }
     @ViewBuilder
     func clip(
-        cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+        cornerRadius: Scale.Radius.KeyPath
     ) -> some View {
-        self.clip(cornerRadius: FoundationUI.Variable.radius[keyPath: cornerRadius])
+        self.clip(cornerRadius: .theme.radius[keyPath: cornerRadius])
     }
     struct Clip: ViewModifier {
         public struct Configuration {
@@ -330,9 +336,9 @@ public extension FoundationUI.Modifier {
     }
     @ViewBuilder
     func cornerRadius(
-        _ cornerRadius: KeyPath<FoundationUI.Variable.Radius, CGFloat>
+        _ cornerRadius: Scale.Radius.KeyPath
     ) -> some View {
-        self.cornerRadius(FoundationUI.Variable.radius[keyPath: cornerRadius])
+        self.cornerRadius(.theme.radius[keyPath: cornerRadius])
     }
     struct CornerRadius: ViewModifier {
         public struct Configuration {
@@ -351,7 +357,7 @@ public extension FoundationUI.Modifier {
     }
 }
 
-// MARK: - Frame
+// MARK: - Size
 public extension FoundationUI.Modifier {
     @ViewBuilder
     func size(
@@ -363,16 +369,16 @@ public extension FoundationUI.Modifier {
     }
     @ViewBuilder
     func size(
-        width: KeyPath<FoundationUI.Variable.Size, CGFloat>? = nil,
-        height: KeyPath<FoundationUI.Variable.Size, CGFloat>? = nil,
+        width: FoundationUI.Scale.Size.KeyPath? = nil,
+        height: FoundationUI.Scale.Size.KeyPath? = nil,
         alignment: Alignment = .center
     ) -> some View {
         let width: CGFloat? = switch width {
-        case .some(let width): FoundationUI.Variable.size[keyPath: width]
+        case .some(let width): .theme.size[keyPath: width]
         case .none: nil
         }
         let height: CGFloat? = switch height {
-        case .some(let height): FoundationUI.Variable.size[keyPath: height]
+        case .some(let height): .theme.size[keyPath: height]
         case .none: nil
         }
         content.modifier(Size(configuration: .init(width: width, height: height, alignment: alignment)))
@@ -386,10 +392,10 @@ public extension FoundationUI.Modifier {
     }
     @ViewBuilder
     func size(
-        _ side: KeyPath<FoundationUI.Variable.Size, CGFloat>,
+        _ side: Scale.Size.KeyPath,
         alignment: Alignment = .center
     ) -> some View {
-        let side = FoundationUI.Variable.size[keyPath: side]
+        let side: CGFloat = .theme.size[keyPath: side]
         self.size(width: side, height: side, alignment: alignment)
     }
     struct Size: ViewModifier {
@@ -402,7 +408,11 @@ public extension FoundationUI.Modifier {
         public let configuration: Configuration
         
         public func body(content: Content) -> some View {
-            content.frame(width: configuration.width, height: configuration.height, alignment: configuration.alignment)
+            if configuration.width == .infinity || configuration.height == .infinity {
+                content.frame(maxWidth: configuration.width, maxHeight: configuration.height, alignment: configuration.alignment)
+            } else {
+                content.frame(width: configuration.width, height: configuration.height, alignment: configuration.alignment)                
+            }
         }
     }
 }

@@ -13,18 +13,31 @@ public struct FoundationUI {
 }
 
 
-public protocol FoundationUIStyleDefaults {
+public protocol FoundationUIDefaultCornerRadiusStyle {
     static var cornerRadiusStyle: RoundedCornerStyle { get }
 }
 
+public extension FoundationUIDefaultCornerRadiusStyle {
+    static var cornerRadiusStyle: RoundedCornerStyle { .continuous }
+}
+
 // Using protocol to have overridable default theme
-public protocol FoundationUIVariableDefaults {
-    static var padding: FoundationUI.Variable.Padding { get }
-    static var spacing: FoundationUI.Variable.Spacing { get }
-    static var radius: FoundationUI.Variable.Radius { get }
-    static var shadow: FoundationUI.Variable.Shadow { get }
+public protocol FoundationUIScalableDefaults {
+    associatedtype Padding: Scalable
+    associatedtype Spacing: Scalable
+    associatedtype Radius: Scalable
+    associatedtype Size: Scalable
     
-    static var animation: FoundationUI.Variable.Animation { get }
+    associatedtype Shadow: Scalable
     
-    static var font: FoundationUI.Variable.Font { get }
+    typealias Scale = FoundationUI.Scale
+    
+    static var padding: Padding { get }
+    static var spacing: Spacing { get }
+    static var radius: Radius { get }
+    static var size: Size { get }
+    
+    static var shadow: Shadow { get }
+    static var animation: Scale.Animation { get }
+    static var font: Scale.Font { get }
 }

@@ -8,67 +8,53 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Tint & Color
-
+// MARK: - Tint
 public extension FoundationUI {
     struct Tint: Sendable {
-        public let light: SwiftUI.Color
-        public let lightAccessible: SwiftUI.Color?
-        public let dark: SwiftUI.Color
-        public let darkAccessible: SwiftUI.Color?
+        public let light: Color
+        public let lightAccessible: Color?
+        public let dark: Color
+        public let darkAccessible: Color?
         
-        public init(light: SwiftUI.Color, lightAccessible: SwiftUI.Color? = nil, dark: SwiftUI.Color, darkAccessible: SwiftUI.Color? = nil) {
+        public init(light: Color, lightAccessible: Color? = nil, dark: Color, darkAccessible: Color? = nil) {
             self.light = light
             self.lightAccessible = lightAccessible
             self.dark = dark
             self.darkAccessible = darkAccessible
         }
         
-        public init(_ universal: SwiftUI.Color, accessible: SwiftUI.Color? = nil) {
+        public init(_ universal: Color, accessible: Color? = nil) {
             self.light = universal
             self.lightAccessible = accessible
             self.dark = universal
             self.darkAccessible = accessible
         }
-    }
-    struct ColorScale: ShapeStyle {
-        public struct Adjust: Sendable {
-            typealias Closure = @Sendable (_ source: Components) -> Components
-            let light: Closure?
-            let lightAccessible: Closure?
-            let dark: Closure?
-            let darkAccessible: Closure?
-            init(light: Closure?, lightAccessible: Closure? = nil, dark: Closure?, darkAccessible: Closure? = nil) {
-                self.light = light
-                self.lightAccessible = lightAccessible
-                self.dark = dark
-                self.darkAccessible = darkAccessible
+        
+        func getColor(scheme: ColorScale.Scheme) -> Color {
+            switch scheme {
+            case .light:
+                return light
+            case .lightAccessible:
+                return lightAccessible ?? light
+            case .dark:
+                return dark
+            case .darkAccessible:
+                return darkAccessible ?? dark
             }
         }
+    }
+}
+
+
+// MARK: - Color Scale
+public extension FoundationUI {
+    struct ColorScale: ShapeStyle {
         public var adjust: Adjust?
+        private var overrides = Overrides()
         
         // TODO:
         // vibrant variant – plusBlend
         // transparent variant (here or in the theme?)
-        
-        // Overrides
-        struct Overrides {
-            struct OpacityOverride {
-                let light: CGFloat
-                let dark: CGFloat
-                
-                init(light: CGFloat, dark: CGFloat? = nil) {
-                    self.light = light
-                    self.dark = dark ?? light
-                }
-            }
-            var tint: FoundationUI.Tint?
-            var opacity: OpacityOverride?
-            var colorScheme: ColorScheme?
-        }
-        private var overrides = Overrides()
-        
-        private var blendMode: BlendMode?
         
         init(light: Adjust.Closure? = nil, lightAccessible: Adjust.Closure? = nil, dark: Adjust.Closure? = nil, darkAccessible: Adjust.Closure? = nil) {
             self.adjust = .init(
@@ -78,113 +64,194 @@ public extension FoundationUI {
                 darkAccessible: darkAccessible)
         }
         
+        /// Create a new ColorScale combining existing ColorScales
         public init(light: ColorScale, lightAccessible: ColorScale? = nil, dark: ColorScale, darkAccessible: ColorScale? = nil) {
-            self.adjust = .init(
-                light: light.adjust?.light,
-                dark: dark.adjust?.dark
+            self.overrides.shapeStyle = .init(
+                light: light.colorScheme(light.overrides.colorScheme ?? .light),
+                lightAccessible: lightAccessible?.colorScheme(lightAccessible?.overrides.colorScheme ?? .light),
+                dark: dark.colorScheme(dark.overrides.colorScheme ?? .dark),
+                darkAccessible: darkAccessible?.colorScheme(darkAccessible?.overrides.colorScheme ?? .dark)
             )
-            
-            // TODO: All Overrides
-            self.overrides.opacity = .init(
-                light: light.overrides.opacity?.light ?? self.overrides.opacity?.light ?? 1,
-                dark: dark.overrides.opacity?.dark ?? self.overrides.opacity?.dark ?? 1)
-        }
-        
-        public func tint(_ tint: FoundationUI.Tint) -> Self {
-            var copy = self
-            copy.overrides.tint = tint
-            return copy
-        }
-        
-        public func tint(color: Color) -> Self {
-            var copy = self
-            copy.overrides.tint = .init(color)
-            return copy
-        }
-        
-        public func opacity(_ value: CGFloat) -> Self {
-            var copy = self
-            copy.overrides.opacity = .init(light: value)
-            return copy
-        }
-        
-        public func blendMode(_ value: BlendMode) -> Self {
-            var copy = self
-            copy.blendMode = value
-            return copy
-        }
-        
-        public func colorScheme(_ colorScheme: ColorScheme) -> Self {
-            var copy = self
-            copy.overrides.colorScheme = colorScheme
-            return copy
         }
         
         public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-            var color: any ShapeStyle = resolveColor(in: environment)
-            if let blendMode {
+            let environment = environmentOverride(environment)
+            let scheme = Scheme(environment)
+            var color: any ShapeStyle = overrides.shapeStyle.resolve(in: scheme) ?? resolveColor(in: environment)
+            if let blendMode = overrides.blendMode {
                 color = color.blendMode(blendMode)
             }
             return AnyShapeStyle(color)
         }
         
-        internal func resolveComponents(in environment: EnvironmentValues) -> Components? {
-            getComponents(color: resolveColor(in: environment))
+        public func resolveColor(in environment: EnvironmentValues) -> Color {
+            let environment = environmentOverride(environment)
+            let scheme = Scheme(environment)
+            
+            let tint = overrides.tint ?? environment.foundationUITint
+            var color = overrides.shapeStyle.resolveColor(in: environment) ?? tint.getColor(scheme: scheme)
+            color = adjust?.updateColor(color, scheme: scheme) ?? color
+            if let opacityOverride = overrides.opacity {
+                color = color.opacity(opacityOverride)
+            }
+            return color
         }
         
-        public func resolveColor(in environment: EnvironmentValues) -> Color {
-            let tint = overrides.tint ?? environment.foundationUITint
-            let adjustLight = adjust?.light
-            let adjustLightAccessible = adjust?.lightAccessible ?? adjust?.light
-            let adjustDark = adjust?.dark
-            let adjustDarkAccessible = adjust?.darkAccessible ?? adjust?.dark
-            
-            let colorScheme = overrides.colorScheme ?? environment.colorScheme
-            
-            let lightColorScheme = colorScheme == .light
+        internal func resolveComponents(in environment: EnvironmentValues) -> Components? {
+            let environment = environmentOverride(environment)
+            return Self.getComponents(color: resolveColor(in: environment))
+        }
+        
+        internal func environmentOverride(_ environment: EnvironmentValues) -> EnvironmentValues {
+            var environment = environment
+            environment.colorScheme = overrides.colorScheme ?? environment.colorScheme
+            return environment
+        }
+    }
+}
+
+// MARK: Overrides
+
+public extension FoundationUI.ColorScale {
+    func tint(_ tint: FoundationUI.Tint) -> Self {
+        var copy = self
+        copy.overrides.tint = tint
+        return copy
+    }
+    
+    func tint(color: Color) -> Self {
+        var copy = self
+        copy.overrides.tint = .init(.init(color))
+        return copy
+    }
+    
+    func opacity(_ opacity: CGFloat) -> Self {
+        var copy = self
+        copy.overrides.opacity = opacity
+        return copy
+    }
+    
+    func blendMode(_ blendMode: BlendMode) -> Self {
+        var copy = self
+        copy.overrides.blendMode = blendMode
+        return copy
+    }
+    
+    func colorScheme(_ colorScheme: ColorScheme) -> Self {
+        var copy = self
+        copy.overrides.colorScheme = colorScheme
+        return copy
+    }
+}
+
+public extension FoundationUI.ColorScale {
+    struct Adjust: Sendable {
+        internal typealias ColorScale = FoundationUI.ColorScale
+        typealias Closure = @Sendable (_ source: Components) -> Components
+        let light: Closure?
+        let lightAccessible: Closure?
+        let dark: Closure?
+        let darkAccessible: Closure?
+        init(light: Closure?, lightAccessible: Closure? = nil, dark: Closure?, darkAccessible: Closure? = nil) {
+            self.light = light
+            self.lightAccessible = lightAccessible
+            self.dark = dark
+            self.darkAccessible = darkAccessible
+        }
+        
+        internal func updateColor(_ color: Color, scheme: ColorScale.Scheme) -> Color {
+            guard let components = ColorScale.getComponents(color: color) else {
+                print("cannot get components")
+                return Color.red
+            }
+            switch scheme {
+            case .light:
+                return light?(components).color() ?? color
+            case .lightAccessible:
+                return lightAccessible?(components).color() ?? color
+            case .dark:
+                return dark?(components).color() ?? color
+            case .darkAccessible:
+                return darkAccessible?(components).color() ?? color
+            }
+        }
+    }
+}
+
+internal extension FoundationUI.ColorScale {
+    enum Scheme {
+        case light
+        case lightAccessible
+        case dark
+        case darkAccessible
+        
+        init(_ environment: EnvironmentValues) {
             let accessibility = (
                 contrast: environment.colorSchemeContrast == .increased,
                 invertColors: environment.accessibilityInvertColors,
                 reduceTransparency: environment.accessibilityReduceTransparency,
                 differentiateWithoutColor: environment.accessibilityDifferentiateWithoutColor
             )
-            
-            var color: Color
-            if accessibility.contrast {
-                color = lightColorScheme ? tint.lightAccessible ?? tint.light : tint.darkAccessible ?? tint.dark
+            if environment.colorScheme == .light {
+                self = accessibility.contrast ? .lightAccessible : .light
             } else {
-                color = lightColorScheme ? tint.light : tint.dark
+                self = accessibility.contrast ? .darkAccessible : .dark
+            }
+        }
+    }
+    
+    struct Overrides {
+        var tint: FoundationUI.Tint?
+        var opacity: CGFloat?
+        var colorScheme: ColorScheme?
+        var blendMode: BlendMode?
+        var shapeStyle = ShapeStyleOverride()
+        
+        struct ShapeStyleOverride {
+            typealias Style = any ShapeStyle
+            var light: Style?
+            var lightAccessible: Style?
+            var dark: Style?
+            var darkAccessible: Style?
+            
+            func resolve(in scheme: FoundationUI.ColorScale.Scheme) -> AnyShapeStyle? {
+                var shapeStyle: (any ShapeStyle)?
+                switch scheme {
+                case .light:
+                    shapeStyle = light
+                case .lightAccessible:
+                    shapeStyle = lightAccessible
+                case .dark:
+                    shapeStyle = dark
+                case .darkAccessible:
+                    shapeStyle = darkAccessible
+                }
+                guard let shapeStyle else { return nil }
+                return AnyShapeStyle(shapeStyle)
             }
             
-
-            guard let components = getComponents(color: color) else {
-                print("cannot get components")
-                return SwiftUI.Color.red
+            func resolveColor(in environment: EnvironmentValues) -> Color? {
+                let scheme = Scheme(environment)
+                var shapeStyle: (any ShapeStyle)?
+                switch scheme {
+                case .light:
+                    shapeStyle = light
+                case .lightAccessible:
+                    shapeStyle = lightAccessible
+                case .dark:
+                    shapeStyle = dark
+                case .darkAccessible:
+                    shapeStyle = darkAccessible
+                }
+                guard let shapeStyle else { return nil }
+                return (shapeStyle as? FoundationUI.ColorScale)?.resolveColor(in: environment)
             }
-            
-            if lightColorScheme {
-                color = (accessibility.contrast
-                         ? adjustLightAccessible?(components).color()
-                         : adjustLight?(components).color()) ?? color
-            } else {
-                color = (accessibility.contrast
-                         ? adjustDarkAccessible?(components).color()
-                         : adjustDark?(components).color()) ?? color
-            }
-            
-            if let opacityOverride = overrides.opacity {
-                color = color.opacity(lightColorScheme ? opacityOverride.light : opacityOverride.dark)
-            }
-            
-            return color
         }
     }
 }
 
-// MARK: - Color Scale
-
 extension FoundationUI.ColorScale {
-    private func getComponents(color: SwiftUI.Color?) -> Components? {
+    private static func getComponents(color: Color?) -> Components? {
         #if os(iOS)
         guard let color else { return nil }
         var hue: CGFloat = 0,
@@ -233,11 +300,11 @@ extension FoundationUI.ColorScale {
         }
         
         func shapeStyle() -> some ShapeStyle {
-            SwiftUI.Color(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
+            Color(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
         }
         
-        func color() -> SwiftUI.Color {
-            SwiftUI.Color(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
+        func color() -> Color {
+            Color(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
         }
     }
 }
@@ -264,3 +331,29 @@ extension EnvironmentValues {
     }
 }
 
+
+
+// MARK: - Previews
+
+internal extension FoundationUI.ColorScale {
+    static let colorSchemeSplit: Self = .init(
+        light: .fill.tint(color: .red),
+        dark: .fill.tint(.accent)
+    )
+}
+
+struct ColorScaleTestPreview: PreviewProvider {
+    static var previews: some View {
+        VStack (spacing: 0) {
+            Rectangle().frame(width: 100, height: 100)
+                .theme().foreground(.colorSchemeSplit.colorScheme(.light))
+            Rectangle().frame(width: 100, height: 100)
+                .theme().foreground(.background.colorScheme(.light))
+            Rectangle().frame(width: 100, height: 100)
+                .theme().foreground(.colorSchemeSplit.colorScheme(.dark))
+            Rectangle().frame(width: 100, height: 100)
+                .theme().foreground(.border.tint(color: .blue).colorScheme(.dark))
+        }
+        .theme().background()
+    }
+}

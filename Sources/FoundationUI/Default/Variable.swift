@@ -8,87 +8,76 @@
 import Foundation
 import SwiftUI
 
-
 extension FoundationUI {
-    public struct Variable: FoundationUIVariableDefaults {}
-    public struct Style: FoundationUIStyleDefaults {}
+    public struct Scale: FoundationUIScalableDefaults {
+        public static let padding = Padding()
+        public static let spacing = Spacing()
+        public static let radius = Radius()
+        public static let size = Size()
+        
+        public static let shadow = Shadow()
+        public static let animation = Animation()
+        public static let font = Font()
+    }
 }
 
-public extension FoundationUIStyleDefaults {
-    static var cornerRadiusStyle: RoundedCornerStyle { .continuous }
-}
 
-internal enum VariableDefaults {
-    static var multiplier: CGFloat { 2 }
-    static var base: CGFloat { 8 }
-}
-
-// Default Theme implementation
-public extension FoundationUIVariableDefaults {
-    typealias Variable = FoundationUI.Variable
-    static var padding: Variable.Padding { .init() }
-    static var spacing: Variable.Spacing { .init() }
-    static var radius: Variable.Radius { .init() }
-    
-    static var size: Variable.Size { .init() }
-    
-    static var shadow: Variable.Shadow { .init() }
-    
-    static var animation: Variable.Animation { .init() }
-    
-    static var font: Variable.Font { .init() }
-}
 
 // MARK: - Extensions
 
 // Set of different value sets
-public enum ThemeCGFloatProperties {
-    public static let spacing = FoundationUI.Variable.spacing
-    public static let padding = FoundationUI.Variable.padding
-    public static let radius = FoundationUI.Variable.radius
-    public static let size = FoundationUI.Variable.size
-}
+//public enum ThemeCGFloatProperties: FoundationUICGFloatVariableDefaults {}
 
 public extension CGFloat {
-    typealias foundation = ThemeCGFloatProperties
-    typealias theme = Self.foundation
+    typealias theme = FoundationUI.Scale
 }
 
 public extension Font {
-    static let foundation = FoundationUI.Variable.font
-    static let theme = Self.foundation
+    static let theme = FoundationUI.Scale.font
 }
 
 public extension Animation {
-    static let theme = FoundationUI.Variable.animation
+    static let theme = FoundationUI.Scale.animation
 }
 
 // MARK: - Variables
-public extension FoundationUI.Variable {
-    struct Padding: CGFloatVariableScale {
-        public var multiplier = VariableDefaults.multiplier
-        public var base = VariableDefaults.base
-        public var rounded = false
+public extension FoundationUI.Scale {
+    internal enum ScaleDefaults {
+        static var multiplier: CGFloat { 2 }
+        static var base: CGFloat { 8 }
     }
-    struct Spacing: CGFloatVariableScale {
-        public var multiplier = VariableDefaults.multiplier
-        public var base = VariableDefaults.base * 0.5
-        public var rounded = false
+    struct Padding: ScalableCGFloat {
+        public var configuration = Configuration(
+            base: ScaleDefaults.base,
+            multiplier: ScaleDefaults.multiplier,
+            rounded: false
+        )
     }
-    
-    struct Size: CGFloatVariableScale {
-        public var multiplier: Value = 2
-        public var base: Value = 64
-        public var rounded = true
-    }
-    
-    struct Radius: CGFloatVariableScale {
-        public var multiplier = VariableDefaults.multiplier
-        public var base = VariableDefaults.base
-        public var rounded = false
+    struct Spacing: ScalableCGFloat {
+        public var configuration = Configuration(
+            base: ScaleDefaults.base * 0.5,
+            multiplier: ScaleDefaults.multiplier,
+            rounded: false
+        )
     }
     
-    struct Font: GenericVariableScale {
+    struct Size: ScalableCGFloat {
+        public var configuration = Configuration(
+            base: 64,
+            multiplier: 2,
+            rounded: true
+        )
+    }
+    
+    struct Radius: ScalableCGFloat {
+        public var configuration = Configuration(
+            base: ScaleDefaults.base,
+            multiplier: ScaleDefaults.multiplier,
+            rounded: false
+        )
+    }
+    
+    struct Font: Scalable {
         typealias Font = SwiftUI.Font
         public let xxSmall = Font.caption
         public let xSmall = Font.callout
@@ -103,7 +92,7 @@ public extension FoundationUI.Variable {
         let `default`: SwiftUI.Animation = .interactiveSpring(duration: 0.2)
     }
     
-    struct Shadow: GenericVariableScale {
+    struct Shadow: Scalable {
         public typealias Shadow = FoundationUI.Modifier.Shadow.Configuration
         static let scale: FoundationUI.ColorScale = .backgroundFaded.colorScheme(.dark)
         public var xxSmall = Shadow(radius: 0.5, scale: scale.opacity(0.1), x: 0, y: 0.5)
@@ -118,7 +107,7 @@ public extension FoundationUI.Variable {
 
 // MARK: - OS Specific
 #if os(macOS)
-public extension FoundationUI.Variable.Radius {
+public extension FoundationUI.Scale.Radius {
     /// Default macOS window radius
     var window: CGFloat { 10 }
 }
