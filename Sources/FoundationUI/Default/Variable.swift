@@ -93,7 +93,7 @@ public extension FoundationUI.Scale {
     }
     
     struct Shadow: Scalable {
-        public typealias Shadow = FoundationUI.Modifier.Shadow.Configuration
+        public typealias Shadow = ShadowConfiguration
         static let scale: FoundationUI.ColorScale = .backgroundFaded.colorScheme(.dark)
         public var xxSmall = Shadow(radius: 0.5, scale: scale.opacity(0.1), x: 0, y: 0.5)
         public var xSmall = Shadow(radius: 1, scale: scale.opacity(0.15), x: 0, y: 1)
