@@ -21,7 +21,6 @@ extension TrussUI {
 
 // MARK: - View extension
 public extension View {
-    func foundation() -> TrussUI.Modifier<some View> { TrussUI.Modifier(self) }
     func theme() -> TrussUI.Modifier<some View> { TrussUI.Modifier(self) }
 }
 
@@ -213,22 +212,6 @@ public extension TrussUI.Modifier {
     ) -> some View {
         content.modifier(Border(style: style, width: width, placement: placement, cornerRadius: cornerRadius, mask: mask))
     }
-//    @ViewBuilder
-//    func border(
-//        _ style: any ShapeStyle = .Scale.border,
-//        width: CGFloat = 1,
-//        placement: BorderPlacement = .inside,
-//        cornerRadius: Scale.Radius.KeyPath,
-//        mask: TrussUI.Gradient? = nil
-//    ) -> some View {
-//        self.border(
-//            style,
-//            width: width,
-//            placement: placement,
-//            cornerRadius: .theme.radius[keyPath: cornerRadius],
-//            mask: mask
-//        )
-//    }
 }
 
 // MARK: - Background

@@ -17,10 +17,10 @@ public protocol VariableValue: Hashable, Equatable {
 }
 
 public extension VariableValue {
-    init(_ value: Value, label: String? = nil) {
+    init(label: String? = nil, _ value: Value) {
         self.init(value: value, label: label)
     }
-    init(_ value: Value, _ label: String? = nil) {
+    init(_ label: String? = nil, _ value: Value) {
         self.init(value: value, label: label)
     }
 }

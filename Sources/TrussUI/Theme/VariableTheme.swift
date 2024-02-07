@@ -10,7 +10,6 @@ import SwiftUI
 
 // MARK: - Extensions
 public extension CGFloat {
-    // `theme`
     static let theme = TrussUI.Variable.theme
 }
 
@@ -32,7 +31,6 @@ public protocol VariableTheme {
     func padding(_ variable: TrussUI.Variable.Padding) -> CGFloat
     func spacing(_ variable: TrussUI.Variable.Spacing) -> CGFloat
     func size(_ variable: TrussUI.Variable.Size) -> CGFloat
-    
     func radius(_ variable: TrussUI.Variable.Radius) -> CGFloat
     
     func shadow(_ variable: TrussUI.Variable.Shadow) -> ShadowConfiguration
@@ -44,7 +42,6 @@ public protocol VariableTheme {
 
 
 public extension VariableTheme {
-    var padding: TrussUI.Variable.Padding { .init(value: 8) }
     func padding(_ variable: TrussUI.Variable.Padding) -> CGFloat {
         variable.value
     }
@@ -54,22 +51,18 @@ public extension VariableTheme {
     func size(_ variable: TrussUI.Variable.Size) -> CGFloat {
         variable.value
     }
-    
     func radius(_ variable: TrussUI.Variable.Radius) -> CGFloat {
         variable.value
     }
     func radius<Variable: VariableScale>(_ variable: Variable) -> CGFloat where Variable.Value == CGFloat {
         variable.value
     }
-    
     func shadow(_ variable: TrussUI.Variable.Shadow) -> ShadowConfiguration {
         variable.value
     }
-    
     func font(_ variable: TrussUI.Variable.Font) -> Font {
         variable.value
     }
-    
     func animation(_ variable: TrussUI.Variable.Animation) -> Animation {
         variable.value
     }
@@ -85,7 +78,7 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static var regular = Self(8, "regular")
+            public static var regular = Self("regular", 8)
         }
         public struct Spacing: VariableScale {
             public var value: CGFloat
@@ -95,7 +88,7 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static var regular = Self(.theme.padding(.regular) * 0.5, "regular")
+            public static var regular = Self("regular", .theme.padding(.regular) * 0.5)
         }
         public struct Size: VariableScale {
             public var value: CGFloat
@@ -105,7 +98,7 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static var regular = Self(.theme.padding(.regular) * 8, "regular")
+            public static var regular = Self("regular", .theme.padding(.regular) * 8)
         }
         public struct Radius: VariableScale {
             public var value: CGFloat
@@ -115,7 +108,7 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static let regular = Self(8, "regular")
+            public static let regular = Self("regular", 8)
         }
         public struct Font: VariableScale {
             public var value: SwiftUI.Font
@@ -125,13 +118,13 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static let xxSmall = Self(.footnote, "xxSmall")
-            public static let xSmall = Self(.subheadline, "xSmall")
-            public static let small = Self(.callout, "small")
-            public static let regular = Self(.body, "regular")
-            public static let large = Self(.title3, "large")
-            public static let xLarge = Self(.title2, "xLarge")
-            public static let xxLarge = Self(.title, "xxLarge")
+            public static let xxSmall = Self("xxSmall", .footnote)
+            public static let xSmall = Self("xSmall", .subheadline)
+            public static let small = Self("small", .callout)
+            public static let regular = Self("regular", .body)
+            public static let large = Self("large", .title3)
+            public static let xLarge = Self("xLarge", .title2)
+            public static let xxLarge = Self("xxLarge", .title)
         }
         
         public struct Animation: VariableValue {
@@ -142,7 +135,7 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static let `regular` = Self(.interactiveSpring(), "regular")
+            public static let `regular` = Self("regular", .interactiveSpring())
         }
         
         public struct Shadow: VariableScale {
@@ -156,13 +149,13 @@ extension TrussUI {
                 light: TrussUI.Tint.primary.dark
             )
             private static let colorVariable = TrussUI.ColorVariable.Scale.background.tint(shadowTint)
-            public static var xxSmall = Self(.init(radius: 0.5, colorVariable: colorVariable.opacity(0.1), x: 0, y: 0.5), "xxSmall")
-            public static var xSmall = Self(.init(radius: 1, colorVariable: colorVariable.opacity(0.15), x: 0, y: 1), "xSmall")
-            public static var small = Self(.init(radius: 1.5, colorVariable: colorVariable.opacity(0.2), x: 0, y: 1), "small")
-            public static var regular = Self(.init(radius: 2.5, colorVariable: colorVariable.opacity(0.25), x: 0, y: 1), "regular")
-            public static var large = Self(.init(radius: 3.5, colorVariable: colorVariable.opacity(0.3), x: 0, y: 1), "large")
-            public static var xLarge = Self(.init(radius: 4, colorVariable: colorVariable.opacity(0.4), x: 0, y: 1), "xLarge")
-            public static var xxLarge = Self(.init(radius: 12, colorVariable: colorVariable.opacity(0.6), x: 0, y: 1), "xxLarge")
+            public static var xxSmall = Self("xxSmall", .init(radius: 0.5, colorVariable: colorVariable.opacity(0.1), x: 0, y: 0.5))
+            public static var xSmall = Self("xSmall", .init(radius: 1, colorVariable: colorVariable.opacity(0.15), x: 0, y: 1))
+            public static var small = Self("small", .init(radius: 1.5, colorVariable: colorVariable.opacity(0.2), x: 0, y: 1))
+            public static var regular = Self("regular", .init(radius: 2.5, colorVariable: colorVariable.opacity(0.25), x: 0, y: 1))
+            public static var large = Self("large", .init(radius: 3.5, colorVariable: colorVariable.opacity(0.3), x: 0, y: 1))
+            public static var xLarge = Self("xLarge", .init(radius: 4, colorVariable: colorVariable.opacity(0.4), x: 0, y: 1))
+            public static var xxLarge = Self("xxLarge", .init(radius: 12, colorVariable: colorVariable.opacity(0.6), x: 0, y: 1))
         }
     }
 }
@@ -218,7 +211,7 @@ private struct VariableScaleSwatch<Variable: VariableValue, Content: View>: View
 // MARK: CGFloat Variable Scale
 public extension VariableScale where Value == CGFloat {
     func offset(_ offset: Value, label: String? = nil) -> Self {
-        let value = Self(value + value * offset * (offset < 0 ? 0.5 : 1), label)
+        let value = Self(label, value + value * offset * (offset < 0 ? 0.5 : 1))
         return value
     }
     
@@ -270,8 +263,6 @@ extension TrussUI {
 struct VariablePreview: PreviewProvider {
     static var previews: some View {
         HStack(alignment: .top, spacing: 10) {
-//            TrussUI.Variable.theme.padding
-//            TrussUI.Variable.Padding.swatch(for: [("regular",.regular), ("large",.large)])
             TrussUI.Variable.Padding.swatch(for: [
                 .xxSmall,
                 .xSmall,
@@ -290,9 +281,6 @@ struct VariablePreview: PreviewProvider {
                 .xLarge,
                 .xxLarge
             ])
-//            TrussUI.Variable.Spacing.swatch()
-//            TrussUI.Variable.Size.swatch()
-//            TrussUI.Variable.Radius.swatch()
             TrussUI.Variable.Font.swatch(for: [
                 .xxSmall,
                 .xSmall,

@@ -16,5 +16,5 @@ TODO: Platforms (macOS, iOS, tvOS?, watchOS?) / Swift versions
 
 ### Add as a dependency
 ```
-https://github.com/artlasovsky/foundation-ui
+https://github.com/artlasovsky/truss-ui
 ```

@@ -483,18 +483,9 @@ extension TrussUI {
             resolve(in: TrussUI.ColorScheme(environment))
         }
         
-//        public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-////            resolveComponents(in: environment).color
-//            resolve(in: TrussUI.ColorScheme(environment))
-//        }
-        
         public func resolve(in colorScheme: TrussUI.ColorScheme) -> Color {
             resolveComponents(in: colorScheme).color
         }
-        
-//        public func resolve(in colorScheme: TrussUI.ColorScheme) -> some ShapeStyle {
-//            resolveComponents(in: colorScheme).color
-//        }
         
         public func resolveComponents(in environment: EnvironmentValues) -> ColorComponents {
             resolveComponents(in: TrussUI.ColorScheme(environment))
@@ -666,12 +657,6 @@ public extension TrussUI.Tint {
 
 // MARK: - Preview
 
-//extension TrussUI.Tint {
-//    static let primary = Tint(
-//        light: .init(hue: 0, saturation: 0, brightness: 0.43),
-//        dark: .init(hue: 0, saturation: 0, brightness: 0.55))
-//}
-
 @available(macOS 14.0, *)
 private extension TrussUI.Tint {
     static let systemRed = Self(lightColor: .red)
@@ -703,31 +688,8 @@ private extension TrussUI.ColorVariable {
 
 struct ColorScaleTestPreview: PreviewProvider {
     struct ColorComponentsTest: View {
-//        let color = TrussUI.ColorComponents(color: .red, colorScheme: .light)
-        
-//        let variableColor = ColorVariable(
-//            light: { $0 },
-//            dark: { $0.multiplied(saturation: 0.95) },
-//            lightAccessible: { $0.multiplied(saturation: 2, brightness: 0.84) },
-//            darkAccessible: { $0.multiplied(saturation: 0.76) }
-//        )
-        
-        // macOS color variation
-//        let variableColor = TrussUI.ColorVariable(
-//            light: { $0 },
-//            dark: { $0.set(green: $0.green + 0.04, blue: $0.blue + 0.04) },
-//            lightAccessible: { $0.multiplied(saturation: 2, brightness: 0.84) },
-//            darkAccessible: { $0.multiplied(saturation: 0.76) }
-//        )
-//        let redVariable2 = ColorVariable(light: { $0.multiplied(brightness: 0.8)} )
-        
         var body: some View {
             VStack {
-//                Text(hsb == rgb ? "Equal" : "-")
-//                hsb.swatch(showValues: .hsb)
-//                rgb.swatch(showValues: .hsb)
-//                color.swatch(showValues: .hsb)
-                
                 TrussUI.ColorVariable.swiftUI.swatch(showValues: .rgb)
                 if #available(macOS 14, *) {
                     TrussUI.Tint.redEqual.swatch()
@@ -750,8 +712,6 @@ struct ColorScaleTestPreview: PreviewProvider {
 
     static var previews: some View {
         VStack (spacing: 0) {
-//            TrussUI.Previews.ColorSample(tint: .red)
-//            TrussUI.Previews.ColorSample(tint: .redSwiftUI)
             ColorComponentsTest()
         }
         .theme().padding(.regular)
