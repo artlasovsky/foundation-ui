@@ -8,19 +8,19 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI {    
+public extension TrussUI {    
     struct Gradient: ShapeStyle {
-        let colors: [FoundationUI.ColorScale]
+        let colorVariables: [TrussUI.ColorVariable]
         let swiftUIColors: [Color]
         let startPoint: Self.Point
         
-        public init(_ colorScale: [FoundationUI.ColorScale], startPoint: Self.Point = .top) {
-            self.colors = colorScale
+        public init(_ colorVariables: [TrussUI.ColorVariable], startPoint: Self.Point = .top) {
+            self.colorVariables = colorVariables
             self.swiftUIColors = []
             self.startPoint = startPoint
         }
         public init(colors: [Color], startPoint: Self.Point = .top) {
-            self.colors = []
+            self.colorVariables = []
             self.swiftUIColors = colors
             self.startPoint = startPoint
         }
@@ -31,7 +31,7 @@ public extension FoundationUI {
             
             var colors: [Color] {
                 swiftUIColors.isEmpty
-                ? self.colors.map({ $0.resolveColor(in: environment) })
+                ? self.colorVariables.map({ $0.resolve(in: environment) })
                 : swiftUIColors
             }
             
@@ -44,7 +44,7 @@ public extension FoundationUI {
     }
 }
 
-extension FoundationUI.Gradient {
+extension TrussUI.Gradient {
     public enum Point: Sendable {
         case top
         case bottom
