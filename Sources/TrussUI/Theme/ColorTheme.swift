@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 // MARK: - Extension
+
 public extension Color {
     typealias Variable = TrussUI.ColorVariable
     typealias Scale = TrussUI.ColorVariable.Scale
@@ -23,6 +24,7 @@ public extension ShapeStyle {
 }
 
 // MARK: - Tint
+
 public extension TrussUI.Tint {
     static let white = Self(light: ColorComponents(hue: 0, saturation: 0, brightness: 1))
     static let black = Self(light: ColorComponents(hue: 0, saturation: 0, brightness: 0))
@@ -44,6 +46,7 @@ public extension TrussUI.Tint {
 }
 
 // MARK: - Color Variable
+
 public extension TrussUI.ColorVariable {
     /// Transparent
     static let clear = Self(
@@ -54,6 +57,7 @@ public extension TrussUI.ColorVariable {
 }
 
 // MARK: - Color Variable Scale
+
 public extension TrussUI.ColorVariable.Scale {
     typealias ColorVariable = TrussUI.ColorVariable
     /// App background
