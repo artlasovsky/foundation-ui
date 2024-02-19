@@ -210,6 +210,11 @@ private struct VariableScaleSwatch<Variable: VariableValue, Content: View>: View
 
 // MARK: CGFloat Variable Scale
 public extension VariableScale where Value == CGFloat {
+    /// Negative value
+    func negative() -> Self {
+        .init(self.value * -1)
+    }
+    
     func offset(_ offset: Value, label: String? = nil) -> Self {
         let value = Self(label, value + value * offset * (offset < 0 ? 0.5 : 1))
         return value

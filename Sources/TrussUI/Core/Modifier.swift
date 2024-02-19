@@ -212,6 +212,17 @@ public extension TrussUI.Modifier {
     ) -> some View {
         content.modifier(Border(style: style, width: width, placement: placement, cornerRadius: cornerRadius, mask: mask))
     }
+    
+    @ViewBuilder
+    func border(
+        _ style: any ShapeStyle = .Scale.border,
+        width: CGFloat = 1,
+        placement: BorderPlacement = .inside,
+        cornerRadius: TrussUI.Variable.Radius? = nil,
+        mask: TrussUI.Gradient? = nil
+    ) -> some View {
+        content.modifier(Border(style: style, width: width, placement: placement, cornerRadius: cornerRadius?.value ?? 0, mask: mask))
+    }
 }
 
 // MARK: - Background
