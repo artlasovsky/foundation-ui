@@ -21,7 +21,7 @@ extension TrussUI {
 
 // MARK: - View extension
 public extension View {
-    var theme: TrussUI.Modifier<some View> { TrussUI.Modifier(self) }
+    func theme() -> TrussUI.Modifier<some View> { TrussUI.Modifier(self) }
 }
 
 // MARK: - Font
@@ -181,7 +181,7 @@ private struct Border: ViewModifier {
                 .stroke(lineWidth: width)
                 .foregroundStyle(style)
                 .padding(placementPadding)
-                .theme.mask(mask)
+                .theme().mask(mask)
         }
     }
     
@@ -235,8 +235,8 @@ struct Background: ViewModifier {
         content.background {
             TrussUI.Component.roundedRectangle(radius)
                 .fill(style)
-                .theme.mask(mask)
-                .theme.shadow(shadow)
+                .theme().mask(mask)
+                .theme().shadow(shadow)
         }
     }
     
@@ -349,10 +349,10 @@ public extension TrussUI.Modifier {
 #Preview(body: {
     VStack {
         Text("Hello!")
-            .theme.font(.large)
-            .theme.size(width: .regular, height: .small)
-            .theme.border(.Scale.border)
+            .theme().font(.large)
+            .theme().size(width: .regular, height: .small)
+            .theme().border(.Scale.border)
     }
-    .theme.size(.large)
-    .theme.padding(.regular)
+    .theme().size(.large)
+    .theme().padding(.regular)
 })
