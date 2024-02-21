@@ -336,9 +336,9 @@ struct ColorScaleTestPreview: PreviewProvider {
                     TrussUI.Tint.tintFromTint.swatch()
                     TrussUI.Tint.systemRed.swatch(showValues: .hsb)
                     TrussUI.Component.roundedRectangle(.regular)
-                        .theme().size(.regular)
-                        .theme().foreground(TrussUI.Tint.systemRed.colorScheme(.lightAccessible))
-//                        .theme().foreground(.swiftUI.tintColor(.red).colorScheme(.light))
+                        .theme.size(.regular)
+                        .theme.foreground(TrussUI.Tint.systemRed.colorScheme(.lightAccessible))
+//                        .theme.foreground(.swiftUI.tintColor(.red).colorScheme(.light))
 //                    TrussUI.ColorVariable.swiftUI.tintColor(.red).colorScheme(.light).swatch()
                     TrussUI.Tint.systemRed.colorScheme(.lightAccessible).swatch()
                     TrussUI.ColorVariable.mix.tint(.systemRed).swatch()
@@ -354,8 +354,8 @@ struct ColorScaleTestPreview: PreviewProvider {
         VStack (spacing: 0) {
             ColorComponentsTest()
         }
-        .theme().padding(.regular)
-        .theme().background()
+        .theme.padding(.regular)
+        .theme.background()
     }
 }
 

@@ -20,13 +20,10 @@ public extension TrussUIComponentDefaults {
     static var cornerRadiusStyle: RoundedCornerStyle { .continuous }
 }
 
-
 // MARK: - Rounded Rectangle
 extension TrussUI.Component: TrussUIComponentDefaults {}
 
-public extension TrussUI.Component {
-//    typealias RadiusKeyPath = TrussUI.Scale.Radius.KeyPath
-    
+public extension TrussUI.Component {    
     @available(macOS 13.0, iOS 16.0, *)
     static func roundedRectangle(
         topLeadingRadius: CGFloat,

@@ -21,18 +21,14 @@ extension TrussUI {
 
 // MARK: - View extension
 public extension View {
-    func theme() -> TrussUI.Modifier<some View> { TrussUI.Modifier(self) }
+    var theme: TrussUI.Modifier<some View> { TrussUI.Modifier(self) }
 }
 
 // MARK: - Font
 public extension TrussUI.Modifier {
     @ViewBuilder
-    func font(_ font: Font) -> some View {
-        content.font(font)
-    }
-    @ViewBuilder
     func font(_ variable: TrussUI.Variable.Font) -> some View {
-        self.font(.theme(variable))
+        content.font(.theme(variable))
     }
 }
 
@@ -67,7 +63,12 @@ public extension TrussUI.Modifier {
     }
     
     @ViewBuilder
-    func shadow(_ variable: ColorVariable = .Scale.backgroundFaded, tint: Tint = .primary, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) -> some View {
+    func shadow(_ variable: ColorVariable = .Scale.backgroundFaded, 
+                tint: Tint = .primary,
+                radius: CGFloat,
+                x: CGFloat = 0,
+                y: CGFloat = 0
+    ) -> some View {
         content.modifier(Shadow(configuration: .init(radius: radius, colorVariable: variable, tint: tint, x: x, y: y)))
     }
     
@@ -129,12 +130,8 @@ public extension TrussUI.Modifier {
 // MARK: - Padding
 public extension TrussUI.Modifier {
     @ViewBuilder
-    func padding(_ length: CGFloat, _ edges: Edge.Set = .all) -> some View {
-        content.padding(edges, length)
-    }
-    @ViewBuilder
-    func padding(_ padding: TrussUI.Variable.Padding = .regular, _ edges: Edge.Set = .all) -> some View {
-        self.padding(.theme.padding(padding), edges)
+    func padding(_ variable: TrussUI.Variable.Padding = .regular, _ edges: Edge.Set = .all) -> some View {
+        content.padding(edges, variable.value)
     }
 }
 
@@ -184,7 +181,7 @@ private struct Border: ViewModifier {
                 .stroke(lineWidth: width)
                 .foregroundStyle(style)
                 .padding(placementPadding)
-                .theme().mask(mask)
+                .theme.mask(mask)
         }
     }
     
@@ -204,24 +201,18 @@ private struct Border: ViewModifier {
 public extension TrussUI.Modifier {
     @ViewBuilder
     func border(
-        _ style: any ShapeStyle = .Scale.border,
-        width: CGFloat = 1,
-        placement: BorderPlacement = .inside,
-        cornerRadius: CGFloat = 0,
-        mask: TrussUI.Gradient? = nil
-    ) -> some View {
-        content.modifier(Border(style: style, width: width, placement: placement, cornerRadius: cornerRadius, mask: mask))
-    }
-    
-    @ViewBuilder
-    func border(
-        _ style: any ShapeStyle = .Scale.border,
+        _ style: some ShapeStyle = .Scale.border,
         width: CGFloat = 1,
         placement: BorderPlacement = .inside,
         cornerRadius: TrussUI.Variable.Radius? = nil,
         mask: TrussUI.Gradient? = nil
     ) -> some View {
-        content.modifier(Border(style: style, width: width, placement: placement, cornerRadius: cornerRadius?.value ?? 0, mask: mask))
+        content.modifier(Border(
+            style: style,
+            width: width,
+            placement: placement,
+            cornerRadius: cornerRadius?.value ?? 0,
+            mask: mask))
     }
 }
 
@@ -244,8 +235,8 @@ struct Background: ViewModifier {
         content.background {
             TrussUI.Component.roundedRectangle(radius)
                 .fill(style)
-                .theme().mask(mask)
-                .theme().shadow(shadow)
+                .theme.mask(mask)
+                .theme.shadow(shadow)
         }
     }
     
@@ -258,20 +249,11 @@ public extension TrussUI.Modifier {
     @ViewBuilder
     func background(
         _ style: some ShapeStyle = .Scale.background,
-        cornerRadius: CGFloat = 0,
+        cornerRadius: TrussUI.Variable.Radius? = nil,
         shadow: TrussUI.Variable.Shadow? = nil,
         mask: TrussUI.Gradient? = nil
     ) -> some View {
-        content.modifier(Background(style: style, cornerRadius: cornerRadius, shadow: shadow, mask: mask))
-    }
-    @ViewBuilder
-    func background(
-        _ style: some ShapeStyle = .Scale.background,
-        cornerRadius: TrussUI.Variable.Radius,
-        shadow: TrussUI.Variable.Shadow? = nil,
-        mask: TrussUI.Gradient? = nil
-    ) -> some View {
-        content.modifier(Background(style: style, cornerRadius: cornerRadius.value, shadow: shadow, mask: mask))
+        content.modifier(Background(style: style, cornerRadius: cornerRadius?.value ?? 0, shadow: shadow, mask: mask))
     }
 }
 
@@ -297,15 +279,9 @@ private struct Clip: ViewModifier {
 public extension TrussUI.Modifier {
     @ViewBuilder
     func clip(
-        cornerRadius: CGFloat = 0
-    ) -> some View {
-        content.modifier(Clip(configuration: .init(cornerRadius: cornerRadius)))
-    }
-    @ViewBuilder
-    func clip(
         cornerRadius: TrussUI.Variable.Radius
     ) -> some View {
-        self.clip(cornerRadius: .theme.radius(cornerRadius))
+        content.modifier(Clip(configuration: .init(cornerRadius: cornerRadius.value)))
     }
 }
 
@@ -322,15 +298,9 @@ private struct CornerRadius: ViewModifier {
 public extension TrussUI.Modifier {
     @ViewBuilder
     func cornerRadius(
-        _ cornerRadius: CGFloat?
-    ) -> some View {
-        content.modifier(CornerRadius(cornerRadius: cornerRadius))
-    }
-    @ViewBuilder
-    func cornerRadius(
         _ cornerRadius: TrussUI.Variable.Radius
     ) -> some View {
-        self.cornerRadius(.theme.radius(cornerRadius))
+        content.modifier(CornerRadius(cornerRadius: cornerRadius.value))
     }
 }
 
@@ -352,14 +322,6 @@ private struct Size: ViewModifier {
 public extension TrussUI.Modifier {
     @ViewBuilder
     func size(
-        width: CGFloat? = nil,
-        height: CGFloat? = nil,
-        alignment: Alignment = .center
-    ) -> some View {
-        content.modifier(Size(width: width, height: height, alignment: alignment))
-    }
-    @ViewBuilder
-    func size(
         width: TrussUI.Variable.Size? = nil,
         height: TrussUI.Variable.Size? = nil,
         alignment: Alignment = .center
@@ -372,21 +334,13 @@ public extension TrussUI.Modifier {
         case .some(let height): .theme.size(height)
         case .none: nil
         }
-        self.size(width: width, height: height, alignment: alignment)
-    }
-    @ViewBuilder
-    func size(
-        _ side: CGFloat,
-        alignment: Alignment = .center
-    ) -> some View {
-        self.size(width: side, height: side, alignment: alignment)
+        content.modifier(Size(width: width, height: height, alignment: alignment))
     }
     @ViewBuilder
     func size(
         _ side: TrussUI.Variable.Size,
         alignment: Alignment = .center
     ) -> some View {
-        let side: CGFloat = .theme.size(side)
         self.size(width: side, height: side, alignment: alignment)
     }
 }
@@ -395,8 +349,10 @@ public extension TrussUI.Modifier {
 #Preview(body: {
     VStack {
         Text("Hello!")
-            .theme().font(.regular)
-            .theme().size(.large)
-            .theme().padding(.regular)
+            .theme.font(.large)
+            .theme.size(width: .regular, height: .small)
+            .theme.border(.Scale.border)
     }
+    .theme.size(.large)
+    .theme.padding(.regular)
 })

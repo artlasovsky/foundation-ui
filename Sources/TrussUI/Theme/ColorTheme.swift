@@ -146,8 +146,8 @@ internal extension TrussUI.ColorVariable.Scale {
         var body: some View {
             VStack(spacing: 0) {
                 Text(colorScheme == .dark ? "Dark" : "Light")
-                    .theme().foreground(.Scale.text)
-                    .theme().padding(.regular, .bottom)
+                    .theme.foreground(.Scale.text)
+                    .theme.padding(.regular, .bottom)
                     .font(.caption.monospaced())
                 ForEach(TrussUI.ColorVariable.Scale.all, id: \.self) { sample in
                     HStack(spacing: 0) {
@@ -164,8 +164,8 @@ internal extension TrussUI.ColorVariable.Scale {
                     }
                 }
             }
-            .theme().padding(.large)
-            .theme().background(.Scale.backgroundFaded)
+            .theme.padding(.large)
+            .theme.background(.Scale.backgroundFaded)
         }
     }
     
@@ -173,15 +173,15 @@ internal extension TrussUI.ColorVariable.Scale {
         ColorScale().environment(\.colorScheme, .light)
         ColorScale()
             .environment(\.colorScheme, .light)
-            .theme().tint(.systemAccent)
+            .theme.tint(.systemAccent)
         if #available(macOS 14.0, *) {
             ColorScale().environment(\.colorScheme, .light)
-                .theme().tintColor(.orange)
+                .theme.tintColor(.orange)
         }
         ColorScale().environment(\.colorScheme, .dark)
         if #available(macOS 14.0, *) {
             ColorScale().environment(\.colorScheme, .dark)
-                .theme().tintColor(.blue)
+                .theme.tintColor(.blue)
         }
     }
 }
