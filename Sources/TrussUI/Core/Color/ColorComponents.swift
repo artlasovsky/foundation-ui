@@ -140,7 +140,7 @@ public extension TrussUI.ColorComponents {
         var body: some View {
             HStack {
                 TrussUI.Component.roundedRectangle(.regular)
-                    .theme().size(.regular)
+                    .truss(.size(.regular))
                     .foregroundStyle(components.color)
                 if [.rgb, .rgb8bit].contains(showValues) {
                     VStack(alignment: .leading) {

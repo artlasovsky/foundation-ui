@@ -139,6 +139,10 @@ internal extension TrussUI.ColorVariable.Scale {
     ]
 }
 
+private extension TrussUI.Variable.Font {
+    static let captionMono = Self(.caption.monospaced())
+}
+
 #Preview {
     struct ColorScale: View {
         @Environment(\.colorScheme) private var colorScheme
@@ -146,9 +150,9 @@ internal extension TrussUI.ColorVariable.Scale {
         var body: some View {
             VStack(spacing: 0) {
                 Text(colorScheme == .dark ? "Dark" : "Light")
-                    .theme().foreground(.Scale.text)
-                    .theme().padding(.regular, .bottom)
-                    .font(.caption.monospaced())
+                    .truss(.foreground(.Scale.text))
+                    .truss(.padding(.regular, .bottom))
+                    .truss(.font(.captionMono))
                 ForEach(TrussUI.ColorVariable.Scale.all, id: \.self) { sample in
                     HStack(spacing: 0) {
                         VStack {
@@ -164,8 +168,8 @@ internal extension TrussUI.ColorVariable.Scale {
                     }
                 }
             }
-            .theme().padding(.large)
-            .theme().background(.Scale.backgroundFaded)
+            .truss(.padding(.large))
+            .truss(.background(.Scale.backgroundFaded))
         }
     }
     
@@ -173,15 +177,15 @@ internal extension TrussUI.ColorVariable.Scale {
         ColorScale().environment(\.colorScheme, .light)
         ColorScale()
             .environment(\.colorScheme, .light)
-            .theme().tint(.systemAccent)
+            .truss(.tint(.systemAccent))
         if #available(macOS 14.0, *) {
             ColorScale().environment(\.colorScheme, .light)
-                .theme().tintColor(.orange)
+                .truss(.tint(color: .orange))
         }
         ColorScale().environment(\.colorScheme, .dark)
         if #available(macOS 14.0, *) {
             ColorScale().environment(\.colorScheme, .dark)
-                .theme().tintColor(.blue)
+                .truss(.tint(color: .blue))
         }
     }
 }

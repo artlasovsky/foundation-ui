@@ -194,7 +194,7 @@ public extension TrussUI.Tint {
         @ViewBuilder
         func resolvedIn(colorScheme: ColorScheme, colorSchemeContrast: ColorSchemeContrast) -> some View {
             TrussUI.Component.roundedRectangle(.regular)
-                .theme().size(.small)
+                .truss(.size(.small))
                 .foregroundStyle(tint.resolve(in: .init(colorScheme: colorScheme, colorSchemeContrast: colorSchemeContrast)))
         }
         var body: some View {

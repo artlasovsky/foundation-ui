@@ -352,13 +352,13 @@ struct ColorScaleTestPreview: PreviewProvider {
                     HStack {
                         Text("Color Scheme Inheritance: ")
                         TrussUI.Component.roundedRectangle(.regular)
-                            .theme().size(.small)
-                            .theme().foreground(.Scale.solid.colorScheme(.dark))
-                            .theme().tint(.systemRed)
+                            .truss(.size(.small))
+                            .truss(.foreground(.Scale.solid.colorScheme(.dark)))
+                            .truss(.tint(.systemRed))
                         TrussUI.Component.roundedRectangle(.regular)
-                            .theme().size(.small)
-                            .theme().foreground(.Scale.solid)
-                            .theme().tint(.systemRed.colorScheme(.dark))
+                            .truss(.size(.small))
+                            .truss(.foreground(.Scale.solid))
+                            .truss(.tint(.systemRed.colorScheme(.dark)))
                     }
                     Text("Tint")
                     TrussUI.Tint.redEqual.swatch()
@@ -383,8 +383,8 @@ struct ColorScaleTestPreview: PreviewProvider {
         VStack (spacing: 0) {
             ColorComponentsTest()
         }
-        .theme().padding(.regular)
-        .theme().background()
+        .truss(.padding(.regular))
+        .truss(.background())
     }
 }
 

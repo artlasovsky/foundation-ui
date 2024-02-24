@@ -9,28 +9,78 @@ import Foundation
 import SwiftUI
 
 extension TrussUI {
-    public struct Modifier<ModifierContent: View> {
-        public var content: ModifierContent
-        internal init(_ content: ModifierContent) {
-            self.content = content
+    public enum Modifier {}
+}
+
+public protocol TrussUIModifier: ViewModifier {}
+
+// MARK: - View extension
+public extension View {
+    func truss(_ modifier: some TrussUIModifier) -> some View {
+        self.modifier(modifier)
+    }
+}
+
+// MARK: - Font
+public extension TrussUIModifier where Self == TrussUI.Modifier.FontModifier {
+    static func font(_ variable: TrussUI.Variable.Font) -> Self {
+        TrussUI.Modifier.FontModifier(font: variable.value)
+    }
+}
+
+public extension TrussUI.Modifier {
+    struct FontModifier: TrussUIModifier {
+        public let font: Font
+        public func body(content: Content) -> some View {
+            content.font(font)
         }
     }
 }
 
-// MARK: - View extension
-public extension View {
-    func theme() -> TrussUI.Modifier<some View> { TrussUI.Modifier(self) }
-}
-
-// MARK: - Font
-public extension TrussUI.Modifier {
-    @ViewBuilder
-    func font(_ variable: TrussUI.Variable.Font) -> some View {
-        content.font(.theme(variable))
+// MARK: - Shadow
+public extension TrussUIModifier where Self == TrussUI.Modifier.ShadowModifier {
+    static func shadow(configuration: ShadowConfiguration) -> Self {
+        TrussUI.Modifier.ShadowModifier(configuration: configuration)
+    }
+    static func shadow(color colorVariable: TrussUI.ColorVariable = .Scale.backgroundFaded,
+                       tint: TrussUI.Tint = .primary,
+                       radius: CGFloat,
+                       x: CGFloat = 0,
+                       y: CGFloat = 0
+    ) -> Self {
+        TrussUI.Modifier.ShadowModifier(
+            configuration: ShadowConfiguration(
+                radius: radius,
+                colorVariable: colorVariable,
+                tint: tint,
+                x: x,
+                y: y)
+        )
+    }
+    static func shadow(_ variable: TrussUI.Variable.Shadow?) -> Self {
+        TrussUI.Modifier.ShadowModifier(configuration: variable?.value)
     }
 }
 
-// MARK: - Shadow
+public extension TrussUI.Modifier {
+    struct ShadowModifier: TrussUIModifier {
+        @Environment(\.self) private var environment
+        public let configuration: ShadowConfiguration?
+        public func body(content: Content) -> some View {
+            if let configuration {
+                content
+                    .shadow(
+                        color: configuration.colorVariable
+                            .tint(configuration.tint)
+                            .resolve(in: environment),
+                        radius: configuration.radius,
+                        x: configuration.x,
+                        y: configuration.y)
+            }
+        }
+    }
+}
+
 public struct ShadowConfiguration: Hashable, Equatable {
     var radius: CGFloat
     var colorVariable: TrussUI.ColorVariable = .Scale.backgroundFaded
@@ -39,307 +89,238 @@ public struct ShadowConfiguration: Hashable, Equatable {
     var y: CGFloat = 0
 }
 
-private struct Shadow: ViewModifier {
-    @Environment(\.self) private var environment
-    let configuration: ShadowConfiguration
-    func body(content: Content) -> some View {
-        content
-            .shadow(
-                color: configuration.colorVariable
-                    .tint(configuration.tint)
-                    .resolve(in: environment),
-                radius: configuration.radius,
-                x: configuration.x,
-                y: configuration.y)
-    }
-}
-
-public extension TrussUI.Modifier {
-    @ViewBuilder
-    func shadow(_ configuration: ShadowConfiguration) -> some View {
-        content.modifier(Shadow(configuration: configuration))
-    }
-    
-    @ViewBuilder
-    func shadow(_ variable: TrussUI.ColorVariable = .Scale.backgroundFaded,
-                tint: TrussUI.Tint = .primary,
-                radius: CGFloat,
-                x: CGFloat = 0,
-                y: CGFloat = 0
-    ) -> some View {
-        content.modifier(Shadow(configuration: .init(radius: radius, colorVariable: variable, tint: tint, x: x, y: y)))
-    }
-    
-    @ViewBuilder
-    func shadow(_ variable: TrussUI.Variable.Shadow? = nil) -> some View {
-        if let variable {
-            let configuration = variable.value
-            shadow(configuration.colorVariable,
-                   tint: configuration.tint,
-                   radius: configuration.radius,
-                   x: configuration.x,
-                   y: configuration.y)
-        } else {
-            content
-        }
-    }
-}
-
 // MARK: - Color
-public extension TrussUI.Modifier {
-    @ViewBuilder
-    func tint(_ tint: TrussUI.Tint?) -> some View {
-        if let tint {
-            content
-                .environment(\.TrussUITint, tint)
-        } else {
-            content
-        }
+public extension TrussUIModifier where Self == TrussUI.Modifier.ColorModifier {
+    static func tint(_ variable: TrussUI.Tint?) -> Self {
+        TrussUI.Modifier.ColorModifier(type: .tint(variable))
     }
-    
     @available(macOS 14.0, *)
-    @ViewBuilder
-    func tintColor(_ color: Color?) -> some View {
+    static func tint(color: Color?) -> Self {
+        let tint: TrussUI.Tint?
         if let color {
-            content
-                .environment(\.TrussUITint, .init(lightColor: color))
+            tint = .init(color: color)
         } else {
-            content
+            tint = nil
         }
+        return TrussUI.Modifier.ColorModifier(type: .tint(tint))
     }
     
-    @ViewBuilder
-    func foregroundStyle(_ style: some ShapeStyle) -> some View {
-        content
-            .foregroundStyle(style)
+    static func foreground(_ variable: TrussUI.ColorVariable) -> Self {
+        TrussUI.Modifier.ColorModifier(type: .foreground(variable))
     }
-    @ViewBuilder
-    func foreground(_ variable: TrussUI.ColorVariable = .Scale.solid) -> some View {
-        content
-            .foregroundStyle(variable)
+    static func foreground(color: Color) -> Self {
+        TrussUI.Modifier.ColorModifier(type: .foregroundColor(color))
     }
-    @ViewBuilder
-    func foregroundColor(_ color: Color) -> some View {
-        content
-            .foregroundStyle(color)
+    static func background(
+        _ variable: TrussUI.ColorVariable = .Scale.background,
+        cornerRadius: TrussUI.Variable.Radius? = nil,
+        shadow: TrussUI.Variable.Shadow? = nil,
+        gradientMask: TrussUI.Gradient? = nil
+    ) -> Self {
+        TrussUI.Modifier.ColorModifier(type: .background(variable, cornerRadius: cornerRadius, shadow: shadow, gradientMask: gradientMask))
     }
 }
 
-// MARK: - Padding
+
 public extension TrussUI.Modifier {
-    @ViewBuilder
-    func padding(_ variable: TrussUI.Variable.Padding = .regular, _ edges: Edge.Set = .all) -> some View {
-        content.padding(edges, variable.value)
+    struct ColorModifier: TrussUIModifier {
+        let type: ModifierType
+        enum ModifierType {
+            case tint(_ variable: TrussUI.Tint?)
+            case foreground(_ variable: TrussUI.ColorVariable)
+            case foregroundColor(_ color: Color)
+            case background(_ variable: TrussUI.ColorVariable, cornerRadius: TrussUI.Variable.Radius?, shadow: TrussUI.Variable.Shadow?, gradientMask: TrussUI.Gradient?)
+        }
+        public func body(content: Content) -> some View {
+            switch type {
+            case .tint(let variable):
+                content.environment(\.TrussUITint, variable)
+            case .foreground(let variable):
+                content.foregroundStyle(variable)
+            case .foregroundColor(let color):
+                content.foregroundStyle(color)
+            case .background(let variable, let cornerRadius, let shadow, let gradientMask):
+                content.modifier(BackgroundModifier(colorVariable: variable, cornerRadius: cornerRadius, shadow: shadow, gradientMask: gradientMask))
+            }
+        }
+    }
+}
+
+extension TrussUI.Modifier.ColorModifier {
+    struct BackgroundModifier: ViewModifier {
+        @Environment(\.TrussUICornerRadius) private var envCornerRadius
+        
+        let colorVariable: TrussUI.ColorVariable
+        let cornerRadius: TrussUI.Variable.Radius?
+        let shadow: TrussUI.Variable.Shadow?
+        let gradientMask: TrussUI.Gradient?
+        
+        public func body(content: Content) -> some View {
+            content.background {
+                TrussUI.Component.roundedRectangle(radius)
+                    .fill(colorVariable)
+                    .truss(.gradientMask(gradientMask))
+                    .truss(.shadow(shadow))
+            }
+        }
+        
+        private var radius: CGFloat {
+            envCornerRadius ?? cornerRadius?.value ?? 0
+        }
     }
 }
 
 // MARK: - Mask
+public extension TrussUIModifier where Self == TrussUI.Modifier.MaskModifier {
+    static func gradientMask(_ gradient: TrussUI.Gradient?) -> Self {
+        TrussUI.Modifier.MaskModifier(gradient: gradient)
+    }
+}
+
 public extension TrussUI.Modifier {
-    @ViewBuilder
-    func mask(_ gradient: TrussUI.Gradient?) -> some View {
-        if let gradient {
-            content.mask {
-                Color.clear
-                    .overlay(gradient)
+    struct MaskModifier: TrussUIModifier {
+        let gradient: TrussUI.Gradient?
+        public func body(content: Content) -> some View {
+            if let gradient {
+                content.mask {
+                    Color.clear.overlay(gradient)
+                }
             }
-        } else {
-            content
+        }
+    }
+}
+
+// MARK: - Padding
+public extension TrussUIModifier where Self == TrussUI.Modifier.PaddingModifier {
+    static func padding(_ variable: TrussUI.Variable.Padding = .regular, _ edges: Edge.Set = .all) -> Self {
+        TrussUI.Modifier.PaddingModifier(variable: variable, edges: edges)
+    }
+}
+public extension TrussUI.Modifier {
+    struct PaddingModifier: TrussUIModifier {
+        let variable: TrussUI.Variable.Padding
+        let edges: Edge.Set
+        public func body(content: Content) -> some View {
+            content.padding(edges, variable.value)
         }
     }
 }
 
 // MARK: - Border
+public extension TrussUIModifier where Self == TrussUI.Modifier.BorderModifier {
+    static func border(
+        _ variable: TrussUI.ColorVariable = .Scale.border,
+        width: CGFloat = 1,
+        placement: BorderPlacement = .inside,
+        cornerRadius: TrussUI.Variable.Radius? = nil,
+        gradientMask: TrussUI.Gradient? = nil
+    ) -> Self {
+        TrussUI.Modifier.BorderModifier(colorVariable: variable, width: width, placement: placement, cornerRadius: cornerRadius, gradientMask: gradientMask)
+    }
+}
+
+public extension TrussUI.Modifier {
+    struct BorderModifier: TrussUIModifier {
+        @Environment(\.self) private var environment
+        
+        let colorVariable: TrussUI.ColorVariable
+        let width: CGFloat
+        let placement: BorderPlacement
+        let cornerRadius: TrussUI.Variable.Radius?
+        let gradientMask: TrussUI.Gradient?
+        
+        public func body(content: Content) -> some View {
+            content.overlay {
+                TrussUI.Component.roundedRectangle(radius)
+                    .stroke(lineWidth: width)
+                    .foregroundStyle(colorVariable)
+                    .padding(placementPadding)
+                    .truss(.gradientMask(gradientMask))
+            }
+        }
+        
+        private var radius: CGFloat {
+            if let cornerRadius = environment.TrussUICornerRadius ?? cornerRadius?.value {
+                return cornerRadius - placementPadding
+            }
+            return 0
+        }
+        
+        private var placementPadding: CGFloat {
+            switch placement {
+            case .inside: width / 2
+            case .outside: -width / 2
+            case .center: 0
+            }
+        }
+    }
+}
+
 public enum BorderPlacement {
     case inside
     case outside
     case center
 }
 
-private struct Border: ViewModifier {
-    let placement: BorderPlacement
-    let side: Edge.Set
-    let style: AnyShapeStyle
-    let width: CGFloat
-    let cornerRadius: CGFloat
-    let mask: TrussUI.Gradient?
-    init(style: any ShapeStyle, width: CGFloat, placement: BorderPlacement, cornerRadius: CGFloat, side: Edge.Set = .all, mask: TrussUI.Gradient?) {
-        self.placement = placement
-        self.style = AnyShapeStyle(style)
-        self.width = width
-        self.cornerRadius = cornerRadius
-        self.side = side
-        self.mask = mask
-    }
-    
-    @Environment(\.self) private var environment
-    
-    func body(content: Content) -> some View {
-        content.overlay {
-            TrussUI.Component.roundedRectangle(radius)
-                .stroke(lineWidth: width)
-                .foregroundStyle(style)
-                .padding(placementPadding)
-                .theme().mask(mask)
-        }
-    }
-    
-    private var radius: CGFloat {
-        (environment.TrussUICornerRadius ?? cornerRadius) - placementPadding
-    }
-    
-    private var placementPadding: CGFloat {
-        switch placement {
-        case .inside: width / 2
-        case .outside: -width / 2
-        case .center: 0
-        }
-    }
-}
-
-public extension TrussUI.Modifier {
-    @ViewBuilder
-    func border(
-        _ style: some ShapeStyle = .Scale.border,
-        width: CGFloat = 1,
-        placement: BorderPlacement = .inside,
-        cornerRadius: TrussUI.Variable.Radius? = nil,
-        mask: TrussUI.Gradient? = nil
-    ) -> some View {
-        content.modifier(Border(
-            style: style,
-            width: width,
-            placement: placement,
-            cornerRadius: cornerRadius?.value ?? 0,
-            mask: mask))
-    }
-}
-
-// MARK: - Background
-struct Background: ViewModifier {
-    let style: AnyShapeStyle
-    let cornerRadius: CGFloat
-    let shadow: TrussUI.Variable.Shadow?
-    let mask: TrussUI.Gradient?
-    init(style: some ShapeStyle, cornerRadius: CGFloat, shadow: TrussUI.Variable.Shadow?, mask: TrussUI.Gradient?) {
-        self.style = AnyShapeStyle(style)
-        self.cornerRadius = cornerRadius
-        self.shadow = shadow
-        self.mask = mask
-    }
-    
-    @Environment(\.TrussUICornerRadius) private var envCornerRadius
-    
-    public func body(content: Content) -> some View {
-        content.background {
-            TrussUI.Component.roundedRectangle(radius)
-                .fill(style)
-                .theme().mask(mask)
-                .theme().shadow(shadow)
-        }
-    }
-    
-    private var radius: CGFloat {
-        envCornerRadius ?? cornerRadius
-    }
-}
-
-public extension TrussUI.Modifier {
-    @ViewBuilder
-    func background(
-        _ style: some ShapeStyle = .Scale.background,
-        cornerRadius: TrussUI.Variable.Radius? = nil,
-        shadow: TrussUI.Variable.Shadow? = nil,
-        mask: TrussUI.Gradient? = nil
-    ) -> some View {
-        content.modifier(Background(style: style, cornerRadius: cornerRadius?.value ?? 0, shadow: shadow, mask: mask))
-    }
-}
-
 // MARK: - Clip
-private struct Clip: ViewModifier {
-    struct Configuration {
-        let cornerRadius: CGFloat
-        init(cornerRadius: CGFloat) {
-            self.cornerRadius = cornerRadius
-        }
-    }
-    
-    let configuration: Configuration
-    
-    @Environment(\.TrussUICornerRadius) private var envCornerRadius
-    
-    func body(content: Content) -> some View {
-        content
-            .clipShape(TrussUI.Component.roundedRectangle(envCornerRadius ?? configuration.cornerRadius))
+public extension TrussUIModifier where Self == TrussUI.Modifier.ClipModifier {
+    static func clip(_ cornerRadius: TrussUI.Variable.Radius) -> Self {
+        TrussUI.Modifier.ClipModifier(cornerRadius: cornerRadius)
     }
 }
 
 public extension TrussUI.Modifier {
-    @ViewBuilder
-    func clip(
-        cornerRadius: TrussUI.Variable.Radius
-    ) -> some View {
-        content.modifier(Clip(configuration: .init(cornerRadius: cornerRadius.value)))
+    struct ClipModifier: TrussUIModifier {
+        @Environment(\.TrussUICornerRadius) private var envCornerRadius
+        let cornerRadius: TrussUI.Variable.Radius
+        
+        public func body(content: Content) -> some View {
+            content.clipShape(TrussUI.Component.roundedRectangle(envCornerRadius ?? cornerRadius.value))
+        }
     }
 }
 
 // MARK: - Corner Radius
-private struct CornerRadius: ViewModifier {
-    let cornerRadius: CGFloat?
-
-    func body(content: Content) -> some View {
-        content
-            .environment(\.TrussUICornerRadius, cornerRadius)
+public extension TrussUIModifier where Self == TrussUI.Modifier.CornerRadius {
+    static func cornerRadius(_ variable: TrussUI.Variable.Radius?) -> Self {
+        TrussUI.Modifier.CornerRadius(variable: variable)
     }
 }
-
 public extension TrussUI.Modifier {
-    @ViewBuilder
-    func cornerRadius(
-        _ cornerRadius: TrussUI.Variable.Radius
-    ) -> some View {
-        content.modifier(CornerRadius(cornerRadius: cornerRadius.value))
+    struct CornerRadius: TrussUIModifier {
+        let variable: TrussUI.Variable.Radius?
+        
+        public func body(content: Content) -> some View {
+            content.environment(\.TrussUICornerRadius, variable?.value)
+        }
     }
 }
 
 // MARK: - Size
-private struct Size: ViewModifier {
-    let width: CGFloat?
-    let height: CGFloat?
-    let alignment: Alignment
-    
-    func body(content: Content) -> some View {
-        if width == .infinity || height == .infinity {
-            content.frame(maxWidth: width, maxHeight: height, alignment: alignment)
-        } else {
-            content.frame(width: width, height: height, alignment: alignment)
-        }
+public extension TrussUIModifier where Self == TrussUI.Modifier.SizeModifier {
+    static func size(width: TrussUI.Variable.Size? = nil, height: TrussUI.Variable.Size? = nil, alignment: Alignment = .center) -> Self {
+        TrussUI.Modifier.SizeModifier(width: width, height: height, alignment: alignment)
+    }
+    static func size(_ side: TrussUI.Variable.Size, alignment: Alignment = .center) -> Self {
+        TrussUI.Modifier.SizeModifier(width: side, height: side, alignment: alignment)
     }
 }
 
 public extension TrussUI.Modifier {
-    @ViewBuilder
-    func size(
-        width: TrussUI.Variable.Size? = nil,
-        height: TrussUI.Variable.Size? = nil,
-        alignment: Alignment = .center
-    ) -> some View {
-        let width: CGFloat? = switch width {
-        case .some(let width): .theme.size(width)
-        case .none: nil
+    struct SizeModifier: TrussUIModifier {
+        let width: TrussUI.Variable.Size?
+        let height: TrussUI.Variable.Size?
+        let alignment: Alignment
+        
+        public func body(content: Content) -> some View {
+            let width = width?.value
+            let height = height?.value
+            if width == .infinity || height == .infinity {
+                content.frame(maxWidth: width, maxHeight: height, alignment: alignment)
+            } else {
+                content.frame(width: width, height: height, alignment: alignment)
+            }
         }
-        let height: CGFloat? = switch height {
-        case .some(let height): .theme.size(height)
-        case .none: nil
-        }
-        content.modifier(Size(width: width, height: height, alignment: alignment))
-    }
-    @ViewBuilder
-    func size(
-        _ side: TrussUI.Variable.Size,
-        alignment: Alignment = .center
-    ) -> some View {
-        self.size(width: side, height: side, alignment: alignment)
     }
 }
 
@@ -347,10 +328,10 @@ public extension TrussUI.Modifier {
 #Preview(body: {
     VStack {
         Text("Hello!")
-            .theme().font(.large)
-            .theme().size(width: .regular, height: .small)
-            .theme().border(.Scale.border)
+            .truss(.font(.large))
+            .truss(.size(width: .regular, height: .small))
+            .truss(.border(.Scale.border))
     }
-    .theme().size(.large)
-    .theme().padding(.regular)
+    .truss(.size(.large))
+    .truss(.padding(.regular))
 })
