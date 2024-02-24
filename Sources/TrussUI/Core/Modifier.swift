@@ -76,6 +76,8 @@ public extension TrussUI.Modifier {
                         radius: configuration.radius,
                         x: configuration.x,
                         y: configuration.y)
+            } else {
+                content
             }
         }
     }
@@ -332,7 +334,8 @@ public extension TrussUI.Modifier {
         Text("Hello!")
             .truss(.font(.large))
             .truss(.size(width: .regular, height: .small))
-            .truss(.border(.Scale.border))
+            .truss(.background(.Scale.fill, cornerRadius: .regular))
+            .truss(.border(.Scale.border, cornerRadius: .regular))
     }
     .truss(.size(.large))
     .truss(.padding(.regular))
