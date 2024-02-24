@@ -185,6 +185,8 @@ public extension TrussUI.Modifier {
                 content.mask {
                     Color.clear.overlay(gradient)
                 }
+            } else {
+                content
             }
         }
     }
