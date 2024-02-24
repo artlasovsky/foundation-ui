@@ -48,10 +48,10 @@ public extension TrussUI.Component {
         topTrailingRadius: TrussUI.Variable.Radius
     ) -> UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: .theme.radius(topLeadingRadius),
-            bottomLeadingRadius: .theme.radius(bottomLeadingRadius),
-            bottomTrailingRadius: .theme.radius(bottomTrailingRadius),
-            topTrailingRadius: .theme.radius(topTrailingRadius),
+            topLeadingRadius: .truss.radius(topLeadingRadius),
+            bottomLeadingRadius: .truss.radius(bottomLeadingRadius),
+            bottomTrailingRadius: .truss.radius(bottomTrailingRadius),
+            topTrailingRadius: .truss.radius(topTrailingRadius),
             style: cornerRadiusStyle
         )
     }
@@ -60,6 +60,6 @@ public extension TrussUI.Component {
         return RoundedRectangle(cornerRadius: radius, style: cornerRadiusStyle)
     }
     static func roundedRectangle(_ variable: TrussUI.Variable.Radius) -> RoundedRectangle {
-        self.roundedRectangle(.theme.radius(variable))
+        self.roundedRectangle(.truss.radius(variable))
     }
 }

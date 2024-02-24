@@ -10,21 +10,21 @@ import SwiftUI
 
 // MARK: - Extensions
 public extension CGFloat {
-    static let theme = TrussUI.Variable.theme
+    static let truss = TrussUI.Variable.truss
 }
 
 public extension Font {
-    static let theme = TrussUI.Variable.theme.font
+    static let truss = TrussUI.Variable.truss.font
 }
 
 public extension Animation {
-    static let theme = TrussUI.Variable.theme.animation
+    static let truss = TrussUI.Variable.truss.animation
 }
 
 // MARK: - Variable Theme
 public extension TrussUI.Variable {
     struct Theme: VariableTheme {}
-    static let theme = Theme()
+    static let truss = Theme()
 }
 
 public protocol VariableTheme {
@@ -88,7 +88,7 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static var regular = Self("regular", .theme.padding(.regular) * 0.5)
+            public static var regular = Self("regular", .truss.padding(.regular) * 0.5)
         }
         public struct Size: VariableScale {
             public var value: CGFloat
@@ -98,7 +98,7 @@ extension TrussUI {
                 self.label = label
             }
             
-            public static var regular = Self("regular", .theme.padding(.regular) * 8)
+            public static var regular = Self("regular", .truss.padding(.regular) * 8)
         }
         public struct Radius: VariableScale {
             public var value: CGFloat
