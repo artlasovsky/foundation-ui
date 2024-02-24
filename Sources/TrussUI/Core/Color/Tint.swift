@@ -10,12 +10,19 @@ import SwiftUI
 
 extension TrussUI {
     public struct Tint: Sendable, ShapeStyle {
-        public let light: ColorComponents
-        public let dark: ColorComponents
-        public let lightAccessible: ColorComponents
-        public let darkAccessible: ColorComponents
+        public let light: TrussUI.ColorComponents
+        public let dark: TrussUI.ColorComponents
+        public let lightAccessible: TrussUI.ColorComponents
+        public let darkAccessible: TrussUI.ColorComponents
         
-        public init(light: ColorComponents, dark: ColorComponents? = nil, lightAccessible: ColorComponents? = nil, darkAccessible: ColorComponents? = nil) {
+        private var colorSchemeOverride: TrussUI.ColorScheme? = nil
+        
+        public init(
+            light: TrussUI.ColorComponents,
+            dark: TrussUI.ColorComponents? = nil,
+            lightAccessible: TrussUI.ColorComponents? = nil,
+            darkAccessible: TrussUI.ColorComponents? = nil
+        ) {
             self.light = light
             self.dark = dark ?? self.light
             self.lightAccessible = lightAccessible ?? self.light
@@ -23,7 +30,7 @@ extension TrussUI {
         }
         
         @available(macOS 14.0, *)
-        public init(_ color: Color) {
+        public init(color: Color) {
             self.init(lightColor: color)
         }
         
@@ -43,11 +50,11 @@ extension TrussUI {
             resolveComponents(in: colorScheme).color
         }
         
-        public func resolveComponents(in environment: EnvironmentValues) -> ColorComponents {
+        public func resolveComponents(in environment: EnvironmentValues) -> TrussUI.ColorComponents {
             resolveComponents(in: TrussUI.ColorScheme(environment))
         }
         
-        public func resolveComponents(in colorScheme: TrussUI.ColorScheme) -> ColorComponents {
+        public func resolveComponents(in colorScheme: TrussUI.ColorScheme) -> TrussUI.ColorComponents {
             switch colorScheme {
             case .light:
                 return light
@@ -78,8 +85,7 @@ extension TrussUI.Tint: Equatable, Hashable {
 }
 
 public extension TrussUI.Tint {
-    typealias ColorComponents = TrussUI.ColorComponents
-    typealias Adjust = @Sendable (ColorComponents) -> ColorComponents
+    typealias Adjust = @Sendable (TrussUI.ColorComponents) -> TrussUI.ColorComponents
     
     func adjusted(
         light: Adjust,
@@ -160,28 +166,31 @@ public extension TrussUI.Tint {
     }
     
     func colorScheme(_ colorScheme: TrussUI.ColorScheme) -> Self {
+        var copy: Self
         switch colorScheme {
         case .light:
-            return Self(light: light)
+            copy = Self(light: light)
         case .dark:
-            return Self(light: dark)
+            copy = Self(light: dark)
         case .lightAccessible:
-            return Self(light: lightAccessible)
+            copy = Self(light: lightAccessible)
         case .darkAccessible:
-            return Self(light: darkAccessible)
+            copy = Self(light: darkAccessible)
         }
+        copy.colorSchemeOverride = colorScheme
+        return copy
     }
 }
 
 public extension TrussUI.Tint {
     @ViewBuilder
-    func swatch(showValues: ColorComponents.ShowValues? = .none) -> some View {
+    func swatch(showValues: TrussUI.ColorComponents.ShowValues? = .none) -> some View {
         Swatch(tint: self, showValues: showValues)
     }
     
     private struct Swatch: View {
         let tint: TrussUI.Tint
-        let showValues: ColorComponents.ShowValues?
+        let showValues: TrussUI.ColorComponents.ShowValues?
         @ViewBuilder
         func resolvedIn(colorScheme: ColorScheme, colorSchemeContrast: ColorSchemeContrast) -> some View {
             TrussUI.Component.roundedRectangle(.regular)

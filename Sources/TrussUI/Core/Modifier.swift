@@ -10,8 +10,6 @@ import SwiftUI
 
 extension TrussUI {
     public struct Modifier<ModifierContent: View> {
-        public typealias Tint = TrussUI.Tint
-        public typealias ColorVariable = TrussUI.ColorVariable
         public var content: ModifierContent
         internal init(_ content: ModifierContent) {
             self.content = content
@@ -63,8 +61,8 @@ public extension TrussUI.Modifier {
     }
     
     @ViewBuilder
-    func shadow(_ variable: ColorVariable = .Scale.backgroundFaded, 
-                tint: Tint = .primary,
+    func shadow(_ variable: TrussUI.ColorVariable = .Scale.backgroundFaded,
+                tint: TrussUI.Tint = .primary,
                 radius: CGFloat,
                 x: CGFloat = 0,
                 y: CGFloat = 0
@@ -90,7 +88,7 @@ public extension TrussUI.Modifier {
 // MARK: - Color
 public extension TrussUI.Modifier {
     @ViewBuilder
-    func tint(_ tint: Tint?) -> some View {
+    func tint(_ tint: TrussUI.Tint?) -> some View {
         if let tint {
             content
                 .environment(\.TrussUITint, tint)
@@ -111,12 +109,12 @@ public extension TrussUI.Modifier {
     }
     
     @ViewBuilder
-    func foreground(_ style: some ShapeStyle) -> some View {
+    func foregroundStyle(_ style: some ShapeStyle) -> some View {
         content
             .foregroundStyle(style)
     }
     @ViewBuilder
-    func foreground(_ variable: ColorVariable) -> some View {
+    func foreground(_ variable: TrussUI.ColorVariable = .Scale.solid) -> some View {
         content
             .foregroundStyle(variable)
     }

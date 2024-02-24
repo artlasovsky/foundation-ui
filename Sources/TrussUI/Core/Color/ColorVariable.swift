@@ -70,8 +70,16 @@ extension TrussUI {
         
         private func adjustTint(in environment: EnvironmentValues?) -> Tint {
             let override = self.override.resolve(in: environment)
-            let tint = override?.tint ?? environment?.TrussUITint ?? TrussUI.Tint.primary
-            return tint.adjusted(light: light, dark: dark, lightAccessible: lightAccessible, darkAccessible: darkAccessible)
+            var tint = override?.tint ?? environment?.TrussUITint ?? TrussUI.Tint.primary
+            if let colorScheme = override?.colorScheme {
+                tint = tint.colorScheme(colorScheme)
+            }
+            return tint
+                .adjusted(
+                    light: light,
+                    dark: dark,
+                    lightAccessible: lightAccessible,
+                    darkAccessible: darkAccessible)
                 .hue(override?.hue)
                 .saturation(override?.saturation)
                 .brightness(override?.brightness)
@@ -83,20 +91,20 @@ extension TrussUI {
             return adjustTint(in: environment)
                 .resolve(in: override?.colorScheme ?? TrussUI.ColorScheme(environment))
         }
-        public func resolveComponents(in environment: EnvironmentValues) -> ColorComponents {
+        public func resolveComponents(in environment: EnvironmentValues) -> TrussUI.ColorComponents {
             let override = self.override.resolve(in: environment)
             return adjustTint(in: environment)
                 .resolveComponents(in: override?.colorScheme ?? TrussUI.ColorScheme(environment))
         }
         
-        // Resolving particula colorScheme ColorVariable color ignoring the environment
+        // Resolving particular colorScheme ColorVariable color ignoring the environment
         public func resolve(in colorScheme: TrussUI.ColorScheme) -> Color {
             let override = self.override.resolve(in: colorScheme)
             return adjustTint(in: nil)
                 .resolve(in: override?.colorScheme ?? colorScheme)
         }
-        // Resolving particula colorScheme ColorVariable color components ignoring the environment
-        public func resolveComponents(in colorScheme: TrussUI.ColorScheme) -> ColorComponents {
+        // Resolving particular colorScheme ColorVariable color components ignoring the environment
+        public func resolveComponents(in colorScheme: TrussUI.ColorScheme) -> TrussUI.ColorComponents {
             let override = self.override.resolve(in: colorScheme)
             return adjustTint(in: nil)
                 .resolveComponents(in: override?.colorScheme ?? colorScheme)
@@ -148,10 +156,10 @@ private extension TrussUI.ColorVariable {
         var darkAccessible = Properties()
         
         mutating func tint(_ value: TrussUI.Tint) {
-            light.tint = value
-            dark.tint = value
-            lightAccessible.tint = value
-            darkAccessible.tint = value
+            light.tint = value.colorScheme(.light)
+            dark.tint = value.colorScheme(.dark)
+            lightAccessible.tint = value.colorScheme(.lightAccessible)
+            darkAccessible.tint = value.colorScheme(.darkAccessible)
         }
         
         mutating func hue(_ value: CGFloat) {
@@ -211,44 +219,44 @@ private extension TrussUI.ColorVariable {
 }
 
 public extension TrussUI.ColorVariable {
-    func tint(_ tint: Tint) -> Self {
+    func tint(_ tint: Tint) -> TrussUI.ColorVariable {
         var copy = self
         copy.override.tint(tint)
         return copy
     }
     
     @available(macOS 14.0, *)
-    func tintColor(_ color: Color) -> Self {
+    func tintColor(_ color: Color) -> TrussUI.ColorVariable {
         var copy = self
-        copy.override.tint(Tint(color))
+        copy.override.tint(Tint(color: color))
         return copy
     }
     
-    func hue(_ value: CGFloat) -> Self {
+    func hue(_ value: CGFloat) -> TrussUI.ColorVariable {
         var copy = self
         copy.override.hue(value)
         return copy
     }
     
-    func saturation(_ value: CGFloat) -> Self {
+    func saturation(_ value: CGFloat) -> TrussUI.ColorVariable {
         var copy = self
         copy.override.saturation(value)
         return copy
     }
     
-    func brightness(_ value: CGFloat) -> Self {
+    func brightness(_ value: CGFloat) -> TrussUI.ColorVariable {
         var copy = self
         copy.override.brightness(value)
         return copy
     }
     
-    func opacity(_ value: CGFloat) -> Self {
+    func opacity(_ value: CGFloat) -> TrussUI.ColorVariable {
         var copy = self
         copy.override.opacity(value)
         return copy
     }
     
-    func colorScheme(_ value: TrussUI.ColorScheme) -> Self {
+    func colorScheme(_ value: TrussUI.ColorScheme) -> TrussUI.ColorVariable {
         var copy = self
         copy.override.colorScheme(value)
         return copy
@@ -299,17 +307,26 @@ public extension TrussUI.ColorVariable {
 
 @available(macOS 14.0, *)
 private extension TrussUI.Tint {
-    static let systemRed = Self(lightColor: .red)
-    static let systemYellow = Self(lightColor: .yellow)
-    static let redEqual = Self(
+    static let systemRed = TrussUI.Tint(color: .red)
+    static let systemYellow = TrussUI.Tint(lightColor: .yellow)
+    static let redEqual = TrussUI.Tint(
         light: .init(hue: 0.009, saturation: 0.8125, brightness: 1),
         dark: .init(red: 255 / 255, green: 59 / 255, blue: 48 / 255),
-        lightAccessible: .init(color: .red, colorScheme: .lightAccessible)
+        lightAccessible: .init(color: .red, colorScheme: .lightAccessible),
+        darkAccessible: .init(color: .red, colorScheme: .lightAccessible)
     )
     static let tintFromTint: TrussUI.Tint = .init(
         light: TrussUI.Tint.systemRed.light,
         dark: TrussUI.Tint.systemYellow.dark
     )
+}
+
+private extension TrussUI.Tint {
+    static let red = TrussUI.Tint(
+        light: .init(hue: 0.01, saturation: 0.81, brightness: 1),
+        dark: .init(hue: 0.01, saturation: 0.77, brightness: 1),
+        lightAccessible: .init(hue: 0.98, saturation: 1, brightness: 0.84),
+        darkAccessible: .init(hue: 0.01, saturation: 0.62, brightness: 1))
 }
 
 private extension TrussUI.ColorVariable {
@@ -332,21 +349,33 @@ struct ColorScaleTestPreview: PreviewProvider {
             VStack {
                 TrussUI.ColorVariable.swiftUI.swatch(showValues: .rgb)
                 if #available(macOS 14, *) {
+                    HStack {
+                        Text("Color Scheme Inheritance: ")
+                        TrussUI.Component.roundedRectangle(.regular)
+                            .theme().size(.small)
+                            .theme().foreground(.Scale.solid.colorScheme(.dark))
+                            .theme().tint(.systemRed)
+                        TrussUI.Component.roundedRectangle(.regular)
+                            .theme().size(.small)
+                            .theme().foreground(.Scale.solid)
+                            .theme().tint(.systemRed.colorScheme(.dark))
+                    }
+                    Text("Tint")
                     TrussUI.Tint.redEqual.swatch()
                     TrussUI.Tint.tintFromTint.swatch()
                     TrussUI.Tint.systemRed.swatch(showValues: .hsb)
-                    TrussUI.Component.roundedRectangle(.regular)
-                        .theme().size(.regular)
-                        .theme().foreground(TrussUI.Tint.systemRed.colorScheme(.lightAccessible))
-//                        .theme().foreground(.swiftUI.tintColor(.red).colorScheme(.light))
-//                    TrussUI.ColorVariable.swiftUI.tintColor(.red).colorScheme(.light).swatch()
+                    TrussUI.Tint.red.swatch(showValues: .hsb)
+                    Text("Tint: Color Scheme Override")
                     TrussUI.Tint.systemRed.colorScheme(.lightAccessible).swatch()
+                    Text("Color Variable")
+                    TrussUI.ColorVariable.Scale.solid.tint(.red).swatch(showValues: .hsb)
+                    TrussUI.ColorVariable.Scale.solid.tint(.systemRed).swatch(showValues: .hsb)
                     TrussUI.ColorVariable.mix.tint(.systemRed).swatch()
                     TrussUI.ColorVariable.Scale.backgroundEmphasized.swatch()
                     TrussUI.ColorVariable.Scale.textFaded.swatch()
-                    
                 }
             }
+            .frame(height: 900)
         }
     }
 

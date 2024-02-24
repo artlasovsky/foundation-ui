@@ -26,18 +26,18 @@ public extension ShapeStyle {
 // MARK: - Tint
 
 public extension TrussUI.Tint {
-    static let white = Self(light: ColorComponents(hue: 0, saturation: 0, brightness: 1))
-    static let black = Self(light: ColorComponents(hue: 0, saturation: 0, brightness: 0))
+    static let white = Self(light: TrussUI.ColorComponents(hue: 0, saturation: 0, brightness: 1))
+    static let black = Self(light: TrussUI.ColorComponents(hue: 0, saturation: 0, brightness: 0))
     
-    static let clear = Self(light: ColorComponents(hue: 0, saturation: 0, brightness: 0, alpha: 0))
+    static let clear = Self(light: TrussUI.ColorComponents(hue: 0, saturation: 0, brightness: 0, alpha: 0))
     
     static let primary = Self(
-        light: ColorComponents(hue: 0, saturation: 0, brightness: 0.43),
-        dark: ColorComponents(hue: 0, saturation: 0, brightness: 0.55))
+        light: TrussUI.ColorComponents(hue: 0, saturation: 0, brightness: 0.43),
+        dark: TrussUI.ColorComponents(hue: 0, saturation: 0, brightness: 0.55))
 }
 
 public extension TrussUI.Tint {
-    static let systemAccent: Self = {
+    static let systemAccent: TrussUI.Tint = {
         if #available(macOS 14.0, *) {
             return Self(lightColor: .accentColor)
         }
