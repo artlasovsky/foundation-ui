@@ -141,8 +141,8 @@ extension TrussUI {
 // MARK: - Overrides
 
 private extension TrussUI.ColorVariable {
-    struct Override {
-        struct Properties {
+    struct Override: Hashable {
+        struct Properties: Hashable {
             var tint: TrussUI.Tint? = nil
             var hue: CGFloat? = nil
             var saturation: CGFloat? = nil
@@ -270,7 +270,8 @@ extension TrussUI.ColorVariable: Equatable, Hashable {
         lhs.resolve(in: .light) == rhs.resolve(in: .light) &&
         lhs.resolve(in: .dark) == rhs.resolve(in: .dark) &&
         lhs.resolve(in: .lightAccessible) == rhs.resolve(in: .lightAccessible) &&
-        lhs.resolve(in: .darkAccessible) == rhs.resolve(in: .darkAccessible)
+        lhs.resolve(in: .darkAccessible) == rhs.resolve(in: .darkAccessible) &&
+        lhs.override == rhs.override
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -278,6 +279,7 @@ extension TrussUI.ColorVariable: Equatable, Hashable {
         hasher.combine(self.resolve(in: .dark))
         hasher.combine(self.resolve(in: .lightAccessible))
         hasher.combine(self.resolve(in: .darkAccessible))
+        hasher.combine(self.override)
     }
 }
 

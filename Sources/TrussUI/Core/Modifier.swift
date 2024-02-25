@@ -329,14 +329,23 @@ public extension TrussUI.Modifier {
 }
 
 
-#Preview(body: {
-    VStack {
-        Text("Hello!")
-            .truss(.font(.large))
-            .truss(.size(width: .regular, height: .small))
-            .truss(.background(.Scale.fill, cornerRadius: .regular))
-            .truss(.border(.Scale.border, cornerRadius: .regular))
+struct ModifierPreview: PreviewProvider {
+    struct Preview: View {
+        @State private var isHovered: Bool = false
+        var body: some View {
+            VStack {
+                Text("Hello!")
+                    .truss(.font(.large))
+                    .truss(.size(width: .regular, height: .small))
+                    .truss(.background(.Scale.fill.opacity(isHovered ? 1 : 0.2), cornerRadius: .regular))
+                    .truss(.border(.Scale.border, cornerRadius: .regular))
+            }
+            .truss(.size(.large))
+            .truss(.padding(.regular))
+            .onHover { isHovered = $0 }
+        }
     }
-    .truss(.size(.large))
-    .truss(.padding(.regular))
-})
+    static var previews: some View {
+        Preview()
+    }
+}
