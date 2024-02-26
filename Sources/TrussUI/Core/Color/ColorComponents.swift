@@ -23,6 +23,13 @@ extension TrussUI {
             self.alpha = Self.clamp(alpha)
         }
         
+        public init(grayscale brightness: CGFloat) {
+            self.hue = 0
+            self.saturation = 0
+            self.brightness = brightness
+            self.alpha = 1
+        }
+        
         public init(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat = 1) {
             var nsColor = NSColor(
                 red: Self.clamp(red),
@@ -104,7 +111,7 @@ public extension TrussUI.ColorComponents {
         .init(hue: self.hue * hue, saturation: self.saturation * saturation, brightness: self.brightness * brightness, alpha: self.alpha * alpha)
     }
     
-    func multiplied(red: CGFloat = 1, green: CGFloat = 1, blue: CGFloat = 1, alpha: CGFloat = 1) -> Self {
+    func multipliedRGB(red: CGFloat = 1, green: CGFloat = 1, blue: CGFloat = 1, alpha: CGFloat = 1) -> Self {
         .init(red: self.red * red, green: self.green * green, blue: self.blue * blue, alpha: self.alpha * alpha)
     }
     
@@ -112,7 +119,7 @@ public extension TrussUI.ColorComponents {
         .init(hue: hue ?? self.hue, saturation: saturation ?? self.saturation, brightness: brightness ?? self.brightness, alpha: alpha ?? self.alpha)
     }
     
-    func set(red: CGFloat? = nil, green: CGFloat? = nil, blue: CGFloat? = nil, alpha: CGFloat? = nil) -> Self {
+    func setRGB(red: CGFloat? = nil, green: CGFloat? = nil, blue: CGFloat? = nil, alpha: CGFloat? = nil) -> Self {
         .init(red: red ?? self.red, green: green ?? self.green, blue: blue ?? self.blue, alpha: alpha ?? self.alpha)
     }
 }
