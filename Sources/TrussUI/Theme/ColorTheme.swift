@@ -10,83 +10,103 @@ import SwiftUI
 
 // MARK: - Color Variable
 
-public extension TrussUI.ColorVariable {
-    static let clear = Self(.init(hue: 0, saturation: 0, brightness: 0, alpha: 0))
+public protocol TrussUIColorVariableDefaults {
+    static var primary: TrussUI.ColorVariable { get }
 }
+public extension TrussUIColorVariableDefaults {
+    static var primary: TrussUI.ColorVariable { .init(
+        light: .init(grayscale: 0.5),
+        dark: .init(grayscale: 0.57),
+        lightAccessible: .init(grayscale: 0.39),
+        darkAccessible: .init(grayscale: 0.64)
+    ) }
+    
+    static var clear: TrussUI.ColorVariable {
+        .init(.init(hue: 0, saturation: 0, brightness: 0, alpha: 0))
+    }
+}
+
+extension TrussUI.ColorVariable: TrussUIColorVariableDefaults {}
 
 // MARK: - Color Variable Scale
 
-public extension TrussUI.ColorScale {
-    private static let defaultTint = Self(tint: .primary)
+public protocol TrussUIColorScaleDeaults {}
+
+public extension TrussUIColorScaleDeaults {
+    internal static var defaultTint: TrussUI.ColorScale { .init(tint: .primary) }
+    
     /// App background
-    static let backgroundFaded = defaultTint.adjust(
+    static var backgroundFaded: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied(saturation: 0.03).set(brightness: $0.isSaturated ? 1 : 0.99) },
         dark: { $0.multiplied(saturation: 0.3).set(brightness: $0.isSaturated ? 0.06 : 0.05) }
-    )
+    ) }
     /// Content background
-    static let background = defaultTint.adjust(
+    static var background: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied(saturation: 0.06, brightness: 2.18 ) },
         dark: { $0.multiplied(saturation: 0.35, brightness: 0.2)}
-    )
+    ) }
     /// Subtle background
-    static let backgroundEmphasized = defaultTint.adjust(
+    static var backgroundEmphasized: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied( saturation: 0.2, brightness: 2.1 ) },
         dark: { $0.multiplied( saturation: 0.45, brightness: 0.25 ) }
-    )
+    ) }
     /// UI element background
-    static let fillFaded = defaultTint.adjust(
+    static var fillFaded: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied( saturation: 0.3, brightness: 1.9 ) },
         dark: { $0.multiplied( saturation: 0.5, brightness: 0.32 ) }
-    )
+    ) }
     /// Hovered UI element background
-    static let fill = defaultTint.adjust(
+    static var fill: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied( saturation: 0.4, brightness: 1.8 ) },
         dark: { $0.multiplied( saturation: 0.6, brightness: 0.45 ) }
-    )
+    ) }
     /// Active / Selected UI element background
-    static let fillEmphasized = defaultTint.adjust(
+    static var fillEmphasized: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied( saturation: 0.5, brightness: 1.7 )},
         dark: { $0.multiplied( saturation: 0.7, brightness: 0.55 ) }
-    )
+    ) }
     /// Subtle borders and separators
-    static let borderFaded = defaultTint.adjust(
+    static var borderFaded: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied( saturation: 0.7, brightness: 1.5 ) },
         dark: { $0.multiplied( saturation: 0.75, brightness: 0.7 ) }
-    )
+    ) }
     /// UI element border and focus rings
-    static let border = defaultTint.adjust(
+    static var border: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied( saturation: 0.8, brightness: 1.4 ) },
         dark: { $0.multiplied( saturation: 0.85, brightness: 0.8 ) }
-    )
+    ) }
     /// Hovered UI element border
-    static let borderEmphasized = defaultTint.adjust(
+    static var borderEmphasized: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied(saturation: 0.9, brightness: 1.1 ) },
         dark: { $0.multiplied(saturation: 0.9, brightness: 0.9 ) }
-    )
+    ) }
     /// Solid backgrounds
-    static let solid = defaultTint.adjust(
+    static var solid: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0 },
         dark: { $0 }
-    )
+    ) }
     /// Hovered solid backgrounds
-    static let solidEmphasized = defaultTint.adjust(
+    static var solidEmphasized: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied(saturation: 1.1, brightness: 0.9) },
         dark: { $0.multiplied(saturation: 0.95, brightness: 1.1) }
-    )
+    ) }
     /// Low-contrast text
-    static let textFaded = Self.solidEmphasized
+    static var textFaded: TrussUI.ColorScale { Self.solidEmphasized }
     /// Normal text
-    static let text = defaultTint.adjust(
+    static var text: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied(saturation: 0.9, brightness: 0.76) },
         dark: { $0.multiplied(saturation: 0.4, brightness: $0.isSaturated ? 1.2 : 1.5) }
-    )
+    ) }
     /// High-contrast text
-    static let textEmphasized = defaultTint.adjust(
+    static var textEmphasized: TrussUI.ColorScale { defaultTint.adjust(
         light: { $0.multiplied(saturation: 0.95, brightness: 0.35) },
         dark: { $0.multiplied(saturation: 0.2, brightness: $0.isSaturated ? 1.9 : 1.7) }
-    )
+    ) }
 }
 
+extension TrussUI.ColorScale: TrussUIColorScaleDeaults {}
+
+// MARK: - Preview
 
 internal extension TrussUI.ColorScale {
     static let all: [Self] = [
@@ -137,7 +157,6 @@ struct ColorThemePreview: PreviewProvider {
             ColorScale().environment(\.colorScheme, .light)
             ColorScale()
                 .environment(\.colorScheme, .light)
-//                .truss(.tint(.systemAccent))
             if #available(macOS 14.0, *) {
                 ColorScale().environment(\.colorScheme, .light)
                     .truss(.tint(color: .orange))

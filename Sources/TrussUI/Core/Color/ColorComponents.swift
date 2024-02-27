@@ -124,6 +124,8 @@ public extension TrussUI.ColorComponents {
     }
 }
 
+// MARK: - Swatch
+
 public extension TrussUI.ColorComponents {
     @ViewBuilder
     func swatch(showValues: ShowValues? = .none) -> some View {
@@ -176,5 +178,29 @@ public extension TrussUI.ColorComponents {
             }
             .font(.system(size: 10).monospaced())
         }
+    }
+}
+
+// MARK: - Color Extension
+
+internal extension Color {
+    typealias RGBAComponents = (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
+    typealias HSBAComponents = (hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat)
+    
+    @available(macOS 14.0, *)
+    func rgbaComponents(in scheme: TrussUI.ColorScheme) -> RGBAComponents {
+        var environment: EnvironmentValues
+        switch scheme {
+        case .light:
+            environment = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
+        case .dark:
+            environment = EnvironmentValues(colorScheme: .dark, colorSchemeContrast: .standard)
+        case .lightAccessible:
+            environment = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .increased)
+        case .darkAccessible:
+            environment = EnvironmentValues(colorScheme: .dark, colorSchemeContrast: .increased)
+        }
+        let resolved = self.resolve(in: environment)
+        return (CGFloat(resolved.red), CGFloat(resolved.green), CGFloat(resolved.blue), CGFloat(resolved.opacity))
     }
 }

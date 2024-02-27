@@ -8,10 +8,6 @@
 import Foundation
 import SwiftUI
 
-// Tint     -> Adjust (Mutable) -> Override (Tint, ColorScheme)
-// Primary  -> B+0.2 S=0        -> Accent, Light                -> Accent (Light) B+0.2 S=0
-// Primary  -> Background       -> –
-
 public extension Color {
     static func truss(_ variable: TrussUI.ColorVariable) -> Color {
         variable.color()
@@ -112,10 +108,21 @@ public extension TrussUIColor {
             darkAccessible: darkAccessible?(self.darkAccessible) ?? dark(self.darkAccessible)
         )
     }
+}
+
+public extension TrussUIColor {
+    func resolve(in environment: EnvironmentValues) -> Color {
+        // Extract ColorScheme from the environment
+        let colorScheme = TrussUI.ColorScheme(environment)
+        if let environmentTint = environment.TrussUITint {
+            return applyCurrentTintOverrides(to: environmentTint).resolve(in: colorScheme)
+        } else {
+            return resolve(in: colorScheme)
+        }
+    }
     
-    private func tintWithOverrides() -> any TrussUIColor {
-        let tint = componentOverride.tint ?? self
-        return applyOverrides(to: tint)
+    func resolve(in colorScheme: TrussUI.ColorScheme) -> Color {
+        componentsWithOverrides(in: colorScheme).color
     }
     
     func components(_ environment: EnvironmentValues) -> TrussUI.ColorComponents {
@@ -127,8 +134,9 @@ public extension TrussUIColor {
     }
     
     private func componentsWithOverrides(in colorScheme: TrussUI.ColorScheme) -> TrussUI.ColorComponents {
-        tintWithOverrides()
-            .resolveComponents(in: componentOverride.colorScheme ?? colorScheme)
+        let tint = componentOverride.tint ?? self
+        let tintWithOverrides = applyCurrentTintOverrides(to: tint)
+        return tintWithOverrides.resolveComponents(in: componentOverride.colorScheme ?? colorScheme)
     }
 
     private func resolveComponents(in colorScheme: TrussUI.ColorScheme) -> TrussUI.ColorComponents {
@@ -142,19 +150,6 @@ public extension TrussUIColor {
         case .darkAccessible:
             darkAccessible
         }
-    }
-    
-    func resolve(in environment: EnvironmentValues) -> Color {
-        let colorScheme = TrussUI.ColorScheme(environment)
-        if let environmentTint = environment.TrussUITint {
-            return applyOverrides(to: environmentTint).resolve(in: colorScheme)
-        }
-        return resolve(in: colorScheme)
-    }
-    
-    func resolve(in colorScheme: TrussUI.ColorScheme) -> Color {
-        let tint = tintWithOverrides()
-        return tint.componentsWithOverrides(in: colorScheme).color
     }
 }
 
@@ -197,19 +192,8 @@ public extension TrussUIColor {
     }
 }
 
-
-public protocol TrussUITintDefaults {
-    static var primary: TrussUI.ColorVariable { get }
-}
-public  extension TrussUITintDefaults {
-    static var primary: TrussUI.ColorVariable { .init(
-        light: .init(grayscale: 0.43),
-        dark: .init(grayscale: 0.55)
-    ) }
-}
-
 public extension TrussUI {
-    struct ColorVariable: TrussUIColor, TrussUITintDefaults {
+    struct ColorVariable: TrussUIColor {
         public var light: TrussUI.ColorComponents
         public var dark: TrussUI.ColorComponents
         public var lightAccessible: TrussUI.ColorComponents
@@ -224,9 +208,6 @@ public extension TrussUI {
             self.darkAccessible = darkAccessible ?? dark
         }
         
-//        public func scale(_ value: TrussUI.ColorScale) -> TrussUI.ColorScale {
-//            value.tint(self)
-//        }
         public func scale<S: TrussUIColor>(_ value: TrussUI.ColorScale) -> S {
             .init(trussUIColor: value)
         }
@@ -252,13 +233,6 @@ public extension TrussUI {
             self.lightAccessible = lightAccessible ?? light
             self.darkAccessible = darkAccessible ?? dark
         }
-        
-//        /// Overrides the base tint.
-//        public func tint(_ color: TrussUI.ColorVariable) -> Self {
-//            var copy = self
-//            copy.componentOverride.tint = color
-//            return copy
-//        }
         
         /// Overrides the base tint.
         public func tint<S: TrussUIColor>(_ color: TrussUI.ColorVariable) -> S {
@@ -299,8 +273,8 @@ extension TrussUI.ColorComponents.Override: Hashable, Equatable {
 }
 
 public extension TrussUIColor {
-    private func applyOverrides(to tint: some TrussUIColor) -> some TrussUIColor {
-        return tint.adjust({ $0.multiplied(
+    private func applyCurrentTintOverrides(to tint: some TrussUIColor) -> some TrussUIColor {
+        tint.adjust({ $0.multiplied(
             hue: componentOverride.hue,
             saturation: componentOverride.saturation,
             brightness: componentOverride.brightness, 
@@ -340,44 +314,25 @@ public extension TrussUIColor {
     }
 }
 
-// MARK: - Color Scheme
+// MARK: - EnvironmentValues
 
-extension TrussUI {
-    public enum ColorScheme: String, Sendable, Hashable {
-        case light
-        case dark
-        case lightAccessible
-        case darkAccessible
-        
-        init(_ environment: EnvironmentValues) {
-            switch (environment.colorScheme, environment.colorSchemeContrast) {
-            case (.light, .standard):
-                self = .light
-            case (.dark, .standard):
-                self = .dark
-            case (.light, .increased):
-                self = .lightAccessible
-            case (.dark, .increased):
-                self = .darkAccessible
-            default:
-                self = .light
-            }
-        }
-        
-        init(appearance: NSAppearance) {
-            switch (appearance.name) {
-            case .aqua, .vibrantDark:
-                self = .light
-            case .darkAqua, .vibrantDark:
-                self = .dark
-            case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
-                self = .lightAccessible
-            case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
-                self = .darkAccessible
-            default:
-                self = .light
-            }
-        }
+private struct TrussUITintKey: EnvironmentKey {
+    static let defaultValue: TrussUI.ColorVariable? = nil
+}
+
+internal extension EnvironmentValues {
+    var TrussUITint: TrussUI.ColorVariable? {
+        get { self[TrussUITintKey.self] }
+        set { self[TrussUITintKey.self] = newValue }
+    }
+}
+
+internal extension EnvironmentValues {
+    init(colorScheme: ColorScheme, colorSchemeContrast: ColorSchemeContrast) {
+        var env = EnvironmentValues()
+        env.colorScheme = colorScheme
+        env._colorSchemeContrast = colorSchemeContrast
+        self = env
     }
 }
 
@@ -413,7 +368,7 @@ private struct TrussUIColorSwatch<S: TrussUIColor>: View {
             labeled()
             Divider()
                 .frame(height: 40)
-                .padding(.bottom, 10)
+                .padding(.bottom, 13)
             labeled(.light)
             labeled(.dark)
             labeled(.lightAccessible)
@@ -438,52 +393,41 @@ extension TrussUIColor {
     }
 }
 
+@available(macOS 14.0, *)
 struct ColorPreview: PreviewProvider {
+    struct Swatch: View {
+        var body: some View {
+            TrussUI.Component.roundedRectangle(.regular)
+                .truss(.size(.regular))
+                .truss(.foreground(.background))
+                .overlay(content: {
+                    Text("Text")
+                        .truss(.foreground(.text))
+                })
+        }
+    }
     static var previews: some View {
         VStack {
-            HStack {
+            VStack {
                 TrussUI.ColorVariable.primary.swatch()
+                TrussUI.ColorVariable(color: .gray).swatch()
             }
             HStack {
-                TrussUI.Component.roundedRectangle(.regular)
-                    .truss(.size(.regular))
-                    .foregroundStyle(.truss(.mix))
+                Swatch()
                     .environment(\.colorScheme, .light)
-                TrussUI.Component.roundedRectangle(.regular)
-                    .truss(.size(.regular))
-                    .foregroundStyle(.truss(.mix))
+                Swatch()
                     .environment(\.colorScheme, .dark)
             }
             HStack {
-                TrussUI.Component.roundedRectangle(.regular)
-                    .truss(.size(.regular))
-                    .foregroundStyle(.truss(.mix))
-                    .overlay(content: {
-                        Text("Text").foregroundStyle(.truss(scale: .text))
-                    })
+                Swatch()
                     .environment(\.colorScheme, .light)
-                TrussUI.Component.roundedRectangle(.regular)
-                    .truss(.size(.regular))
-                    .foregroundStyle(.truss(.mix))
-                    .overlay(content: {
-                        Text("Text").foregroundStyle(.truss(scale: .text))
-                    })
+                Swatch()
                     .environment(\.colorScheme, .dark)
             }
             HStack {
-                TrussUI.Component.roundedRectangle(.regular)
-                    .truss(.size(.regular))
-                    .foregroundStyle(.truss(.mix))
-                    .overlay(content: {
-                        Text("Text").foregroundStyle(.truss(scale: .text))
-                    })
+                Swatch()
                     .environment(\.colorScheme, .light)
-                TrussUI.Component.roundedRectangle(.regular)
-                    .truss(.size(.regular))
-                    .foregroundStyle(.truss(.mix))
-                    .overlay(content: {
-                        Text("Text").foregroundStyle(.truss(scale: .text))
-                    })
+                Swatch()
                     .environment(\.colorScheme, .dark)
             }
             .environment(\._colorSchemeContrast, .increased)

@@ -324,6 +324,20 @@ public extension TrussUI.Modifier {
 }
 
 
+// MARK: - EnvironmentValues
+private struct TrussUICornerRadiusKey: EnvironmentKey {
+    static let defaultValue: CGFloat? = nil
+}
+
+internal extension EnvironmentValues {
+    var TrussUICornerRadius: CGFloat? {
+        get { self[TrussUICornerRadiusKey.self] }
+        set { self[TrussUICornerRadiusKey.self] = newValue }
+    }
+}
+
+// MARK: - Preview
+
 struct ModifierPreview: PreviewProvider {
     struct Preview: View {
         @State private var isHovered: Bool = false
