@@ -68,8 +68,8 @@ public extension TrussUIColor {
             dark: trussUIColor.dark,
             lightAccessible: trussUIColor.lightAccessible,
             darkAccessible: trussUIColor.darkAccessible)
+        self.componentOverride = trussUIColor.componentOverride
     }
-    
 }
 
 @available(macOS 14.0, *)
@@ -360,6 +360,11 @@ internal extension TrussUI.ColorVariable {
         lightAccessible: .test.colorScheme(.dark).opacity(0.2),
         darkAccessible: .tint.brightness(1.2)
     )
+    
+    static let split = Self(
+        light: .scale(.text.opacity(0.5)),
+        dark: .scale(.text.opacity(0.5).colorScheme(.light))
+    )
 }
 
 fileprivate extension TrussUI.Variable.Font {
@@ -419,6 +424,16 @@ struct ColorPreview: PreviewProvider {
             VStack {
                 TrussUI.ColorVariable.primary.swatch()
                 TrussUI.ColorVariable(color: .gray).swatch()
+            }
+            HStack {
+                TrussUI.Component.roundedRectangle(.regular)
+                    .truss(.size(.regular))
+                    .truss(.foreground(.tint(.split)))
+                    .environment(\.colorScheme, .light)
+                TrussUI.Component.roundedRectangle(.regular)
+                    .truss(.size(.regular))
+                    .truss(.foreground(.tint(.split)))
+                    .environment(\.colorScheme, .dark)
             }
             HStack {
                 Swatch()
