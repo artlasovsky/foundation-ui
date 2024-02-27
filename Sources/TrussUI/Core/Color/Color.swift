@@ -46,7 +46,6 @@ public protocol TrussUIColor: ShapeStyle, Hashable, Equatable, Sendable {
     var componentOverride: TrussUI.ColorComponents.Override { get set }
     
     func colorScheme(_ colorScheme: TrussUI.ColorScheme) -> Self
-//    func tint(_ color: some TrussUIColor) -> Self
 }
 
 public extension TrussUIColor {
@@ -211,6 +210,10 @@ public extension TrussUI {
         public func scale<S: TrussUIColor>(_ value: TrussUI.ColorScale) -> S {
             .init(trussUIColor: value)
         }
+        
+        public static func scale<S: TrussUIColor>(_ value: TrussUI.ColorScale) -> S {
+            .init(trussUIColor: value)
+        }
     }
     struct ColorScale: TrussUIColor {
         public var light: TrussUI.ColorComponents
@@ -239,6 +242,10 @@ public extension TrussUI {
             var copy = self
             copy.componentOverride.tint = color
             return .init(trussUIColor: copy)
+        }
+        
+        public static func tint<S: TrussUIColor>(_ color: TrussUI.ColorVariable) -> S {
+            .init(trussUIColor: color)
         }
     }
 }
@@ -348,7 +355,8 @@ internal extension TrussUI.ColorVariable {
     
     static let mix = Self(
         light: .test.opacity(0.5).colorScheme(.dark),
-        dark: .tint.opacity(0.5),
+//        dark: .tint.opacity(0.5),
+        dark: .primary.scale(.background),
         lightAccessible: .test.colorScheme(.dark).opacity(0.2),
         darkAccessible: .tint.brightness(1.2)
     )
