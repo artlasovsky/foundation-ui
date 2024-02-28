@@ -109,14 +109,15 @@ public extension TrussUIColor {
     }
 }
 
-public extension TrussUIColor {
-    func resolve(in environment: EnvironmentValues) -> Color {
+public extension TrussUIColor {    
+    func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         // Extract ColorScheme from the environment
         let colorScheme = TrussUI.ColorScheme(environment)
+        let blendMode = componentOverride.blendMode ?? .normal
         if let environmentTint = environment.TrussUITint {
-            return applyCurrentTintOverrides(to: environmentTint).resolve(in: colorScheme)
+            return applyCurrentTintOverrides(to: environmentTint).resolve(in: colorScheme).blendMode(blendMode)
         } else {
-            return resolve(in: colorScheme)
+            return resolve(in: colorScheme).blendMode(blendMode)
         }
     }
     
@@ -244,7 +245,7 @@ public extension TrussUI {
             return .init(trussUIColor: copy)
         }
         
-        public static func tint<S: TrussUIColor>(_ color: TrussUI.ColorVariable) -> S {
+        public static func variable<S: TrussUIColor>(_ color: TrussUI.ColorVariable) -> S {
             .init(trussUIColor: color)
         }
     }
@@ -259,6 +260,7 @@ public extension TrussUI.ColorComponents {
         
         var colorScheme: TrussUI.ColorScheme? = nil
         var tint: (any TrussUIColor)? = nil
+        var blendMode: BlendMode? = nil
     }
 }
 
@@ -287,6 +289,12 @@ public extension TrussUIColor {
             brightness: componentOverride.brightness, 
             alpha: componentOverride.alpha
         ) })
+    }
+    
+    func blendMode(_ mode: BlendMode) -> Self {
+        var copy = self
+        copy.componentOverride.blendMode = mode
+        return copy
     }
     
     /// Multiplies the opacity of the color by the given amount.
@@ -421,6 +429,15 @@ struct ColorPreview: PreviewProvider {
     }
     static var previews: some View {
         VStack {
+            ZStack {
+                TrussUI.Component.roundedRectangle(.regular)
+                    .truss(.size(.regular))
+                    .truss(.foreground(.solid))
+                TrussUI.Component.roundedRectangle(.regular)
+                    .offset(x: 15, y: 3)
+                    .truss(.size(.regular))
+                    .truss(.foreground(.solid.blendMode(.plusLighter)))
+            }
             VStack {
                 TrussUI.ColorVariable.primary.swatch()
                 TrussUI.ColorVariable(color: .gray).swatch()
@@ -428,11 +445,11 @@ struct ColorPreview: PreviewProvider {
             HStack {
                 TrussUI.Component.roundedRectangle(.regular)
                     .truss(.size(.regular))
-                    .truss(.foreground(.tint(.split)))
+                    .truss(.foreground(.variable(.split)))
                     .environment(\.colorScheme, .light)
                 TrussUI.Component.roundedRectangle(.regular)
                     .truss(.size(.regular))
-                    .truss(.foreground(.tint(.split)))
+                    .truss(.foreground(.variable(.split)))
                     .environment(\.colorScheme, .dark)
             }
             HStack {

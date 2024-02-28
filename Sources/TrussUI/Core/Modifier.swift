@@ -105,7 +105,7 @@ public extension TrussUIModifier where Self == TrussUI.Modifier.ColorModifier {
     static func foreground(_ variable: TrussUI.ColorScale) -> Self {
         TrussUI.Modifier.ColorModifier(type: .foreground(variable))
     }
-    static func foreground(color: Color) -> Self {
+    static func foregroundColor(_ color: Color) -> Self {
         TrussUI.Modifier.ColorModifier(type: .foregroundColor(color))
     }
     static func background(
@@ -263,7 +263,7 @@ public enum BorderPlacement {
 
 // MARK: - Clip
 public extension TrussUIModifier where Self == TrussUI.Modifier.ClipModifier {
-    static func clip(_ cornerRadius: TrussUI.Variable.Radius) -> Self {
+    static func clip(cornerRadius: TrussUI.Variable.Radius? = nil) -> Self {
         TrussUI.Modifier.ClipModifier(cornerRadius: cornerRadius)
     }
 }
@@ -271,10 +271,14 @@ public extension TrussUIModifier where Self == TrussUI.Modifier.ClipModifier {
 public extension TrussUI.Modifier {
     struct ClipModifier: TrussUIModifier {
         @Environment(\.TrussUICornerRadius) private var envCornerRadius
-        let cornerRadius: TrussUI.Variable.Radius
+        let cornerRadius: TrussUI.Variable.Radius?
         
         public func body(content: Content) -> some View {
-            content.clipShape(TrussUI.Component.roundedRectangle(envCornerRadius ?? cornerRadius.value))
+            if let cornerRadius = envCornerRadius ?? cornerRadius?.value {
+                content.clipShape(TrussUI.Component.roundedRectangle(cornerRadius))
+            } else {
+                content
+            }
         }
     }
 }

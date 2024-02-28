@@ -31,7 +31,7 @@ public extension TrussUI {
             
             var colors: [Color] {
                 swiftUIColors.isEmpty
-                ? self.colorVariables.map({ $0.resolve(in: environment) })
+                ? self.colorVariables.map({ $0.color(environment) })
                 : swiftUIColors
             }
             

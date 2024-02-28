@@ -21,6 +21,10 @@ public extension TrussUIColorVariableDefaults {
         darkAccessible: .init(grayscale: 0.64)
     ) }
     
+    static var white: TrussUI.ColorVariable { .init(.init(grayscale: 1)) }
+    static var black: TrussUI.ColorVariable { .init(.init(grayscale: 0)) }
+    static var gray: TrussUI.ColorVariable { .init(.init(grayscale: 0.5)) }
+    
     static var clear: TrussUI.ColorVariable {
         .init(.init(hue: 0, saturation: 0, brightness: 0, alpha: 0))
     }
