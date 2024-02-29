@@ -10,64 +10,64 @@ import SwiftUI
 
 // MARK: - Extensions
 public extension CGFloat {
-    static let truss = TrussUI.Variable.truss
+    typealias truss = TrussUI.Variable.Theme<Self>
 }
 
 public extension Font {
-    static let truss = TrussUI.Variable.truss.font
+    typealias truss = TrussUI.Variable.Theme<Self>
 }
 
 public extension Animation {
-    static let truss = TrussUI.Variable.truss.animation
+    typealias truss = TrussUI.Variable.Theme<Self>
 }
 
 // MARK: - Variable Theme
 public extension TrussUI.Variable {
-    struct Theme: VariableTheme {}
-    static let truss = Theme()
+    struct Theme<V>: VariableTheme {
+        public typealias Value = V
+        private init() {}
+    }
 }
 
 public protocol VariableTheme {
-    func padding(_ variable: TrussUI.Variable.Padding) -> CGFloat
-    func spacing(_ variable: TrussUI.Variable.Spacing) -> CGFloat
-    func size(_ variable: TrussUI.Variable.Size) -> CGFloat
-    func radius(_ variable: TrussUI.Variable.Radius) -> CGFloat
-    
-    func shadow(_ variable: TrussUI.Variable.Shadow) -> ShadowConfiguration
-    
-    func font(_ variable: TrussUI.Variable.Font) -> Font
-    
-    func animation(_ variable: TrussUI.Variable.Animation) -> Animation
+    associatedtype Value
 }
 
-
-public extension VariableTheme {
-    func padding(_ variable: TrussUI.Variable.Padding) -> CGFloat {
-        variable.value
-    }
-    func spacing(_ variable: TrussUI.Variable.Spacing) -> CGFloat {
-        variable.value
-    }
-    func size(_ variable: TrussUI.Variable.Size) -> CGFloat {
-        variable.value
-    }
-    func radius(_ variable: TrussUI.Variable.Radius) -> CGFloat {
-        variable.value
-    }
-    func radius<Variable: VariableScale>(_ variable: Variable) -> CGFloat where Variable.Value == CGFloat {
-        variable.value
-    }
-    func shadow(_ variable: TrussUI.Variable.Shadow) -> ShadowConfiguration {
-        variable.value
-    }
-    func font(_ variable: TrussUI.Variable.Font) -> Font {
-        variable.value
-    }
-    func animation(_ variable: TrussUI.Variable.Animation) -> Animation {
+// MARK: - Variable Theme Extensions
+public extension VariableTheme where Value == ShadowConfiguration {
+    static func shadow(_ variable: TrussUI.Variable.Shadow) -> Value {
         variable.value
     }
 }
 
+public extension VariableTheme where Value == Font {
+    static func font(_ variable: TrussUI.Variable.Font) -> Value {
+        variable.value
+    }
+}
+
+public extension VariableTheme where Value == Animation {
+    static func animation(_ variable: TrussUI.Variable.Animation) -> Value {
+        variable.value
+    }
+}
+
+public extension VariableTheme where Value == CGFloat {
+    static func padding(_ variable: TrussUI.Variable.Padding) -> Value {
+        variable.value
+    }
+    static func spacing(_ variable: TrussUI.Variable.Spacing) -> Value {
+        variable.value
+    }
+    static func size(_ variable: TrussUI.Variable.Size) -> Value {
+        variable.value
+    }
+    static func radius(_ variable: TrussUI.Variable.Radius) -> Value {
+        variable.value
+    }
+}
+
+// MARK: - Variable
 extension TrussUI {
     public enum Variable {
         public struct Padding: VariableScale {
@@ -145,9 +145,6 @@ extension TrussUI {
                 self.value = value
                 self.label = label
             }
-//            private static let shadowTint = TrussUI.Tint(
-//                light: TrussUI.Tint.primary.dark
-//            )
             private static let colorVariable: TrussUI.ColorScale = TrussUI.ColorScale.background.colorScheme(.dark).tint(.primary)
             public static var xxSmall = Self("xxSmall", .init(radius: 0.5, colorVariable: colorVariable.opacity(0.1), x: 0, y: 0.5))
             public static var xSmall = Self("xSmall", .init(radius: 1, colorVariable: colorVariable.opacity(0.15), x: 0, y: 1))
@@ -251,23 +248,15 @@ public struct VariableScaleOffset: RawRepresentable {
 }
 
 // TODO: Previews for all theme values
-
-public struct Theme_ {
-    public let padding = Padding(value: 8)
-    public struct Padding {
-        let value: CGFloat
-        
-        var small: Self { .init(value: regular.value / 2) }
-        var regular: Self { .init(value: self.value) }
-    }
-}
-extension TrussUI {
-    static let theme_ = Theme_()
-}
-
 struct VariablePreview: PreviewProvider {
+    // All values should be accessible without explicit type
+    static let test = TrussUI.Variable.Theme.animation(.regular)
+    static let padding: CGFloat = .truss.padding(.regular)
     static var previews: some View {
         HStack(alignment: .top, spacing: 10) {
+            Rectangle().frame(width: .truss.size(.regular),
+                              height: TrussUI.Variable.Theme.size(.small))
+            Text(TrussUI.Variable.Theme.padding(.small).description)
             TrussUI.Variable.Padding.swatch(for: [
                 .xxSmall,
                 .xSmall,
