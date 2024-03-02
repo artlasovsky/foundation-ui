@@ -16,6 +16,8 @@ extension TrussUI {
         public let brightness: CGFloat
         public let alpha: CGFloat
         
+        public var adjustments = Adjustments()
+        
         public init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat = 1) {
             self.hue = Self.clamp(hue)
             self.saturation = Self.clamp(saturation)
@@ -43,47 +45,119 @@ extension TrussUI {
             self.brightness = nsColor.brightnessComponent
             self.alpha = nsColor.alphaComponent
         }
-        
-        @available(macOS 14.0, *)
-        public init(color: Color, colorScheme: TrussUI.ColorScheme) {
-            let components = color.rgbaComponents(in: colorScheme)
-            self.init(red: components.red, green: components.green, blue: components.blue, alpha: components.alpha)
-        }
-        
-    //    @available(macOS, introduced: 12.0, deprecated: 14.0, obsoleted: 14.0, renamed: "init(color:colorScheme:)")
-    //    init(color: Color) {
-    //        Unpredictable with Previews
-    //        let nsColor = NSColor(color).usingColorSpace(.deviceRGB)
-    //        self.hue = nsColor?.hueComponent ?? 0
-    //        self.saturation = nsColor?.saturationComponent ?? 0
-    //        self.brightness = nsColor?.brightnessComponent ?? 0
-    //        self.alpha = nsColor?.alphaComponent ?? 0
-    //    }
-        
-        
-        internal func to8Bit(_ value: CGFloat) -> Int {
-            let roundingRule = FloatingPointRoundingRule.toNearestOrEven
-            return Int((value * 255).rounded(roundingRule))
-        }
-        
-        private static func clamp(_ value: CGFloat) -> CGFloat {
-            max(0, min(1, value))
-        }
     }
 }
 
-extension TrussUI.ColorComponents: Equatable, Hashable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.hue == rhs.hue &&
-        lhs.saturation == rhs.saturation &&
-        lhs.brightness == rhs.brightness &&
-        lhs.alpha == rhs.alpha
+extension TrussUI.ColorComponents {
+//  TODO: In some scenarios we could set blendMode back to .normal
+    public func resolve() -> some ShapeStyle {
+        return applyAdjustments().color.blendMode(adjustments.blendMode)
     }
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(hue)
-        hasher.combine(saturation)
-        hasher.combine(brightness)
-        hasher.combine(alpha)
+}
+
+extension TrussUI.ColorComponents {
+    @available(macOS 14.0, *)
+    public init(color: Color, colorScheme: TrussUI.ColorScheme) {
+        let components = color.rgbaComponents(in: colorScheme)
+        self.init(red: components.red, green: components.green, blue: components.blue, alpha: components.alpha)
+    }
+    
+//    @available(macOS, introduced: 12.0, deprecated: 14.0, obsoleted: 14.0, renamed: "init(color:colorScheme:)")
+//    init(color: Color) {
+//        Unpredictable with Previews
+//        let nsColor = NSColor(color).usingColorSpace(.deviceRGB)
+//        self.hue = nsColor?.hueComponent ?? 0
+//        self.saturation = nsColor?.saturationComponent ?? 0
+//        self.brightness = nsColor?.brightnessComponent ?? 0
+//        self.alpha = nsColor?.alphaComponent ?? 0
+//    }
+}
+
+private extension TrussUI.ColorComponents {
+    func rgbaToHsba(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) -> (hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat) {
+        var nsColor = NSColor(
+            red: Self.clamp(red),
+            green: Self.clamp(green),
+            blue: Self.clamp(blue),
+            alpha: Self.clamp(alpha)
+        )
+        nsColor = nsColor.usingColorSpace(.deviceRGB) ?? nsColor
+        return (nsColor.hueComponent, nsColor.saturationComponent, nsColor.brightnessComponent, nsColor.alphaComponent)
+    }
+}
+
+extension TrussUI.ColorComponents {
+    public struct Adjustments: Sendable {
+        var hue: CGFloat = 1
+        var saturation: CGFloat = 1
+        var brightness: CGFloat = 1
+        var alpha: CGFloat = 1
+        var hueOverride: CGFloat? = nil
+        var saturationOverride: CGFloat? = nil
+        var brightnessOverride: CGFloat? = nil
+        var alphaOverride: CGFloat? = nil
+        var blendMode: BlendMode = .normal
+        
+        func multiply(hue: CGFloat = 1, saturation: CGFloat = 1, brightness: CGFloat = 1, alpha: CGFloat = 1) -> Self {
+            var copy = self
+            copy.hue *= hue
+            copy.saturation *= saturation
+            copy.brightness *= brightness
+            copy.alpha *= alpha
+            return copy
+        }
+        
+        func set(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, alpha: CGFloat? = nil) -> Self {
+            var copy = self
+            copy.hueOverride = hue
+            copy.saturationOverride = saturation
+            copy.brightnessOverride = brightness
+            copy.alphaOverride = alpha
+            return copy
+        }
+        
+        static func multiply(hue: CGFloat = 1, saturation: CGFloat = 1, brightness: CGFloat = 1, alpha: CGFloat = 1) -> Self {
+            .init(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha)
+        }
+        static func set(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, alpha: CGFloat? = nil) -> Self {
+            .init(hueOverride: hue, saturationOverride: saturation, brightnessOverride: brightness, alphaOverride: alpha)
+        }
+    }
+    
+    mutating func hue(_ hue: CGFloat) {
+        adjustments.hue *= hue
+    }
+    mutating func saturation(_ saturation: CGFloat) {
+        adjustments.saturation *= saturation
+    }
+    mutating func brightness(_ brightness: CGFloat) {
+        adjustments.brightness *= brightness
+    }
+    mutating func opacity(_ opacity: CGFloat) {
+        adjustments.alpha *= opacity
+    }
+    mutating func blendMode(_ mode: BlendMode) {
+        adjustments.blendMode = mode
+    }
+    func applyAdjustments(to components: Self? = nil) -> Self {
+        var components: Self = (components ?? self)
+            .multiplied(
+                hue: adjustments.hue,
+                saturation: adjustments.saturation,
+                brightness: adjustments.brightness,
+                alpha: adjustments.alpha
+            )
+            .set(
+                hue: adjustments.hueOverride,
+                saturation: adjustments.saturationOverride,
+                brightness: adjustments.brightnessOverride,
+                alpha: adjustments.alphaOverride
+            )
+        components.blendMode(adjustments.blendMode)
+        return components
+    }
+    func withAdjustments(from components: Self) -> Self {
+        components.applyAdjustments(to: self)
     }
 }
 
@@ -107,20 +181,50 @@ public extension TrussUI.ColorComponents {
         saturation > 0
     }
     
-    func multiplied(hue: CGFloat = 1, saturation: CGFloat = 1, brightness: CGFloat = 1, alpha: CGFloat = 1) -> Self {
-        .init(hue: self.hue * hue, saturation: self.saturation * saturation, brightness: self.brightness * brightness, alpha: self.alpha * alpha)
+    // Update Adjustments
+    func multiply(hue: CGFloat = 1, saturation: CGFloat = 1, brightness: CGFloat = 1, alpha: CGFloat = 1) -> Adjustments {
+        adjustments.multiply(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha)
     }
-    
-    func multipliedRGB(red: CGFloat = 1, green: CGFloat = 1, blue: CGFloat = 1, alpha: CGFloat = 1) -> Self {
-        .init(red: self.red * red, green: self.green * green, blue: self.blue * blue, alpha: self.alpha * alpha)
+    func set(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, alpha: CGFloat? = nil) -> Adjustments {
+        adjustments.set(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha)
     }
-    
-    func set(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, alpha: CGFloat? = nil) -> Self {
+    // Update Components
+    private func multiplied(hue: CGFloat = 1, saturation: CGFloat = 1, brightness: CGFloat = 1, alpha: CGFloat = 1) -> Self {
+        .init(
+            hue: self.hue * hue,
+            saturation: self.saturation * saturation,
+            brightness: self.brightness * brightness,
+            alpha: self.alpha * alpha
+        )
+    }
+    private func set(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, alpha: CGFloat? = nil) -> Self {
         .init(hue: hue ?? self.hue, saturation: saturation ?? self.saturation, brightness: brightness ?? self.brightness, alpha: alpha ?? self.alpha)
     }
+}
+
+extension TrussUI.ColorComponents: Equatable, Hashable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.hue == rhs.hue &&
+        lhs.saturation == rhs.saturation &&
+        lhs.brightness == rhs.brightness &&
+        lhs.alpha == rhs.alpha
+    }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(hue)
+        hasher.combine(saturation)
+        hasher.combine(brightness)
+        hasher.combine(alpha)
+    }
+}
+
+internal extension TrussUI.ColorComponents {
+    func to8Bit(_ value: CGFloat) -> Int {
+        let roundingRule = FloatingPointRoundingRule.toNearestOrEven
+        return Int((value * 255).rounded(roundingRule))
+    }
     
-    func setRGB(red: CGFloat? = nil, green: CGFloat? = nil, blue: CGFloat? = nil, alpha: CGFloat? = nil) -> Self {
-        .init(red: red ?? self.red, green: green ?? self.green, blue: blue ?? self.blue, alpha: alpha ?? self.alpha)
+    private static func clamp(_ value: CGFloat) -> CGFloat {
+        max(0, min(1, value))
     }
 }
 

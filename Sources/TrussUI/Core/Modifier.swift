@@ -92,7 +92,7 @@ public extension TrussUIModifier where Self == TrussUI.Modifier.ColorModifier {
         TrussUI.Modifier.ColorModifier(type: .tint(variable))
     }
     @available(macOS 14.0, *)
-    static func tint(color: Color?) -> Self {
+    static func tintColor(_ color: Color?) -> Self {
         let tint: TrussUI.ColorVariable?
         if let color {
             tint = .init(color: color)
@@ -131,7 +131,7 @@ public extension TrussUI.Modifier {
         public func body(content: Content) -> some View {
             switch type {
             case .tint(let variable):
-                content.environment(\.TrussUITint, variable)
+                content.environment(\.trussUITint, variable)
             case .foreground(let variable):
                 content.foregroundStyle(variable)
             case .foregroundColor(let color):
