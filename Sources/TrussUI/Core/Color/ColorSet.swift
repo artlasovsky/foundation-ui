@@ -72,7 +72,18 @@ public extension TrussUIColorSet {
         )
     }
     static func fromComponents<C: TrussUIColorComponents>(_ universal: C) -> Self {
-        .fromComponents(light: universal, dark: universal, lightAccessible: universal, darkAccessible: universal)
+        .fromComponents(light: universal, dark: universal)
+    }
+    static func fromColorSet<C: TrussUIColorSet>(light: C, dark: C, lightAccessible: C? = nil, darkAccessible: C? = nil) -> Self {
+        .fromComponents(
+            light: light.light,
+            dark: dark.dark,
+            lightAccessible: lightAccessible?.lightAccessible,
+            darkAccessible: darkAccessible?.darkAccessible
+        )
+    }
+    static func fromColorSet<C: TrussUIColorSet>(_ universal: C) -> Self {
+        .fromColorSet(light: universal, dark: universal)
     }
 }
 
@@ -133,7 +144,7 @@ public extension TrussUI {
 }
 
 public extension TrussUI.ColorSet {
-    func from(_ tintedColorSet: TrussUI.TintedColorSet) -> Self {
+    static func from(_ tintedColorSet: TrussUI.TintedColorSet) -> Self {
         .init(
             light: tintedColorSet.light,
             dark: tintedColorSet.dark,
