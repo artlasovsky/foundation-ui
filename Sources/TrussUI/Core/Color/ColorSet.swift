@@ -17,11 +17,11 @@ public protocol TrussUIColorSet: ShapeStyle, Hashable, Equatable { // aka "Destr
     
     var colorScheme: TrussUI.ColorScheme? { get set }
     
-    var blendMode: BlendMode { get set }
-    
     init(light: Components, dark: Components, lightAccessible: Components?, darkAccessible: Components?)
     
     func components(_ colorScheme: TrussUI.ColorScheme) -> Components
+    
+    func blendMode(_ blendMode: BlendMode) -> Self
 }
 
 public extension TrussUIColorSet {
@@ -89,7 +89,7 @@ public extension TrussUIColorSet {
 
 public extension TrussUIColorSet {
     func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-        components(.init(environment)).shapeStyle().blendMode(blendMode)
+        components(.init(environment)).shapeStyle()
     }
     
     func components(_ colorScheme: TrussUI.ColorScheme) -> Components {
@@ -116,11 +116,6 @@ public extension TrussUIColorSet {
         copy.colorScheme = colorScheme
         return copy
     }
-    func blendMode(_ blendMode: BlendMode) -> Self {
-        var copy = self
-        copy.blendMode = blendMode
-        return copy
-    }
 }
 
 public extension TrussUI {
@@ -132,14 +127,23 @@ public extension TrussUI {
         
         public var colorScheme: TrussUI.ColorScheme?
         
-        public var blendMode: BlendMode = .normal
-        
         public init(light: Components, dark: Components, lightAccessible: Components? = nil, darkAccessible: Components? = nil) {
             self.light = light
             self.dark = dark
             self.lightAccessible = lightAccessible ?? light
             self.darkAccessible = darkAccessible ?? dark
         }
+    }
+}
+
+public extension TrussUI.ColorSet {
+    func blendMode(_ blendMode: BlendMode) -> TrussUI.ColorSet {
+        .init(
+            light: light.blendMode(blendMode),
+            dark: dark.blendMode(blendMode),
+            lightAccessible: lightAccessible.blendMode(blendMode),
+            darkAccessible: darkAccessible.blendMode(blendMode)
+        )
     }
 }
 
@@ -202,8 +206,6 @@ public extension TrussUI {
         
         public var colorScheme: TrussUI.ColorScheme?
         
-        public var blendMode: BlendMode = .normal
-        
         private var tint: TrussUI.ColorSet
         
         private var tintIsLocked: Bool = false
@@ -229,12 +231,30 @@ public extension TrussUI {
 }
 
 public extension TrussUI.TintedColorSet {
+    func blendMode(_ blendMode: BlendMode) -> TrussUI.TintedColorSet {
+        var copy = TrussUI.TintedColorSet(
+            light: light.blendMode(blendMode),
+            dark: dark.blendMode(blendMode),
+            lightAccessible: lightAccessible.blendMode(blendMode),
+            darkAccessible: darkAccessible.blendMode(blendMode)
+        )
+        copy.lightAdjust = lightAdjust
+        copy.darkAdjust = darkAdjust
+        copy.lightAccessibleAdjust = lightAccessibleAdjust
+        copy.darkAccessibleAdjust = darkAccessibleAdjust
+        copy.tint = tint
+        copy.tintIsLocked = tintIsLocked
+        return copy
+    }
+}
+
+public extension TrussUI.TintedColorSet {
     func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         var colorSet = self
         if !tintIsLocked, let envTint = environment.trussUITint {
             colorSet.tint = envTint
         }
-        return colorSet.components(.init(environment)).shapeStyle().blendMode(colorSet.blendMode)
+        return colorSet.components(.init(environment)).shapeStyle()
     }
     
     func components(_ colorScheme: TrussUI.ColorScheme) -> Components {
@@ -259,7 +279,6 @@ public extension TrussUI.TintedColorSet {
         hasher.combine(dark)
         hasher.combine(lightAccessible)
         hasher.combine(darkAccessible)
-        hasher.combine(blendMode)
         
         hasher.combine(lightAdjust?(light))
         hasher.combine(darkAdjust?(dark))
