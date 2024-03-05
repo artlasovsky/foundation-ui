@@ -234,7 +234,7 @@ public extension TrussUI.TintedColorSet {
         if !tintIsLocked, let envTint = environment.trussUITint {
             colorSet.tint = envTint
         }
-        return colorSet.components(.init(environment)).shapeStyle().blendMode(blendMode)
+        return colorSet.components(.init(environment)).shapeStyle().blendMode(colorSet.blendMode)
     }
     
     func components(_ colorScheme: TrussUI.ColorScheme) -> Components {
