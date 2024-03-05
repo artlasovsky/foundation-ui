@@ -194,7 +194,7 @@ public extension TrussUI.ColorSet {
 
 public extension TrussUI {
     struct TintedColorSet: TrussUIColorSet {
-        typealias Adjust = @Sendable (Components) -> Components.Adjustments
+        public typealias Adjust = @Sendable (Components) -> Components.Adjustments
         public var light: Components { tint.components(.light) }
         public var dark: Components { tint.components(.dark) }
         public var lightAccessible: Components { tint.components(.lightAccessible) }
@@ -289,7 +289,7 @@ public extension TrussUI.TintedColorSet {
     }
 }
 
-extension TrussUI.TintedColorSet {
+public extension TrussUI.TintedColorSet {
     func adjust(light: @escaping Adjust, dark: @escaping Adjust, lightAccessible: Adjust? = nil, darkAccessible: Adjust? = nil) -> Self {
         var copy = self
         copy.lightAdjust = light
@@ -303,19 +303,19 @@ extension TrussUI.TintedColorSet {
         adjust(light: universal, dark: universal, lightAccessible: universal, darkAccessible: universal)
     }
     
-    func hue(_ hue: CGFloat) -> Self {
+    func hue(_ hue: Double) -> Self {
         adjust { $0.hue(hue) }
     }
     
-    func saturation(_ saturation: CGFloat) -> Self {
+    func saturation(_ saturation: Double) -> Self {
         adjust { $0.saturation(saturation) }
     }
     
-    func brightness(_ brightness: CGFloat) -> Self {
+    func brightness(_ brightness: Double) -> Self {
         adjust { $0.brightness(brightness) }
     }
     
-    func opacity(_ opacity: CGFloat) -> Self {
+    func opacity(_ opacity: Double) -> Self {
         adjust { $0.opacity(opacity) }
     }
 }
