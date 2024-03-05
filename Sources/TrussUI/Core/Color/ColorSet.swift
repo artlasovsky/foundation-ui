@@ -195,10 +195,10 @@ public extension TrussUI.ColorSet {
 public extension TrussUI {
     struct TintedColorSet: TrussUIColorSet {
         public typealias Adjust = @Sendable (Components) -> Components.Adjustments
-        public var light: Components { tint.components(.light) }
-        public var dark: Components { tint.components(.dark) }
-        public var lightAccessible: Components { tint.components(.lightAccessible) }
-        public var darkAccessible: Components { tint.components(.darkAccessible) }
+        public var light: Components { components(.light) }
+        public var dark: Components { components(.dark) }
+        public var lightAccessible: Components { components(.lightAccessible) }
+        public var darkAccessible: Components { components(.darkAccessible) }
         
         public var colorScheme: TrussUI.ColorScheme?
         
@@ -387,11 +387,23 @@ struct DynamicColor_Preview: PreviewProvider {
                 }
                 .truss(.tintColor(.accentColor))
             }
-            ZStack {
+            VStack {
+//                ZStack {
+//                    rect
+//                        .truss(.foreground(.solid))
+//                    rect.offset(x: 15, y: 15)
+//                        .truss(.foreground(.solid.blendMode(.plusLighter)))
+//                }
                 rect
-                    .truss(.foreground(.solid))
-                rect.offset(x: 15, y: 15)
-                    .truss(.foreground(.solid.blendMode(.plusLighter)))
+                    .foregroundStyle(TrussUI.ColorSet.from(.background))
+                rect
+                    .foregroundStyle(TrussUI.TintedColorSet.background)
+                rect
+                    .foregroundStyle(TrussUI.ColorSet.from(.text))
+                rect
+                    .foregroundStyle(TrussUI.TintedColorSet.text)
+//                    .truss(.foreground(.tint(.from(.background))))
+//                    .truss(.tint(.from(.background)))
             }
 //            VStack {
 //                rect
