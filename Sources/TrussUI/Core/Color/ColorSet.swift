@@ -30,7 +30,7 @@ public extension TrussUIColorSet {
     }
     
     init(_ colorSet: Self) {
-        self.init( lightSet: colorSet, dark: colorSet, lightAccessible: colorSet, darkAccessible: colorSet)
+        self.init(lightSet: colorSet, dark: colorSet, lightAccessible: colorSet, darkAccessible: colorSet)
     }
  
     init(lightSet light: Self, dark: Self, lightAccessible: Self? = nil, darkAccessible: Self? = nil) {
@@ -232,18 +232,13 @@ public extension TrussUI {
 
 public extension TrussUI.TintedColorSet {
     func blendMode(_ blendMode: BlendMode) -> TrussUI.TintedColorSet {
-        var copy = TrussUI.TintedColorSet(
-            light: light.blendMode(blendMode),
-            dark: dark.blendMode(blendMode),
-            lightAccessible: lightAccessible.blendMode(blendMode),
-            darkAccessible: darkAccessible.blendMode(blendMode)
+        var copy = self
+        copy.tint = .init(
+            light: tint.light.blendMode(blendMode),
+            dark: tint.dark.blendMode(blendMode),
+            lightAccessible: tint.lightAccessible.blendMode(blendMode),
+            darkAccessible: tint.darkAccessible.blendMode(blendMode)
         )
-        copy.lightAdjust = lightAdjust
-        copy.darkAdjust = darkAdjust
-        copy.lightAccessibleAdjust = lightAccessibleAdjust
-        copy.darkAccessibleAdjust = darkAccessibleAdjust
-        copy.tint = tint
-        copy.tintIsLocked = tintIsLocked
         return copy
     }
 }
@@ -368,62 +363,67 @@ struct DynamicColor_Preview: PreviewProvider {
     static let rect: some View = TrussUI.Component.roundedRectangle(.regular).truss(.size(.regular))
     static var previews: some View {
         HStack {
-//            rect.foregroundStyle(.tint)
-            VStack {
-                rect
-                    .truss(.foreground(.fill))
-                    .environment(\.colorScheme, .light)
-                rect
-                    .truss(.foreground(.fill))
-                    .environment(\.colorScheme, .dark)
-                rect
-                    .truss(.foreground(.fill))
-                    .environment(\.colorScheme, .light)
-                    .environment(\._colorSchemeContrast, .increased)
-                rect
-                    .truss(.foreground(.fill))
-                    .environment(\.colorScheme, .dark)
-                    .environment(\._colorSchemeContrast, .increased)
+            ZStack {
+                rect.truss(.foreground(.mix))
+                rect.truss(.foreground(.mix.blendMode(.plusDarker)))
+                    .offset(x: 15, y: 15)
             }
-            .truss(.tint(.accent))
-            if #available(macOS 14.0, *) {
-                let tintedColorSet = TrussUI.TintedColorSet.background
-                VStack {
-                    rect
-                        .truss(.foreground(tintedColorSet))
-                        .environment(\.colorScheme, .light)
-                    rect
-                        .truss(.foreground(tintedColorSet))
-                        .environment(\.colorScheme, .dark)
-                    rect
-                        .truss(.foreground(tintedColorSet))
-                        .environment(\.colorScheme, .light)
-                        .environment(\._colorSchemeContrast, .increased)
-                    rect
-                        .truss(.foreground(tintedColorSet))
-                        .environment(\.colorScheme, .dark)
-                        .environment(\._colorSchemeContrast, .increased)
-                }
-                .truss(.tintColor(.accentColor))
-            }
-            VStack {
+            .offset(x: -7, y: -7)
+//            VStack {
+//                rect
+//                    .truss(.foreground(.fill))
+//                    .environment(\.colorScheme, .light)
+//                rect
+//                    .truss(.foreground(.fill))
+//                    .environment(\.colorScheme, .dark)
+//                rect
+//                    .truss(.foreground(.fill))
+//                    .environment(\.colorScheme, .light)
+//                    .environment(\._colorSchemeContrast, .increased)
+//                rect
+//                    .truss(.foreground(.fill))
+//                    .environment(\.colorScheme, .dark)
+//                    .environment(\._colorSchemeContrast, .increased)
+//            }
+//            .truss(.tint(.accent))
+//            if #available(macOS 14.0, *) {
+//                let tintedColorSet = TrussUI.TintedColorSet.background
+//                VStack {
+//                    rect
+//                        .truss(.foreground(tintedColorSet))
+//                        .environment(\.colorScheme, .light)
+//                    rect
+//                        .truss(.foreground(tintedColorSet))
+//                        .environment(\.colorScheme, .dark)
+//                    rect
+//                        .truss(.foreground(tintedColorSet))
+//                        .environment(\.colorScheme, .light)
+//                        .environment(\._colorSchemeContrast, .increased)
+//                    rect
+//                        .truss(.foreground(tintedColorSet))
+//                        .environment(\.colorScheme, .dark)
+//                        .environment(\._colorSchemeContrast, .increased)
+//                }
+//                .truss(.tintColor(.accentColor))
+//            }
+//            VStack {
 //                ZStack {
 //                    rect
 //                        .truss(.foreground(.solid))
 //                    rect.offset(x: 15, y: 15)
 //                        .truss(.foreground(.solid.blendMode(.plusLighter)))
 //                }
-                rect
-                    .foregroundStyle(TrussUI.ColorSet.from(.background))
-                rect
-                    .foregroundStyle(TrussUI.TintedColorSet.background)
-                rect
-                    .foregroundStyle(TrussUI.ColorSet.from(.text))
-                rect
-                    .foregroundStyle(TrussUI.TintedColorSet.text)
+//                rect
+//                    .foregroundStyle(TrussUI.ColorSet.from(.background))
+//                rect
+//                    .foregroundStyle(TrussUI.TintedColorSet.background)
+//                rect
+//                    .foregroundStyle(TrussUI.ColorSet.from(.text))
+//                rect
+//                    .foregroundStyle(TrussUI.TintedColorSet.text)
 //                    .truss(.foreground(.tint(.from(.background))))
 //                    .truss(.tint(.from(.background)))
-            }
+//            }
 //            VStack {
 //                rect
 //                    .foregroundStyle(TintedColorSet.dynamic)
