@@ -110,7 +110,7 @@ public extension TrussUIColorSet {
     }
 }
 
-extension TrussUIColorSet {
+public extension TrussUIColorSet {
     func colorScheme(_ colorScheme: TrussUI.ColorScheme) -> Self {
         var copy = self
         copy.colorScheme = colorScheme
