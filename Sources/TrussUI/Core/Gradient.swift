@@ -10,11 +10,11 @@ import SwiftUI
 
 public extension TrussUI {    
     struct Gradient: ShapeStyle {
-        let colorVariables: [TrussUI.ColorVariable]
+        let colorVariables: [TrussUI.ColorSet]
         let swiftUIColors: [Color]
         let startPoint: Self.Point
         
-        public init(_ colorVariables: [TrussUI.ColorVariable], startPoint: Self.Point = .top) {
+        public init(_ colorVariables: [TrussUI.ColorSet], startPoint: Self.Point = .top) {
             self.colorVariables = colorVariables
             self.swiftUIColors = []
             self.startPoint = startPoint
@@ -31,7 +31,7 @@ public extension TrussUI {
             
             var colors: [Color] {
                 swiftUIColors.isEmpty
-                ? self.colorVariables.map({ $0.color(environment) })
+                ? self.colorVariables.map({ $0.color(in: environment) })
                 : swiftUIColors
             }
             

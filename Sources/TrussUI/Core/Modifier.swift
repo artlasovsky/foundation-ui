@@ -42,7 +42,7 @@ public extension TrussUIModifier where Self == TrussUI.Modifier.ShadowModifier {
     static func shadow(configuration: ShadowConfiguration) -> Self {
         TrussUI.Modifier.ShadowModifier(configuration: configuration)
     }
-    static func shadow(color colorVariable: TrussUI.ColorScale = .backgroundFaded.tint(.primary),
+    static func shadow(color colorVariable: TrussUI.TintedColorSet = .backgroundFaded.tint(.primary),
                        radius: CGFloat,
                        x: CGFloat = 0,
                        y: CGFloat = 0
@@ -68,7 +68,7 @@ public extension TrussUI.Modifier {
             if let configuration {
                 content
                     .shadow(
-                        color: configuration.colorVariable.color(environment),
+                        color: configuration.colorVariable.color(in: environment),
                         radius: configuration.radius,
                         x: configuration.x,
                         y: configuration.y)
@@ -81,19 +81,19 @@ public extension TrussUI.Modifier {
 
 public struct ShadowConfiguration: Hashable, Equatable {
     var radius: CGFloat
-    var colorVariable: TrussUI.ColorScale
+    var colorVariable: TrussUI.TintedColorSet
     var x: CGFloat = 0
     var y: CGFloat = 0
 }
 
 // MARK: - Color
 public extension TrussUIModifier where Self == TrussUI.Modifier.ColorModifier {
-    static func tint(_ variable: TrussUI.ColorVariable?) -> Self {
-        TrussUI.Modifier.ColorModifier(type: .tint(variable))
+    static func tint(_ colorSet: TrussUI.ColorSet?) -> Self {
+        TrussUI.Modifier.ColorModifier(type: .tint(colorSet))
     }
     @available(macOS 14.0, *)
     static func tintColor(_ color: Color?) -> Self {
-        let tint: TrussUI.ColorVariable?
+        let tint: TrussUI.ColorSet?
         if let color {
             tint = .init(color: color)
         } else {
@@ -102,14 +102,14 @@ public extension TrussUIModifier where Self == TrussUI.Modifier.ColorModifier {
         return TrussUI.Modifier.ColorModifier(type: .tint(tint))
     }
     
-    static func foreground(_ variable: TrussUI.ColorScale) -> Self {
+    static func foreground(_ variable: TrussUI.TintedColorSet) -> Self {
         TrussUI.Modifier.ColorModifier(type: .foreground(variable))
     }
     static func foregroundColor(_ color: Color) -> Self {
         TrussUI.Modifier.ColorModifier(type: .foregroundColor(color))
     }
     static func background(
-        _ variable: TrussUI.ColorScale = .background,
+        _ variable: TrussUI.TintedColorSet = .background,
         cornerRadius: TrussUI.Variable.Radius? = nil,
         shadow: TrussUI.Variable.Shadow? = nil,
         gradientMask: TrussUI.Gradient? = nil
@@ -123,10 +123,10 @@ public extension TrussUI.Modifier {
     struct ColorModifier: TrussUIModifier {
         let type: ModifierType
         enum ModifierType {
-            case tint(_ variable: TrussUI.ColorVariable?)
-            case foreground(_ variable: TrussUI.ColorScale)
+            case tint(_ colorSet: TrussUI.ColorSet?)
+            case foreground(_ tintedColorSet: TrussUI.TintedColorSet)
             case foregroundColor(_ color: Color)
-            case background(_ variable: TrussUI.ColorScale, cornerRadius: TrussUI.Variable.Radius?, shadow: TrussUI.Variable.Shadow?, gradientMask: TrussUI.Gradient?)
+            case background(_ tintedColorSet: TrussUI.TintedColorSet, cornerRadius: TrussUI.Variable.Radius?, shadow: TrussUI.Variable.Shadow?, gradientMask: TrussUI.Gradient?)
         }
         public func body(content: Content) -> some View {
             switch type {
@@ -136,8 +136,8 @@ public extension TrussUI.Modifier {
                 content.foregroundStyle(variable)
             case .foregroundColor(let color):
                 content.foregroundStyle(color)
-            case .background(let variable, let cornerRadius, let shadow, let gradientMask):
-                content.modifier(BackgroundModifier(colorVariable: variable, cornerRadius: cornerRadius, shadow: shadow, gradientMask: gradientMask))
+            case .background(let tintedColorSet, let cornerRadius, let shadow, let gradientMask):
+                content.modifier(BackgroundModifier(tintedColorSet: tintedColorSet, cornerRadius: cornerRadius, shadow: shadow, gradientMask: gradientMask))
             }
         }
     }
@@ -147,7 +147,7 @@ extension TrussUI.Modifier.ColorModifier {
     struct BackgroundModifier: ViewModifier {
         @Environment(\.TrussUICornerRadius) private var envCornerRadius
         
-        let colorVariable: TrussUI.ColorScale
+        let tintedColorSet: TrussUI.TintedColorSet
         let cornerRadius: TrussUI.Variable.Radius?
         let shadow: TrussUI.Variable.Shadow?
         let gradientMask: TrussUI.Gradient?
@@ -155,7 +155,7 @@ extension TrussUI.Modifier.ColorModifier {
         public func body(content: Content) -> some View {
             content.background {
                 TrussUI.Component.roundedRectangle(radius)
-                    .fill(colorVariable)
+                    .fill(tintedColorSet)
                     .truss(.gradientMask(gradientMask))
                     .truss(.shadow(shadow))
             }
@@ -208,13 +208,13 @@ public extension TrussUI.Modifier {
 // MARK: - Border
 public extension TrussUIModifier where Self == TrussUI.Modifier.BorderModifier {
     static func border(
-        _ variable: TrussUI.ColorScale = .border,
+        _ tintedColorSet: TrussUI.TintedColorSet = .border,
         width: CGFloat = 1,
         placement: BorderPlacement = .inside,
         cornerRadius: TrussUI.Variable.Radius? = nil,
         gradientMask: TrussUI.Gradient? = nil
     ) -> Self {
-        TrussUI.Modifier.BorderModifier(colorVariable: variable, width: width, placement: placement, cornerRadius: cornerRadius, gradientMask: gradientMask)
+        TrussUI.Modifier.BorderModifier(tintedColorSet: tintedColorSet, width: width, placement: placement, cornerRadius: cornerRadius, gradientMask: gradientMask)
     }
 }
 
@@ -222,7 +222,7 @@ public extension TrussUI.Modifier {
     struct BorderModifier: TrussUIModifier {
         @Environment(\.self) private var environment
         
-        let colorVariable: TrussUI.ColorScale
+        let tintedColorSet: TrussUI.TintedColorSet
         let width: CGFloat
         let placement: BorderPlacement
         let cornerRadius: TrussUI.Variable.Radius?
@@ -232,7 +232,7 @@ public extension TrussUI.Modifier {
             content.overlay {
                 TrussUI.Component.roundedRectangle(radius)
                     .stroke(lineWidth: width)
-                    .foregroundStyle(colorVariable)
+                    .foregroundStyle(tintedColorSet)
                     .padding(placementPadding)
                     .truss(.gradientMask(gradientMask))
             }

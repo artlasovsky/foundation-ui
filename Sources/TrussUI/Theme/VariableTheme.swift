@@ -145,7 +145,7 @@ extension TrussUI {
                 self.value = value
                 self.label = label
             }
-            private static let colorVariable: TrussUI.ColorScale = TrussUI.ColorScale.background.colorScheme(.dark).tint(.primary)
+            private static let colorVariable: TrussUI.TintedColorSet = .background.colorScheme(.dark).tint(.primary)
             public static var xxSmall = Self("xxSmall", .init(radius: 0.5, colorVariable: colorVariable.opacity(0.1), x: 0, y: 0.5))
             public static var xSmall = Self("xSmall", .init(radius: 1, colorVariable: colorVariable.opacity(0.15), x: 0, y: 1))
             public static var small = Self("small", .init(radius: 1.5, colorVariable: colorVariable.opacity(0.2), x: 0, y: 1))

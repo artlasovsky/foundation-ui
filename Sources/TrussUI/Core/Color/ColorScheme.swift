@@ -44,5 +44,40 @@ extension TrussUI {
                 self = .light
             }
         }
+        
+        internal var colorScheme: SwiftUI.ColorScheme {
+            switch self {
+            case .light, .lightAccessible:
+                .light
+            case .dark, .darkAccessible:
+                .dark
+            }
+        }
+        
+        internal var colorSchemeContrast: SwiftUI.ColorSchemeContrast {
+            switch self {
+            case .lightAccessible, .darkAccessible:
+                .increased
+            case .light, .dark:
+                .standard
+            }
+        }
+    }
+}
+
+internal extension EnvironmentValues {
+    init(colorScheme: ColorScheme, colorSchemeContrast: ColorSchemeContrast) {
+        var env = EnvironmentValues()
+        env.colorScheme = colorScheme
+        env._colorSchemeContrast = colorSchemeContrast
+        self = env
+    }
+}
+
+internal extension View {
+    func _colorScheme(_ colorScheme: TrussUI.ColorScheme) -> some View {
+        self
+            .environment(\.colorScheme, colorScheme.colorScheme)
+            .environment(\._colorSchemeContrast, colorScheme.colorSchemeContrast)
     }
 }
