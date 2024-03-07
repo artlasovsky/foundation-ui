@@ -1,7 +1,7 @@
 import XCTest
 @testable import TrussUI
 
-final class ColorComponentsAdjustments: XCTestCase {
+final class ColorComponentsTests: XCTestCase {
     let target = TrussUI.ColorComponents(hue: 0.08, saturation: 0.8, brightness: 0.8)
     func testAdjustingColorComponents() throws {
         let source = TrussUI.ColorComponents(hue: 0, saturation: 0.4, brightness: 1)
@@ -13,7 +13,7 @@ final class ColorComponentsAdjustments: XCTestCase {
         let source: TrussUI.DynamicColorComponents = .init(hue: 0, saturation: 0.4, brightness: 1)
         let adjusted: TrussUI.DynamicColorComponents = source.set(hue: 0.08).multiply(saturation: 2).set(brightness: 0.8)
         XCTAssertTrue(target == adjusted)
-        XCTAssertTrue(source != adjusted)
+        XCTAssertNotEqual(source, adjusted)
     }
     func testApplyDynamicColorAdjustmentsToOtherComponents() throws {
         let source: TrussUI.ColorComponents = .init(hue: 0, saturation: 0.4, brightness: 1)

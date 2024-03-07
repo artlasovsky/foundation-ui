@@ -10,6 +10,7 @@ import SwiftUI
 
 extension TrussUI {
     public struct Component {}
+    public struct Shape {}
 }
 
 public protocol TrussUIComponentDefaults {
@@ -21,9 +22,9 @@ public extension TrussUIComponentDefaults {
 }
 
 // MARK: - Rounded Rectangle
-extension TrussUI.Component: TrussUIComponentDefaults {}
+extension TrussUI.Shape: TrussUIComponentDefaults {}
 
-public extension TrussUI.Component {    
+public extension TrussUI.Shape {
     @available(macOS 13.0, iOS 16.0, *)
     static func roundedRectangle(
         topLeadingRadius: CGFloat,
@@ -56,10 +57,14 @@ public extension TrussUI.Component {
         )
     }
     
-    static func roundedRectangle(_ radius: CGFloat) -> RoundedRectangle {
+    static func roundedRectangle(radius: CGFloat) -> RoundedRectangle {
         return RoundedRectangle(cornerRadius: radius, style: cornerRadiusStyle)
     }
     static func roundedRectangle(_ variable: TrussUI.Variable.Radius) -> RoundedRectangle {
-        self.roundedRectangle(.truss.radius(variable))
+        self.roundedRectangle(radius: .truss.radius(variable))
+    }
+    static func roundedSquare(_ variable: TrussUI.Variable.Radius, size: TrussUI.Variable.Size) -> some View {
+        self.roundedRectangle(radius: .truss.radius(variable))
+            .truss(.size(size))
     }
 }

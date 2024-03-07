@@ -165,7 +165,7 @@ extension TrussUI.Modifier.ColorModifier {
         
         public func body(content: Content) -> some View {
             content.background {
-                TrussUI.Component.roundedRectangle(radius)
+                TrussUI.Shape.roundedRectangle(radius: radius)
                     .fill(fill)
                     .truss(.gradientMask(gradientMask))
                     .truss(.shadow(shadow))
@@ -241,7 +241,7 @@ public extension TrussUI.Modifier {
         
         public func body(content: Content) -> some View {
             content.overlay {
-                TrussUI.Component.roundedRectangle(radius)
+                TrussUI.Shape.roundedRectangle(radius: radius)
                     .stroke(lineWidth: width)
                     .foregroundStyle(tintedColorSet)
                     .padding(placementPadding)
@@ -286,7 +286,7 @@ public extension TrussUI.Modifier {
         
         public func body(content: Content) -> some View {
             if let cornerRadius = envCornerRadius ?? cornerRadius?.value {
-                content.clipShape(TrussUI.Component.roundedRectangle(cornerRadius))
+                content.clipShape(TrussUI.Shape.roundedRectangle(radius: cornerRadius))
             } else {
                 content
             }
