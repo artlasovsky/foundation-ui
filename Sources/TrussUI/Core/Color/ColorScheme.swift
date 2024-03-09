@@ -29,38 +29,59 @@ extension TrussUI {
                 self = .light
             }
         }
-        
-        init(appearance: NSAppearance) {
-            switch (appearance.name) {
-            case .aqua, .vibrantDark:
-                self = .light
-            case .darkAqua, .vibrantDark:
-                self = .dark
-            case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
-                self = .lightAccessible
-            case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
-                self = .darkAccessible
-            default:
-                self = .light
-            }
+    }
+}
+
+public extension TrussUI.ColorScheme {
+    #if os(macOS)
+    init(appearance: NSAppearance) {
+        switch (appearance.name) {
+        case .aqua, .vibrantDark:
+            self = .light
+        case .darkAqua, .vibrantDark:
+            self = .dark
+        case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
+            self = .lightAccessible
+        case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
+            self = .darkAccessible
+        default:
+            self = .light
         }
-        
-        internal var colorScheme: SwiftUI.ColorScheme {
-            switch self {
-            case .light, .lightAccessible:
-                .light
-            case .dark, .darkAccessible:
-                .dark
-            }
+    }
+    #elseif os(iOS)
+    init(appearance: UITraitCollection) {
+        switch (appearance.userInterfaceStyle, appearance.accessibilityContrast) {
+        case (.light, .normal):
+            self = .light
+        case (.dark, .normal):
+            self = .dark
+        case (.light, .high):
+            self = .lightAccessible
+        case (.dark, .high):
+            self = .darkAccessible
+        default:
+            self = .light
         }
-        
-        internal var colorSchemeContrast: SwiftUI.ColorSchemeContrast {
-            switch self {
-            case .lightAccessible, .darkAccessible:
-                .increased
-            case .light, .dark:
-                .standard
-            }
+    }
+    #endif
+}
+
+internal extension TrussUI.ColorScheme {
+    var colorScheme: SwiftUI.ColorScheme {
+        switch self {
+        case .light, .lightAccessible:
+            .light
+        case .dark, .darkAccessible:
+            .dark
+        }
+    }
+    
+    var colorSchemeContrast: SwiftUI.ColorSchemeContrast {
+        switch self {
+        case .lightAccessible, .darkAccessible:
+            .increased
+        case .light, .dark:
+            .standard
         }
     }
 }

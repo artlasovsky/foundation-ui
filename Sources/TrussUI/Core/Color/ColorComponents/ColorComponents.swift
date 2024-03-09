@@ -29,24 +29,8 @@ public extension TrussUI {
 }
 
 extension TrussUI.ColorComponents {
-    public init(red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat = 1) {
-        var nsColor = NSColor(
-            red: red.clamp(0, 1),
-            green: green.clamp(0, 1),
-            blue: blue.clamp(0, 1),
-            alpha: opacity.clamp(0, 1)
-        )
-        nsColor = nsColor.usingColorSpace(.deviceRGB) ?? nsColor
-        self.hue = nsColor.hueComponent
-        self.saturation = nsColor.saturationComponent
-        self.brightness = nsColor.brightnessComponent
-        self.opacity = nsColor.alphaComponent
-    }
-}
-
-extension TrussUI.ColorComponents {
     /// Extracting the components from SwiftUI.Color
-    @available(macOS 14.0, *)
+    @available(macOS 14.0, iOS 17.0, *)
     public init(color: Color, colorScheme: TrussUI.ColorScheme) {
         let components = color.rgbaComponents(in: colorScheme)
         self.init(red: components.red, green: components.green, blue: components.blue, opacity: components.opacity)
@@ -163,6 +147,7 @@ public extension TrussUIColorComponents {
 
 public extension TrussUIColorComponents {
     init(red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat = 1) {
+        #if os(macOS)
         var nsColor = NSColor(
             red: red.clamp(0, 1),
             green: green.clamp(0, 1),
@@ -176,11 +161,31 @@ public extension TrussUIColorComponents {
             brightness: nsColor.brightnessComponent,
             opacity: nsColor.alphaComponent
         )
+        #elseif os(iOS)
+        var uiColor = UIColor(
+            red: red.clamp(0, 1),
+            green: green.clamp(0, 1),
+            blue: blue.clamp(0, 1),
+            alpha: opacity.clamp(0, 1)
+        )
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+        uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+        self.init(
+            hue: hue,
+            saturation: saturation,
+            brightness: brightness,
+            opacity: alpha
+        )
+        #endif
     }
 }
 
 internal extension TrussUIColorComponents {
     var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
+        #if os(macOS)
         let nsColor = NSColor(.init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)).usingColorSpace(.deviceRGB)
         return (
             nsColor?.redComponent ?? 0,
@@ -188,6 +193,15 @@ internal extension TrussUIColorComponents {
             nsColor?.greenComponent ?? 0,
             nsColor?.alphaComponent ?? 0
         )
+        #elseif os(iOS)
+        let uiColor = UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: opacity)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return (red, green, blue, alpha)
+        #endif
     }
     var red: CGFloat { rgba.red }
     var green: CGFloat { rgba.green }
@@ -202,7 +216,7 @@ internal extension CGFloat {
 }
 
 internal extension Color {
-    @available(macOS 14.0, *)
+    @available(macOS 14.0, iOS 17.0, *)
     func rgbaComponents(in scheme: TrussUI.ColorScheme) -> (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
         var environment: EnvironmentValues
         switch scheme {

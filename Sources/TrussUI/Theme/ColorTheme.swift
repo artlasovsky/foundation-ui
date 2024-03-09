@@ -131,7 +131,7 @@ private extension TrussUI.Variable.Font {
     static let colorComponentsMono = Self(.system(size: 5).monospaced())
 }
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 struct ColorThemePreview: PreviewProvider {
     struct ColorScale: View {
         @Environment(\.self) private var env

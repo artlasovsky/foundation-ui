@@ -122,7 +122,7 @@ public extension TrussUIColorSet {
     }
 }
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 public extension TrussUIColorSet {
     init(color: Color) {
         self.init(lightColor: color)
@@ -194,6 +194,16 @@ public extension TrussUIColorSet {
         var copy = self
         copy.colorScheme = colorScheme
         return copy
+    }
+    
+    /// Automatically adjust the color blend mode to mix with the background
+    func vibrant() -> Self {
+        .init(
+            light: light.opacity(0.65).blendMode(.plusDarker),
+            dark: dark.opacity(0.5).blendMode(.plusLighter),
+            lightAccessible: lightAccessible,
+            darkAccessible: darkAccessible
+        )
     }
 }
 
@@ -281,6 +291,7 @@ struct DynamicColor_Preview: PreviewProvider {
             TrussUI.TintedColorSet.textEmphasized.swatch()
         }
         .padding()
+        .truss(.background())
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
     }
 }

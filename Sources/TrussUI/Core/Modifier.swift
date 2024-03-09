@@ -91,7 +91,7 @@ public extension TrussUIModifier where Self == TrussUI.Modifier.ColorModifier {
     static func tint(_ colorSet: TrussUI.ColorSet?) -> Self {
         TrussUI.Modifier.ColorModifier(type: .tint(colorSet))
     }
-    @available(macOS 14.0, *)
+    @available(macOS 14.0, iOS 17.0, *)
     static func tintColor(_ color: Color?) -> Self {
         let tint: TrussUI.ColorSet?
         if let color {
