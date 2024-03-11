@@ -143,7 +143,7 @@ struct ColorThemePreview: PreviewProvider {
             VStack(spacing: 0) {
                 Text(colorScheme.rawValue)
                     .truss(.foreground(.text))
-                    .truss(.padding(.regular, .bottom))
+                    .truss(.padding(.regular).edges(.bottom))
                     .truss(.font(.captionMono))
                 HStack(spacing: 0) {
                     ForEach(TrussUI.TintedColorSet.all, id: \.self) { sample in
@@ -162,8 +162,8 @@ struct ColorThemePreview: PreviewProvider {
                     }
                 }
             }
-            .truss(.padding(.regular, .vertical))
-            .truss(.padding(.large, .horizontal))
+            .truss(.padding(.regular).edges(.vertical))
+            .truss(.padding(.large).edges(.horizontal))
             .truss(.background(.backgroundFaded))
             .fixedSize()
         }

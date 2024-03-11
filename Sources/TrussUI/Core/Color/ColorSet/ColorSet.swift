@@ -291,7 +291,14 @@ struct DynamicColor_Preview: PreviewProvider {
             TrussUI.TintedColorSet.textEmphasized.swatch()
         }
         .padding()
-        .truss(.background())
+        .background {
+            Rectangle()
+                .padding(-20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+        }
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .truss(.background().ignoreEdges())
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
     }
 }
