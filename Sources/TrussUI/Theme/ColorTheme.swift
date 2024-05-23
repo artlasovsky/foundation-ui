@@ -8,6 +8,15 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Extensions
+public extension Color {
+    typealias truss = TrussUI.TintedColorSet
+}
+
+public extension ShapeStyle {
+    typealias truss = TrussUI.TintedColorSet
+}
+
 // MARK: - Color Variable
 
 public protocol TrussUIColorSetDefaults {
@@ -21,12 +30,12 @@ public extension TrussUIColorSetDefaults {
         darkAccessible: .init(grayscale: 0.64)
     ) }
     
-    static var white: TrussUI.ColorSet { .init(.init(grayscale: 1)) }
-    static var black: TrussUI.ColorSet { .init(.init(grayscale: 0)) }
-    static var gray: TrussUI.ColorSet { .init(.init(grayscale: 0.5)) }
+    static var white: TrussUI.ColorSet { .init(universal: .init(grayscale: 1)) }
+    static var black: TrussUI.ColorSet { .init(universal: .init(grayscale: 0)) }
+    static var gray: TrussUI.ColorSet { .init(universal: .init(grayscale: 0.5)) }
     
     static var clear: TrussUI.ColorSet {
-        .init(.init(hue: 0, saturation: 0, brightness: 0, opacity: 0))
+        .init(universal: .init(grayscale: 0, opacity: 0))
     }
 }
 

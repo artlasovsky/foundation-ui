@@ -212,21 +212,21 @@ public extension VariableScale where Value == CGFloat {
         .init(self.value * -1)
     }
     
-    func offset(_ offset: Value, label: String? = nil) -> Self {
+    func offset(value offset: Value, label: String? = nil) -> Self {
         let value = Self(label, value + value * offset * (offset < 0 ? 0.5 : 1))
         return value
     }
     
     func offset(_ offset: VariableScaleOffset, label: String? = nil) -> Self {
-        self.offset(offset.rawValue, label: label)
+        self.offset(value: offset.rawValue, label: label)
     }
     
-    static var xxSmall: Self { xSmall.offset(-1, label: "xxSmall") }
-    static var xSmall: Self { small.offset(-1, label: "xSmall") }
-    static var small: Self { regular.offset(-1, label: "small") }
-    static var large: Self { regular.offset(1, label: "large") }
-    static var xLarge: Self { large.offset(1, label: "xLarge") }
-    static var xxLarge: Self { xLarge.offset(1, label: "xxLarge") }
+    static var xxSmall: Self { xSmall.offset(value: -1, label: "xxSmall") }
+    static var xSmall: Self { small.offset(value: -1, label: "xSmall") }
+    static var small: Self { regular.offset(value: -1, label: "small") }
+    static var large: Self { regular.offset(value: 1, label: "large") }
+    static var xLarge: Self { large.offset(value: 1, label: "xLarge") }
+    static var xxLarge: Self { xLarge.offset(value: 1, label: "xxLarge") }
 }
 
 public struct VariableScaleOffset: RawRepresentable {

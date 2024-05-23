@@ -104,7 +104,7 @@ public protocol TrussUIColorSet: ShapeStyle, Hashable, Equatable { // aka "Destr
 }
 
 public extension TrussUIColorSet {
-    init(_ components: Components) {
+    init(universal components: Components) {
         self.init(light: components, dark: components, lightAccessible: components, darkAccessible: components)
     }
     

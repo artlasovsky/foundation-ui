@@ -92,7 +92,7 @@ public extension TrussUI.TintedColorSet {
     
     func tint(_ colorSet: TrussUI.ColorSet) -> Self {
         var copy = self
-        copy.tint = tint
+        copy.tint = colorSet
         return copy.lockTint(true)
     }
 }

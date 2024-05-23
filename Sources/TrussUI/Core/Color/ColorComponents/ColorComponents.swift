@@ -88,8 +88,8 @@ public extension TrussUIColorComponents {
 }
 
 public extension TrussUIColorComponents {
-    init(grayscale: CGFloat) {
-        self.init(hue: 0, saturation: 0, brightness: grayscale, opacity: 1)
+    init(grayscale: CGFloat, opacity: CGFloat = 1) {
+        self.init(hue: 0, saturation: 0, brightness: grayscale, opacity: opacity)
     }
     init<C: TrussUIColorComponents>(_ colorComponents: C) {
         self.init(
