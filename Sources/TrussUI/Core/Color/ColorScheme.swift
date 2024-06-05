@@ -15,7 +15,7 @@ extension TrussUI {
         case lightAccessible
         case darkAccessible
         
-        init(_ environment: EnvironmentValues) {
+        public init(_ environment: EnvironmentValues) {
             switch (environment.colorScheme, environment.colorSchemeContrast) {
             case (.light, .standard):
                 self = .light

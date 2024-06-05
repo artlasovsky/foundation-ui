@@ -8,92 +8,20 @@
 import Foundation
 import SwiftUI
 
-public extension TrussUI {    
-    struct Gradient: ShapeStyle {
-        let colorVariables: [TrussUI.ColorSet]
-        let swiftUIColors: [Color]
-        let startPoint: Self.Point
-        
-        public init(_ colorVariables: [TrussUI.ColorSet], startPoint: Self.Point = .top) {
-            self.colorVariables = colorVariables
-            self.swiftUIColors = []
-            self.startPoint = startPoint
-        }
-        public init(colors: [Color], startPoint: Self.Point = .top) {
-            self.colorVariables = []
-            self.swiftUIColors = colors
-            self.startPoint = startPoint
-        }
-        
-        public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-            let endPoint = startPoint.opposite.unitPoint
-            let startPoint = startPoint.unitPoint
-            
-            var colors: [Color] {
-                swiftUIColors.isEmpty
-                ? self.colorVariables.map({ $0.color(in: environment) })
-                : swiftUIColors
-            }
-            
-            return AnyShapeStyle(LinearGradient(
-                colors: colors,
-                startPoint: startPoint,
-                endPoint: endPoint
-            ))
-        }
+extension Gradient {
+    static func from(tint: TrussUI.DynamicColor?, variation: [TrussUI.DynamicColor.VariationKeyPath], in environment: EnvironmentValues) -> Self? {
+        guard !variation.isEmpty else { return nil }
+        let tint: TrussUI.DynamicColor = tint ?? environment.dynamicColorTint
+        let colors: [Color] = variation.map({ tint[keyPath: $0].resolveColor(in: environment) })
+        return .init(colors: colors)
     }
-}
-
-extension TrussUI.Gradient {
-    public enum Point: Sendable {
-        case top
-        case bottom
-        case leading
-        case trailing
-        case topLeading
-        case topTrailing
-        case bottomLeading
-        case bottomTrailing
-        
-        public var opposite: Self {
-            switch self {
-            case .top:
-                return .bottom
-            case .bottom:
-                return .top
-            case .leading:
-                return .trailing
-            case .trailing:
-                return .leading
-            case .topLeading:
-                return .bottomTrailing
-            case .topTrailing:
-                return .bottomLeading
-            case .bottomLeading:
-                return .topTrailing
-            case .bottomTrailing:
-                return .topLeading
-            }
-        }
-        public var unitPoint: UnitPoint {
-            switch self {
-            case .top:
-                return .top
-            case .bottom:
-                return .bottom
-            case .leading:
-                return .leading
-            case .trailing:
-                return .trailing
-            case .topLeading:
-                return .topLeading
-            case .topTrailing:
-                return .topTrailing
-            case .bottomLeading:
-                return .bottomLeading
-            case .bottomTrailing:
-                return .bottomTrailing
-            }
-        }
+    static func from(colors: [TrussUI.DynamicColor], in environment: EnvironmentValues) -> Self? {
+        guard !colors.isEmpty else { return nil }
+        let colors: [Color] = colors.map({ $0.resolveColor(in: environment) })
+        return .init(colors: colors)
+    }
+    
+    func linearGradient(startPoint: UnitPoint, endPoint: UnitPoint) -> LinearGradient {
+        .init(gradient: self, startPoint: startPoint, endPoint: endPoint)
     }
 }
