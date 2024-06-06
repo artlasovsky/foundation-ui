@@ -54,17 +54,7 @@ extension TrussUI.DynamicColor: ShapeStyle {
             case .darkAccessible: darkAccessible
         }
         
-        var blendMode = blendMode
-        if extendedBlendMode == .vibrant {
-            switch colorScheme {
-            case .light:
-                blendMode = .plusDarker
-            case .dark:
-                blendMode = .plusLighter
-            case .lightAccessible, .darkAccessible:
-                break
-            }
-        }
+        var blendMode = extendedBlendMode?.resolve(in: colorScheme) ?? blendMode
         
         return color.resolve(in: environment).blendMode(blendMode)
     }
@@ -123,7 +113,7 @@ extension TrussUI.DynamicColor {
     }
     
     @available(macOS 14.0, iOS 17.0, *)
-    public init(color: Color) {
+    public static func from(color: Color) -> TrussUI.DynamicColor {
         self.init(
             light: .init(color: color, colorScheme: .light),
             dark: .init(color: color, colorScheme: .dark),
@@ -217,12 +207,30 @@ public extension TrussUI.DynamicColor {
         case vibrant
         
         func adjustColor(_ color: TrussUI.DynamicColor) -> TrussUI.DynamicColor {
-            color.makeVariation(
-                light: { $0.multiply(opacity: 0.65) },
-                dark: { $0.multiply(opacity: 0.5) },
-                lightAccessible: { $0 },
-                darkAccessible: { $0 }
-            )
+            switch self {
+            case .vibrant:
+                color
+                    .makeVariation(
+                        light: { _ in color.light.multiply(opacity: 0.65) },
+                        dark: { _ in color.dark.multiply(opacity: 0.5) },
+                        lightAccessible: { $0 },
+                        darkAccessible: { $0 }
+                    )                
+            }
+        }
+        
+        func resolve(in colorScheme: TrussUI.ColorScheme) -> BlendMode? {
+            switch self {
+            case .vibrant:
+                switch colorScheme {
+                case .light:
+                    return .plusDarker
+                case .dark:
+                    return .plusLighter
+                case .lightAccessible, .darkAccessible:
+                    return nil
+                }
+            }
         }
     }
 }

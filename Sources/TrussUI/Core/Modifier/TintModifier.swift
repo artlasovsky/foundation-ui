@@ -17,7 +17,7 @@ public extension TrussUIModifier where Self == TrussUI.Modifier.TintModifier {
         guard let color else {
             return tint(.environmentDefault)
         }
-        return tint(.init(color: color))
+        return tint(.from(color: color))
     }
 }
 
