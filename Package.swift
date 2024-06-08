@@ -4,27 +4,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "TrussUI",
+    name: "FoundationUI",
     platforms: [
         .macOS(.v12),
         .iOS(.v15)
     ],
     products: [
         .library(
-            name: "TrussUI",
-            targets: ["TrussUI"])
+            name: "FoundationUI",
+            targets: ["FoundationUI"])
     ],
     dependencies: [
     ],
     targets: [
         // Default theme – Native experience
         .target(
-            name: "TrussUI",
+            name: "FoundationUI",
             dependencies: [],
-            path: "Sources/TrussUI"
+            path: "Sources/FoundationUI"
         ),
         .testTarget(
-            name: "TrussUITests",
-            dependencies: ["TrussUI"]),
+            name: "FoundationUITests",
+            dependencies: ["FoundationUI"]),
     ]
 )

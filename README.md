@@ -1,4 +1,4 @@
-# TrussUI
+# FoundationUI
 
 Scalable Design System Framework for Apple Developers
 
@@ -34,61 +34,61 @@ macOS 12+, iOS 15+
 ### Add as a dependency
 
 ```
-https://github.com/artlasovsky/truss-ui
+https://github.com/artlasovsky/foundation-ui
 ```
 
 ### Import and you're ready to start
 
 ```swift
-import TrussUI
+import FoundationUI
 ```
 
 ### Tokens
 
-TrussUI has predefined token scales for `Color`, `ShapeStyle`, `CGFloat`, `Font`, `Animation`.
+FoundationUI has predefined token scales for `Color`, `ShapeStyle`, `CGFloat`, `Font`, `Animation`.
 
 Default token scale contains 7 sizes: `xxSmall`, `xSmall`, `small`, `regular`, `large`, `xLarge`, `xxLarge`
 
 `CGFloat` value tokens are available in 4 scales: `Padding`, `Spacing`, `Radius`, `Size`
 
-Let's try to build a simple button using TrussUI:
+Let's try to build a simple button using FoundationUI:
 
 ```swift
-import TrussUI
+import FoundationUI
 
-struct TrussUIButton: View {
+struct FoundationUIButton: View {
     var body: some View {
-        Text("Hello TrussUI!")
-            .padding(.vertical, TrussUI.Variable.Theme.padding(.regular))
-            .padding(.horizontal, .truss.padding(.large))
+        Text("Hello FoundationUI!")
+            .padding(.vertical, FoundationUI.Variable.Theme.padding(.regular))
+            .padding(.horizontal, .foundation.padding(.large))
             .background(
               // `Color` Token
-              .truss.fill,
+              .foundation.primary.fill,
               // Radius: 8
-              in: .rect(cornerRadius: .truss.radius(.regular))
+              in: .rect(cornerRadius: .foundation.radius(.regular))
             )
     }
 }
 ```
 
-After importing `TrussUI` we can access tokens via `TrussUI.Variable.Theme` struct:
+After importing `FoundationUI` we can access tokens via `FoundationUI.Variable.Theme` struct:
 
 ```swift
-View.padding(.vertical, TrussUI.Variable.Theme.padding(.regular)) // 8
+View.padding(.vertical, FoundationUI.Variable.Theme.padding(.regular)) // 8
 ```
 
 or with a shortcut using a dot notation:
 
 ```swift
-View.padding(.horizontal, .truss.padding(.large)) // 16
+View.padding(.horizontal, .foundation.padding(.large)) // 16
 ```
 
-Set `.fill` token as a background color together with `.truss.radius` token
+Set `.fill` token as a background color together with `.foundation.radius` token
 
 ```swift
 View.background(
-    .truss.fill, // UI element background color token
-    in: .rect(cornerRadius: .truss.radius(.regular)) // 8
+    .foundation.primary.fill, // UI element background color token
+    in: .rect(cornerRadius: .foundation.radius(.regular)) // 8
 )
 ```
 
