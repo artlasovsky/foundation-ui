@@ -33,9 +33,10 @@ extension FoundationUI.DynamicColor: DynamicColorDefaults {}
 public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     static var primary: Self { .init(
         light: .init(grayscale: 0.5),
-        dark: .init(grayscale: 0.57),
-        lightAccessible: .init(grayscale: 0.39),
-        darkAccessible: .init(grayscale: 0.64)
+        dark: .init(grayscale: 0.57)
+//        ,
+//        lightAccessible: .init(grayscale: 0.39),
+//        darkAccessible: .init(grayscale: 0.64)
     ) }
     
     static var clear: Self {
@@ -64,6 +65,39 @@ internal extension DynamicColorDefaults where Self == FoundationUI.DynamicColor 
     }
 }
 
+internal extension FoundationUI.ColorComponents {
+    func dynamicLight(saturation: CGFloat, brightness: CGFloat) -> Self {
+        guard isSaturated else { return multiply(brightness: brightness) }
+        if brightness < 1 {
+            return multiply(saturation: saturation, brightness: brightness)
+        }
+        let saturation = saturation * brightness * 0.85
+        if self.saturation < 0.5 {
+            return self.multiply(saturation: saturation * 1.2, brightness: brightness * 0.8)
+        }
+        if self.saturation < 0.6 {
+            return self.multiply(saturation: saturation * 1.05, brightness: brightness * 0.685)
+        }
+        if self.saturation < 0.7 {
+            if self.brightness < 0.85 {
+                return multiply(saturation: saturation / 3, brightness: brightness * 0.61)
+            }
+            if self.brightness < 0.9 {
+                return multiply(saturation: saturation * 0.9, brightness: brightness * 0.6)
+            }
+            return multiply(saturation: saturation, brightness: brightness * 0.55)
+        }
+        if self.saturation < 0.9 {
+            return multiply(saturation: saturation * 0.92, brightness: brightness * 0.521)
+        }
+        if self.saturation > 0.9, self.brightness < 0.8 {
+            return multiply(saturation: saturation * 0.9, brightness: brightness * 0.667)
+        }
+            
+        return multiply(saturation: saturation, brightness: brightness * 0.53)
+    }
+}
+
 /// Variations are extention of `DynamicColor`
 public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     static var environmentDefault: Self {
@@ -72,63 +106,63 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     
     /// App background
     var backgroundFaded: Self { makeVariation(
-        light: { $0.multiply(saturation: 0.03).override(brightness: $0.isSaturated ? 1 : 0.99) },
-        dark: { $0.multiply(saturation: 0.3).override(brightness: $0.isSaturated ? 0.06 : 0.05) },
+        light: { $0.dynamicLight(saturation: 0.03, brightness: 1.98) },
+        dark: { $0.multiply(saturation: 0.3).override(brightness: $0.isSaturated ? 0.14 : 0.08) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// Content background
     var background: Self { makeVariation(
-        light: { $0.multiply(saturation: 0.06, brightness: 2.18 ) },
+        light: { $0.dynamicLight(saturation: 0.045, brightness: 1.94) },
         dark: { $0.multiply(saturation: 0.35, brightness: 0.2) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// Subtle background
     var backgroundEmphasized: Self { makeVariation(
-        light: { $0.multiply( saturation: 0.2, brightness: 2.1 ) },
-        dark: { $0.multiply( saturation: 0.45, brightness: 0.25 ) },
+        light: { $0.dynamicLight(saturation: 0.1, brightness: 1.94) },
+        dark: { $0.multiply(saturation: 0.45, brightness: 0.25 ) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// UI element background
     var fillFaded: Self { makeVariation(
-        light: { $0.multiply( saturation: 0.3, brightness: 1.9 ) },
-        dark: { $0.multiply( saturation: 0.5, brightness: 0.32 ) },
+        light: { $0.dynamicLight(saturation: 0.14, brightness: 1.87) },
+        dark: { $0.multiply(saturation: 0.5, brightness: 0.32 ) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// Hovered UI element background
     var fill: Self { makeVariation(
-        light: { $0.multiply( saturation: 0.4, brightness: 1.8 ) },
-        dark: { $0.multiply( saturation: 0.6, brightness: 0.45 ) },
+        light: { $0.dynamicLight(saturation: 0.2, brightness: 1.8) },
+        dark: { $0.multiply(saturation: 0.6, brightness: 0.45 ) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// Active / Selected UI element background
     var fillEmphasized: Self { makeVariation(
-        light: { $0.multiply( saturation: 0.5, brightness: 1.7 )},
-        dark: { $0.multiply( saturation: 0.7, brightness: 0.55 ) },
+        light: { $0.dynamicLight(saturation: 0.3, brightness: 1.73) },
+        dark: { $0.multiply(saturation: 0.7, brightness: 0.55 ) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// Subtle borders and separators
     var borderFaded: Self { makeVariation(
-        light: { $0.multiply( saturation: 0.7, brightness: 1.5 ) },
-        dark: { $0.multiply( saturation: 0.75, brightness: 0.7 ) },
+        light: { $0.dynamicLight(saturation: 0.45, brightness: 1.6) },
+        dark: { $0.multiply(saturation: 0.75, brightness: 0.7 ) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// UI element border and focus rings
     var border: Self { makeVariation(
-        light: { $0.multiply( saturation: 0.8, brightness: 1.4 ) },
-        dark: { $0.multiply( saturation: 0.85, brightness: 0.8 ) },
+        light: { $0.dynamicLight(saturation: 0.55, brightness: 1.5) },
+        dark: { $0.multiply(saturation: 0.85, brightness: 0.8 ) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// Hovered UI element border
     var borderEmphasized: Self { makeVariation(
-        light: { $0.multiply(saturation: 0.9, brightness: 1.1 ) },
+        light: { $0.dynamicLight(saturation: 0.7, brightness: 1.38) },
         dark: { $0.multiply(saturation: 0.9, brightness: 0.9 ) },
         lightAccessible: nil,
         darkAccessible: nil
@@ -137,7 +171,7 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     var solid: Self { self }
     /// Hovered solid backgrounds
     var solidEmphasized: Self { makeVariation(
-        light: { $0.multiply(saturation: 1.1, brightness: 0.9) },
+        light: { $0.dynamicLight(saturation: 0.98, brightness: 0.8) },
         dark: { $0.multiply(saturation: 0.95, brightness: 1.1) },
         lightAccessible: nil,
         darkAccessible: nil
@@ -146,14 +180,14 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     var textFaded: Self { solidEmphasized }
     /// Normal text
     var text: Self { makeVariation(
-        light: { $0.multiply(saturation: 0.9, brightness: 0.76) },
+        light: { $0.dynamicLight(saturation: 0.95, brightness: 0.52) },
         dark: { $0.multiply(saturation: 0.4, brightness: $0.isSaturated ? 1.2 : 1.5) },
         lightAccessible: nil,
         darkAccessible: nil
     ) }
     /// High-contrast text
     var textEmphasized: Self { makeVariation(
-        light: { $0.multiply(saturation: 0.95, brightness: 0.35) },
+        light: { $0.dynamicLight(saturation: 0.6, brightness: 0.24) },
         dark: { $0.multiply(saturation: 0.2, brightness: $0.isSaturated ? 1.9 : 1.7) },
         lightAccessible: nil,
         darkAccessible: nil
@@ -179,190 +213,131 @@ internal extension DynamicColorDefaults {
     ]}
 }
 
-// MARK: - Color Variable
+// MARK: - Preview
 
-//public protocol FoundationUIColorSetDefaults {
-//    static var primary: FoundationUI.ColorSet { get }
-//}
-//public extension FoundationUIColorSetDefaults {
-//    static var primary: FoundationUI.ColorSet { .init(
-//        light: .init(grayscale: 0.5),
-//        dark: .init(grayscale: 0.57),
-//        lightAccessible: .init(grayscale: 0.39),
-//        darkAccessible: .init(grayscale: 0.64)
-//    ) }
-//    
-//    static var white: FoundationUI.ColorSet { .init(universal: .init(grayscale: 1)) }
-//    static var black: FoundationUI.ColorSet { .init(universal: .init(grayscale: 0)) }
-//    static var gray: FoundationUI.ColorSet { .init(universal: .init(grayscale: 0.5)) }
-//    
-//    static var clear: FoundationUI.ColorSet {
-//        .init(universal: .init(grayscale: 0, opacity: 0))
-//    }
-//}
-//
-//extension FoundationUI.ColorSet: FoundationUIColorSetDefaults {}
-//
-//// MARK: - Color Variable Scale
-//
-//public protocol FoundationUITintedColorSetDefaults {}
-//
-//public extension FoundationUITintedColorSetDefaults {
-//    internal static var defaultTint: FoundationUI.TintedColorSet { .tint(.primary) }
-//    
-//    /// App background
-//    static var backgroundFaded: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply(saturation: 0.03).set(brightness: $0.isSaturated ? 1 : 0.99) },
-//        dark: { $0.multiply(saturation: 0.3).set(brightness: $0.isSaturated ? 0.06 : 0.05) }
-//    ) }
-//    /// Content background
-//    static var background: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply(saturation: 0.06, brightness: 2.18 ) },
-//        dark: { $0.multiply(saturation: 0.35, brightness: 0.2)}
-//    ) }
-//    /// Subtle background
-//    static var backgroundEmphasized: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply( saturation: 0.2, brightness: 2.1 ) },
-//        dark: { $0.multiply( saturation: 0.45, brightness: 0.25 ) }
-//    ) }
-//    /// UI element background
-//    static var fillFaded: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply( saturation: 0.3, brightness: 1.9 ) },
-//        dark: { $0.multiply( saturation: 0.5, brightness: 0.32 ) }
-//    ) }
-//    /// Hovered UI element background
-//    static var fill: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply( saturation: 0.4, brightness: 1.8 ) },
-//        dark: { $0.multiply( saturation: 0.6, brightness: 0.45 ) }
-//    ) }
-//    /// Active / Selected UI element background
-//    static var fillEmphasized: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply( saturation: 0.5, brightness: 1.7 )},
-//        dark: { $0.multiply( saturation: 0.7, brightness: 0.55 ) }
-//    ) }
-//    /// Subtle borders and separators
-//    static var borderFaded: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply( saturation: 0.7, brightness: 1.5 ) },
-//        dark: { $0.multiply( saturation: 0.75, brightness: 0.7 ) }
-//    ) }
-//    /// Subtle borders and separators
-//    static var borderFaded_: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply( saturation: 0.7, brightness: 1.5 ) },
-//        dark: { $0.multiply( saturation: 0.75, brightness: 0.7 ) }
-//    ) }
-//    /// UI element border and focus rings
-//    static var border: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply( saturation: 0.8, brightness: 1.4 ) },
-//        dark: { $0.multiply( saturation: 0.85, brightness: 0.8 ) }
-//    ) }
-//    /// Hovered UI element border
-//    static var borderEmphasized: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply(saturation: 0.9, brightness: 1.1 ) },
-//        dark: { $0.multiply(saturation: 0.9, brightness: 0.9 ) }
-//    ) }
-//    /// Solid backgrounds
-//    static var solid: FoundationUI.TintedColorSet {
-//        Self.defaultTint
-//    }
-//    /// Hovered solid backgrounds
-//    static var solidEmphasized: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply(saturation: 1.1, brightness: 0.9) },
-//        dark: { $0.multiply(saturation: 0.95, brightness: 1.1) }
-//    ) }
-//    /// Low-contrast text
-//    static var textFaded: FoundationUI.TintedColorSet { Self.solidEmphasized }
-//    /// Normal text
-//    static var text: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply(saturation: 0.9, brightness: 0.76) },
-//        dark: { $0.multiply(saturation: 0.4, brightness: $0.isSaturated ? 1.2 : 1.5) }
-//    ) }
-//    /// High-contrast text
-//    static var textEmphasized: FoundationUI.TintedColorSet { defaultTint.adjust(
-//        light: { $0.multiply(saturation: 0.95, brightness: 0.35) },
-//        dark: { $0.multiply(saturation: 0.2, brightness: $0.isSaturated ? 1.9 : 1.7) }
-//    ) }
-//}
-//
-//extension FoundationUI.TintedColorSet: FoundationUITintedColorSetDefaults {}
-//
-//// MARK: - Preview
-//
-//internal extension FoundationUI.TintedColorSet {
-//    static let all: [Self] = [
-//        Self.backgroundFaded, Self.background, Self.backgroundEmphasized,
-//        Self.fillFaded, Self.fill, Self.fillEmphasized,
-//        Self.borderFaded, Self.border, Self.borderEmphasized,
-//        Self.solid, Self.solidEmphasized, /*.textFaded,*/
-//        Self.text, Self.textEmphasized
-//    ]
-//}
-//
-//private extension FoundationUI.Variable.Font {
-//    static let captionMono = Self(.caption.monospaced())
-//    static let colorComponentsMono = Self(.system(size: 5).monospaced())
-//}
-//
-//@available(macOS 14.0, iOS 17.0, *)
-//struct ColorThemePreview: PreviewProvider {
-//    struct ColorScale: View {
-//        @Environment(\.self) private var env
-//        
-//        var colorScheme: FoundationUI.ColorScheme {
-//            .init(env)
-//        }
-//        var body: some View {
-//            VStack(spacing: 0) {
-//                Text(colorScheme.rawValue)
-//                    .foundation(.foreground(.text))
-//                    .foundation(.padding(.regular).edges(.bottom))
-//                    .foundation(.font(.captionMono))
-//                HStack(spacing: 0) {
-//                    ForEach(FoundationUI.TintedColorSet.all, id: \.self) { sample in
-//                        Rectangle().foundation(.size(width: .small,height: .small))
-//                            .foundation(.foreground(sample))
-////                            .overlay {
-////                                VStack {
-////                                    Text(String(format: "%.2f", sample.components(.init(env)).hue))
-////                                    Text(String(format: "%.2f", sample.components(.init(env)).saturation))
-////                                    Text(String(format: "%.2f", sample.components(.init(env)).brightness))
-////                                    Text(String(format: "%.2f", sample.components(.init(env)).opacity))
-////                                }
-////                                .foundation(.font(.colorComponentsMono))
-////                                .padding(.trailing, 2)
-////                            }
-//                    }
-//                }
-//            }
-//            .foundation(.padding(.regular).edges(.vertical))
-//            .foundation(.padding(.large).edges(.horizontal))
-//            .foundation(.background(.backgroundFaded))
-//            .fixedSize()
-//        }
-//    }
-//    
-//    static var previews: some View {
-//        let tintColor = FoundationUI.ColorSet(color: .accentColor)
-//        VStack(spacing: 0) {
-//            VStack(spacing: 0) {
-//                ColorScale()
-//                ColorScale().foundation(.tint(tintColor))
-//            }
-//            ._colorScheme(.light)
-//            VStack(spacing: 0) {
-//                ColorScale()
-//                ColorScale().foundation(.tint(tintColor))
-//            }
-//            ._colorScheme(.lightAccessible)
-//            VStack(spacing: 0) {
-//                ColorScale()
-//                ColorScale().foundation(.tint(tintColor))
-//            }
-//            ._colorScheme(.dark)
-//            VStack(spacing: 0) {
-//                ColorScale()
-//                ColorScale().foundation(.tint(tintColor))
-//            }
-//            ._colorScheme(.darkAccessible)
-//        }
-//    }
-//}
+struct DynamicColorPreview: PreviewProvider {
+    struct ColorPatch: View {
+        let color: FoundationUI.DynamicColor
+        var body: some View {
+            FoundationUI.Shape.roundedRectangle(.regular)
+                .foundation(.foreground(color))
+                .foundation(.size(.small))
+        }
+    }
+    struct Scale: View {
+        @Environment(\.dynamicColorTint) private var tint
+        var body: some View {
+            VStack(spacing: 0) {
+                TextSample()
+                Divider().foundation(.size(width: .small)).foundation(.foreground(\.borderFaded))
+                ForEach(FoundationUI.DynamicColor.primary.defaultScale, id: \.hashValue) { variant in
+                    ZStack {
+                        Rectangle()
+                            .foundation(.foreground(variant))
+                            .foundation(.size(variant == \.solid ? .small.offset(.quarter.up) : .small))
+                        if variant == \.solid {
+                            VStack {
+                                let tint = tint[keyPath: variant]
+                                let h = String(format: "%.2f", tint.light.hue)
+                                let s = String(format: "%.2f", tint.light.saturation)
+                                let b = String(format: "%.2f", tint.light.brightness)
+                                let o = String(format: "%.2f", tint.light.opacity)
+                                Text(h).fixedSize()
+                                Text(s).fixedSize()
+                                Text(b).fixedSize()
+                                Text(o).fixedSize()
+                            }
+                            .foundation(.font(.init(value: .system(size: 7), label: nil)))
+                            .foundation(.foreground(\.background))
+                        }
+                    }
+                }
+            }
+            .foundation(.padding(.regular))
+            .foundation(.background(\.backgroundFaded))
+        }
+    }
+    
+    struct TextSample: View {
+        var body: some View {
+            Text("Text")
+                .foundation(.padding(.regular))
+                .foundation(.foreground(\.textFaded))
+                .foundation(.font(.small))
+        }
+    }
+    
+    struct ScaleSet: View {
+        var body: some View {
+            HStack(spacing: 0) {
+                Scale()._colorScheme(.light)
+//                Scale()._colorScheme(.lightAccessible)
+//                Scale()._colorScheme(.dark)
+//                Scale()._colorScheme(.darkAccessible)
+            }
+        }
+    }
+    
+    static var previews: some View {
+        HStack(spacing: 0) {
+            ScaleSet()
+                .foundation(.tint(.red))
+            if #available(macOS 14.0, *) {
+                ScaleSet()
+                    .foundation(.tintColor(.accentColor))
+                ScaleSet()
+                    .foundation(.tintColor(.orange))
+                ScaleSet()
+                    .foundation(.tintColor(.brown))
+                ScaleSet()
+                    .foundation(.tintColor(.indigo))
+                ScaleSet()
+                    .foundation(.tintColor(.purple))
+                ScaleSet()
+                    .foundation(.tintColor(.pink))
+                ScaleSet()
+                    .foundation(.tintColor(.yellow))
+                ScaleSet()
+                    .foundation(.tintColor(.cyan))
+                ScaleSet()
+                    .foundation(.tintColor(.mint))
+                ScaleSet()
+                    .foundation(.tintColor(.teal))
+                ScaleSet()
+                    .foundation(.tint(.init(.init(hue: 0.4, saturation: 0.5, brightness: 0.75))))
+            }
+            ScaleSet()
+                .foundation(.tint(.primary))
+            
+        }
+        .foundation(.clip(cornerRadius: .regular))
+        .scenePadding()
+        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+    }
+}
+
+
+@available(macOS 14.0, *)
+struct Button_Preview: PreviewProvider {
+    struct TestButton: View {
+        @State private var isHovered: Bool = false
+        var body: some View {
+            Text("Button")
+                .foundation(.padding())
+                .foundation(.foreground(\.text))
+                .foundation(.background(isHovered ? \.background : \.backgroundEmphasized))
+                .foundation(.border(\.borderFaded))
+                .foundation(.cornerRadius(.regular))
+                .animation(.foundation.animation(.regular), value: isHovered)
+                .onHover { isHovered = $0 }
+                .foundation(.tint(.from(color: .orange)))
+        }
+    }
+    static var previews: some View {
+        VStack {
+            TestButton()
+        }
+        .padding()
+        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+    }
+}
