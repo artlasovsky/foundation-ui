@@ -48,13 +48,86 @@ public extension FoundationUI.ColorComponents {
     var isSaturated: Bool {
         saturation > 0
     }
-    
-    func override(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, opacity: CGFloat? = nil) -> Self {
-        .init(hue: hue ?? self.hue, saturation: saturation ?? self.saturation, brightness: brightness ?? self.brightness, opacity: opacity ?? self.opacity)
+}
+
+public extension FoundationUI.ColorComponents {
+    enum AdjustMethod {
+        case multiply
+        case override
     }
     
-    func multiply(hue: CGFloat = 1, saturation: CGFloat = 1, brightness: CGFloat = 1, opacity: CGFloat = 1) -> Self {
-        .init(hue: self.hue * hue, saturation: self.saturation * saturation, brightness: self.brightness * brightness, opacity: self.opacity * opacity)
+    typealias ConditionalValue = (FoundationUI.ColorComponents) -> CGFloat
+    
+    func hue(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue * value, saturation: saturation, brightness: brightness, opacity: opacity)
+        case .override:
+                .init(hue: value, saturation: saturation, brightness: brightness, opacity: opacity)
+        }
+    }
+    
+    func hue(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue * value(self), saturation: saturation, brightness: brightness, opacity: opacity)
+        case .override:
+                .init(hue: value(self), saturation: saturation, brightness: brightness, opacity: opacity)
+        }
+    }
+    
+    func saturation(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue, saturation: saturation * value, brightness: brightness, opacity: opacity)
+        case .override:
+                .init(hue: hue, saturation: value, brightness: brightness, opacity: opacity)
+        }
+    }
+    
+    func saturation(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue, saturation: saturation * value(self), brightness: brightness, opacity: opacity)
+        case .override:
+                .init(hue: hue, saturation: value(self), brightness: brightness, opacity: opacity)
+        }
+    }
+    
+    func brightness(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue, saturation: saturation, brightness: brightness * value, opacity: opacity)
+        case .override:
+                .init(hue: hue, saturation: saturation, brightness: value, opacity: opacity)
+        }
+    }
+    
+    func brightness(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue, saturation: saturation, brightness: brightness * value(self), opacity: opacity)
+        case .override:
+                .init(hue: hue, saturation: saturation, brightness: value(self), opacity: opacity)
+        }
+    }
+    
+    func opacity(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity * value)
+        case .override:
+                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: value)
+        }
+    }
+    
+    func opacity(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+        switch method {
+        case .multiply:
+                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity * value(self))
+        case .override:
+                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: value(self))
+        }
     }
 }
 

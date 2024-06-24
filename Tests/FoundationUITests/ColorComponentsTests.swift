@@ -45,12 +45,11 @@ final class ColorComponentsInitializers: XCTestCase {
             brightnessAdjust: CGFloat = 0.75,
             opacityAdjust: CGFloat = 1
         
-        let adjusted = color.multiply(
-            hue: hueAdjust,
-            saturation: saturationAdjust,
-            brightness: brightnessAdjust,
-            opacity: opacityAdjust
-        )
+        let adjusted = color
+            .hue(hueAdjust)
+            .saturation(saturationAdjust)
+            .brightness(brightnessAdjust)
+            .opacity(opacityAdjust)
         let targetColor = FoundationUI.ColorComponents(
             hue: color.hue * hueAdjust,
             saturation: color.saturation * saturationAdjust,
@@ -69,26 +68,27 @@ final class ColorComponentsInitializers: XCTestCase {
             opacity: 1
         )
         
-        let hueAdjust: CGFloat? = 2,
-            saturationAdjust: CGFloat? = 0.53,
-            brightnessAdjust: CGFloat? = nil,
-            opacityAdjust: CGFloat? = 1
+        let hueAdjust: CGFloat = 2,
+            saturationAdjust: CGFloat = 0.53,
+//            brightnessAdjust: CGFloat = nil,
+            opacityAdjust: CGFloat = 1
         
-        let adjusted = color.override(
+        let adjusted = color
+            .hue(hueAdjust, method: .override)
+            .saturation(saturationAdjust, method: .override)
+//            .brightness(brightnessAdjust, method: .override)
+            .opacity(opacityAdjust, method: .override)
+        let targetColor = FoundationUI.ColorComponents(
             hue: hueAdjust,
             saturation: saturationAdjust,
-            brightness: brightnessAdjust,
+            brightness: color.brightness,
             opacity: opacityAdjust
-        )
-        let targetColor = FoundationUI.ColorComponents(
-            hue: hueAdjust ?? color.hue.clamp(0, 1),
-            saturation: saturationAdjust ?? color.saturation.clamp(0, 1),
-            brightness: brightnessAdjust ?? color.brightness.clamp(0, 1),
-            opacity: opacityAdjust ?? color.opacity.clamp(0, 1)
         )
         
         XCTAssert(adjusted == targetColor, "\(adjusted) \n should be equal to \(targetColor)")
     }
+    
+    #warning("Conditional Adjustment Tests")
 }
 
 private func XCTAssertEqualColors(

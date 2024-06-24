@@ -3,15 +3,27 @@ import SwiftUI
 @testable import FoundationUI
 
 private let lightColor = FoundationUI.ColorComponents(hue: 0.1, saturation: 0.8, brightness: 1)
-private let lightAccessibleColor = lightColor.multiply(saturation: 1.2)
+private let lightAccessibleColor = lightColor.saturation(1.2)
 private let darkColor = FoundationUI.ColorComponents(hue: 0.1, saturation: 0.7, brightness: 1)
-private let darkAssessibleColor = darkColor.multiply(saturation: 1.2)
+private let darkAssessibleColor = darkColor.saturation(1.2)
 private let color = FoundationUI.DynamicColor(
     light: lightColor,
     dark: darkColor,
     lightAccessible: lightAccessibleColor,
     darkAccessible: darkAssessibleColor
 )
+
+@available(macOS 14.0, *)
+extension Color {
+    func preciseResolve(in env: EnvironmentValues) -> Color.Resolved {
+        let resolved = self.resolve(in: env)
+        return .init(
+            red: resolved.red.precise(),
+            green: resolved.green.precise(),
+            blue: resolved.blue.precise()
+        )
+    }
+}
 
 final class DynamicColorTests: XCTestCase {
     func testInit() throws {
@@ -28,19 +40,37 @@ final class DynamicColorTests: XCTestCase {
         let opacityAdjust: CGFloat = 0.5
         
         let adjusted: FoundationUI.DynamicColor = color
-            .opacity(opacityAdjust)
             .hue(hueAdjust)
             .saturation(saturationAdjust)
             .brightness(brightnessAdjust)
+            .opacity(opacityAdjust)
         
-        let target = Color(
-            hue: hueAdjust,
+        let targetLight = FoundationUI.ColorComponents(
+            hue: lightColor.hue * hueAdjust,
             saturation: lightColor.saturation * saturationAdjust,
             brightness: lightColor.brightness * brightnessAdjust,
             opacity: lightColor.opacity * opacityAdjust
         )
-        let env = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
-        XCTAssert(adjusted.resolveColor(in: env) == target)
+        
+        XCTAssert(adjusted.light == targetLight)
+        
+        if #available(macOS 14.0, *) {
+            // Compare with SwiftUI.Color
+            let targetColor = Color(
+                hue: lightColor.hue * hueAdjust,
+                saturation: lightColor.saturation * saturationAdjust,
+                brightness: lightColor.brightness * brightnessAdjust,
+                opacity: lightColor.opacity * opacityAdjust
+            )
+            let env = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
+            let resolvedAdjusted = adjusted.resolveColor(in: env).preciseResolve(in: env)
+            let resolvedTarget = targetColor.preciseResolve(in: env)
+            XCTAssert(resolvedAdjusted == resolvedTarget)
+            XCTAssert(resolvedAdjusted.red == resolvedTarget.red)
+            XCTAssert(resolvedAdjusted.green == resolvedTarget.green)
+            XCTAssert(resolvedAdjusted.blue == resolvedTarget.blue)
+            XCTAssert(resolvedAdjusted.opacity == resolvedTarget.opacity)
+        }
     }
     
     func testConditionalAdjust() throws {
@@ -49,20 +79,22 @@ final class DynamicColorTests: XCTestCase {
         let saturated = FoundationUI.DynamicColor(.init(hue: 0, saturation: 0.4, brightness: 1))
         let grayscale = FoundationUI.DynamicColor(.init(hue: 0, saturation: 0.0, brightness: 1))
         
-        func conditional(_ components: FoundationUI.ColorComponents) -> FoundationUI.ColorComponents {
-            components.multiply(brightness: components.isSaturated ? 0.9 : 0.8)
+        func conditionalBrightness(_ components: FoundationUI.ColorComponents) -> CGFloat {
+            components.isSaturated ? 0.9 : 0.8
         }
         
         let adjustedSaturated = saturated
-            .makeVariation(light: conditional(_:), dark: { $0 })
+            .brightness(dynamic: conditionalBrightness(_:))
         let adjustedGrayscale = grayscale
-            .makeVariation(light: conditional(_:), dark: { $0 })
+            .brightness(dynamic: conditionalBrightness(_:))
         
         XCTAssert(adjustedSaturated.resolveColor(in: env) == Color(hue: 0, saturation: 0.4, brightness: 0.9))
         XCTAssert(adjustedGrayscale.resolveColor(in: env) == Color(hue: 0, saturation: 0, brightness: 0.8))
     }
     
-    // TODO: Create mixed
-    // TODO: BlendMode
-    // TODO: UI Test with Environment
+    #warning("BlendMode Tests")
+    #warning("Variation Tests")
+    #warning("SwiftUI Tests")
+    #warning("AppKit / UIKit Tests")
+    // TODO: Check new Color.mix modifier
 }

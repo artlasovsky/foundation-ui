@@ -21,6 +21,12 @@ internal extension CGFloat {
     }
 }
 
+internal extension Float {
+    func precise(_ digits: Int = 2) -> Self {
+        NSString(format: "%.\(digits)f" as NSString, self).floatValue
+    }
+}
+
 internal extension Color {
     @available(macOS 14.0, iOS 17.0, *)
     func rgbaComponents(in scheme: FoundationUI.ColorScheme) -> (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {

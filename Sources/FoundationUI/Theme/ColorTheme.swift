@@ -19,25 +19,19 @@ public extension ShapeStyle {
 
 public protocol DynamicColorDefaults {
     typealias VariationKeyPath = KeyPath<FoundationUI.DynamicColor, FoundationUI.DynamicColor>
-    func makeVariation(
-        light: FoundationUI.DynamicColor.Adjustment,
-        dark: FoundationUI.DynamicColor.Adjustment,
-        lightAccessible: FoundationUI.DynamicColor.Adjustment?,
-        darkAccessible: FoundationUI.DynamicColor.Adjustment?
-    ) -> Self
 }
 
 extension FoundationUI.DynamicColor: DynamicColorDefaults {}
 
 /// Tint are static extensions of `DynamicColor`
 public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
-    static var primary: Self { .init(
-        light: .init(grayscale: 0.5),
-        dark: .init(grayscale: 0.57)
-//        ,
-//        lightAccessible: .init(grayscale: 0.39),
-//        darkAccessible: .init(grayscale: 0.64)
-    ) }
+    #warning("TODO: Accessible Variants")
+    static var primary: Self {
+        .init(
+            light: .init(grayscale: 0.5),
+            dark: .init(grayscale: 0.57)
+        )
+    }
     
     static var clear: Self {
         .init(.init(grayscale: 0, opacity: 0))
@@ -65,39 +59,6 @@ internal extension DynamicColorDefaults where Self == FoundationUI.DynamicColor 
     }
 }
 
-internal extension FoundationUI.ColorComponents {
-    func dynamicLight(saturation: CGFloat, brightness: CGFloat) -> Self {
-        guard isSaturated else { return multiply(brightness: brightness) }
-        if brightness < 1 {
-            return multiply(saturation: saturation, brightness: brightness)
-        }
-        let saturation = saturation * brightness * 0.85
-        if self.saturation < 0.5 {
-            return self.multiply(saturation: saturation * 1.2, brightness: brightness * 0.8)
-        }
-        if self.saturation < 0.6 {
-            return self.multiply(saturation: saturation * 1.05, brightness: brightness * 0.685)
-        }
-        if self.saturation < 0.7 {
-            if self.brightness < 0.85 {
-                return multiply(saturation: saturation / 3, brightness: brightness * 0.61)
-            }
-            if self.brightness < 0.9 {
-                return multiply(saturation: saturation * 0.9, brightness: brightness * 0.6)
-            }
-            return multiply(saturation: saturation, brightness: brightness * 0.55)
-        }
-        if self.saturation < 0.9 {
-            return multiply(saturation: saturation * 0.92, brightness: brightness * 0.521)
-        }
-        if self.saturation > 0.9, self.brightness < 0.8 {
-            return multiply(saturation: saturation * 0.9, brightness: brightness * 0.667)
-        }
-            
-        return multiply(saturation: saturation, brightness: brightness * 0.53)
-    }
-}
-
 /// Variations are extention of `DynamicColor`
 public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     static var environmentDefault: Self {
@@ -105,100 +66,139 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     }
     
     /// App background
-    var backgroundFaded: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.03, brightness: 1.98) },
-        dark: { $0.multiply(saturation: 0.3).override(brightness: $0.isSaturated ? 0.14 : 0.08) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var backgroundFaded: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.98 : 0.97 }, method: .override)
+                .saturation(0.02),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.1 : 0.05 }, method: .override)
+        )
+    }
     /// Content background
-    var background: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.045, brightness: 1.94) },
-        dark: { $0.multiply(saturation: 0.35, brightness: 0.2) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var background: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.975 : 0.95 }, method: .override)
+                .saturation(0.06),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.18 : 0.12 }, method: .override)
+        )
+    }
     /// Subtle background
-    var backgroundEmphasized: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.1, brightness: 1.94) },
-        dark: { $0.multiply(saturation: 0.45, brightness: 0.25 ) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var backgroundEmphasized: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.96 : 0.92 }, method: .override)
+                .saturation(0.1)
+            ,
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.32 : 0.18 }, method: .override)
+        )
+    }
     /// UI element background
-    var fillFaded: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.14, brightness: 1.87) },
-        dark: { $0.multiply(saturation: 0.5, brightness: 0.32 ) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var fillFaded: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.9 }, method: .override)
+                .saturation(0.18),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.44 : 0.22 }, method: .override)
+        )
+    }
     /// Hovered UI element background
-    var fill: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.2, brightness: 1.8) },
-        dark: { $0.multiply(saturation: 0.6, brightness: 0.45 ) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var fill: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.94 : 0.87 }, method: .override)
+                .saturation(0.35),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.61 : 0.27 }, method: .override)
+        )
+    }
     /// Active / Selected UI element background
-    var fillEmphasized: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.3, brightness: 1.73) },
-        dark: { $0.multiply(saturation: 0.7, brightness: 0.55 ) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var fillEmphasized: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.92 : 0.83 }, method: .override)
+                .saturation(0.5),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.68 : 0.32 }, method: .override)
+        )
+    }
     /// Subtle borders and separators
-    var borderFaded: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.45, brightness: 1.6) },
-        dark: { $0.multiply(saturation: 0.75, brightness: 0.7 ) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var borderFaded: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.82 : 0.77 }, method: .override)
+                .saturation(0.58),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.72 : 0.37 }, method: .override)
+                .saturation(0.97)
+        )
+    }
     /// UI element border and focus rings
-    var border: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.55, brightness: 1.5) },
-        dark: { $0.multiply(saturation: 0.85, brightness: 0.8 ) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var border: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.78 : 0.7 }, method: .override)
+                .saturation(0.8),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.8 : 0.42 }, method: .override)
+                .saturation(0.95)
+        )
+    }
     /// Hovered UI element border
-    var borderEmphasized: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.7, brightness: 1.38) },
-        dark: { $0.multiply(saturation: 0.9, brightness: 0.9 ) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var borderEmphasized: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.65 : 0.6 }, method: .override)
+                .saturation(0.8),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.85 : 0.48 }, method: .override)
+                .saturation(0.9)
+        )
+    }
     /// Solid backgrounds
     var solid: Self { self }
-    /// Hovered solid backgrounds
-    var solidEmphasized: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.98, brightness: 0.8) },
-        dark: { $0.multiply(saturation: 0.95, brightness: 1.1) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
     /// Low-contrast text
-    var textFaded: Self { solidEmphasized }
+    var textFaded: Self { 
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.6 : 0.35 }, method: .override)
+                .saturation(1),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.85 }, method: .override)
+                .saturation(0.25)
+        )
+    }
     /// Normal text
-    var text: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.95, brightness: 0.52) },
-        dark: { $0.multiply(saturation: 0.4, brightness: $0.isSaturated ? 1.2 : 1.5) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var text: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.45 : 0.24 }, method: .override)
+                .saturation(0.95),
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.92 }, method: .override)
+                .saturation(0.15)
+        )
+    }
     /// High-contrast text
-    var textEmphasized: Self { makeVariation(
-        light: { $0.dynamicLight(saturation: 0.6, brightness: 0.24) },
-        dark: { $0.multiply(saturation: 0.2, brightness: $0.isSaturated ? 1.9 : 1.7) },
-        lightAccessible: nil,
-        darkAccessible: nil
-    ) }
+    var textEmphasized: Self {
+        .init(
+            light: self.light
+                .brightness(dynamic: { $0.isSaturated ? 0.35 : 0.12 }, method: .override)
+                .saturation(0.8)
+            ,
+            dark: self.dark
+                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.98 }, method: .override)
+                .saturation(0.05)
+        )
+    }
     
-    var clear: Self { makeVariation(
-        light: { $0.override(opacity: 0) },
-        dark: { $0.override(opacity: 0) },
-        lightAccessible: { $0.override(opacity: 0) },
-        darkAccessible: { $0.override(opacity: 0) }
-    ) }
+    var clear: Self {
+        self.opacity(0)
+    }
 }
 
 // MARK: - Preview
@@ -208,8 +208,8 @@ internal extension DynamicColorDefaults {
          \.backgroundFaded, \.background, \.backgroundEmphasized,
          \.fillFaded, \.fill, \.fillEmphasized,
          \.borderFaded, \.border, \.borderEmphasized,
-         \.solid, \.solidEmphasized,
-         \.text, \.textEmphasized
+         \.solid,
+         \.textFaded, \.text, \.textEmphasized
     ]}
 }
 
@@ -234,7 +234,7 @@ struct DynamicColorPreview: PreviewProvider {
                     ZStack {
                         Rectangle()
                             .foundation(.foreground(variant))
-                            .foundation(.size(variant == \.solid ? .small.offset(.quarter.up) : .small))
+                            .foundation(.size([\.solid, \.border, \.fill, \.background, \.text].contains(variant) ? .small.offset(.quarter.up) : .small))
                         if variant == \.solid {
                             VStack {
                                 let tint = tint[keyPath: variant]
@@ -248,7 +248,7 @@ struct DynamicColorPreview: PreviewProvider {
                                 Text(o).fixedSize()
                             }
                             .foundation(.font(.init(value: .system(size: 7), label: nil)))
-                            .foundation(.foreground(\.background))
+                            .foundation(.foreground(\.backgroundFaded))
                         }
                     }
                 }
@@ -262,7 +262,7 @@ struct DynamicColorPreview: PreviewProvider {
         var body: some View {
             Text("Text")
                 .foundation(.padding(.regular))
-                .foundation(.foreground(\.textFaded))
+                .foundation(.foreground(\.text))
                 .foundation(.font(.small))
         }
     }
@@ -270,9 +270,9 @@ struct DynamicColorPreview: PreviewProvider {
     struct ScaleSet: View {
         var body: some View {
             HStack(spacing: 0) {
-                Scale()._colorScheme(.light)
+//                Scale()._colorScheme(.light)
 //                Scale()._colorScheme(.lightAccessible)
-//                Scale()._colorScheme(.dark)
+                Scale()._colorScheme(.dark)
 //                Scale()._colorScheme(.darkAccessible)
             }
         }

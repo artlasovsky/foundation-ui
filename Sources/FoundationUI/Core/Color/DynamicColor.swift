@@ -25,15 +25,11 @@ import SwiftUI
 public extension FoundationUI {
     struct DynamicColor {
         public typealias Components = FoundationUI.ColorComponents
-        private let current: ComponentsSet
-        private var source: ComponentsSet? = nil
         
-        public var light: Components { current.light }
-        public var dark: Components { current.dark }
-        public var lightAccessible: Components { current.lightAccessible }
-        public var darkAccessible: Components { current.darkAccessible }
-        
-        private var base: ComponentsSet { source ?? current }
+        public private(set) var light: Components
+        public private(set) var dark: Components
+        public private(set) var lightAccessible: Components
+        public private(set) var darkAccessible: Components
         
         private var blendMode: BlendMode = .normal
         private var extendedBlendMode: ExtendedBlendMode? = nil
@@ -73,26 +69,6 @@ extension FoundationUI.DynamicColor: ShapeStyle {
     }
 }
 
-public extension FoundationUI.DynamicColor {
-    typealias Adjustment = (Components) -> Components
-    /// Overrides all previous changes
-    func makeVariation(
-        light: Adjustment,
-        dark: Adjustment,
-        lightAccessible: Adjustment? = nil,
-        darkAccessible: Adjustment? = nil
-    ) -> Self {
-        var color = Self(
-            light: light(base.light),
-            dark: dark(base.dark),
-            lightAccessible: lightAccessible?(base.lightAccessible) ?? light(base.lightAccessible),
-            darkAccessible: darkAccessible?(base.darkAccessible) ?? dark(base.darkAccessible)
-        )
-        color.source = base
-        return color
-    }
-}
-
 extension FoundationUI.DynamicColor {
     public init(
         light: Components,
@@ -100,12 +76,10 @@ extension FoundationUI.DynamicColor {
         lightAccessible: Components? = nil,
         darkAccessible: Components? = nil
     ) {
-        self.current = .init(
-            light: light,
-            dark: dark, 
-            lightAccessible: lightAccessible,
-            darkAccessible: darkAccessible
-        )
+        self.light = light
+        self.dark = dark
+        self.lightAccessible = lightAccessible ?? light
+        self.darkAccessible = darkAccessible ?? dark
     }
     
     public init(_ universal: Components) {
@@ -123,60 +97,76 @@ extension FoundationUI.DynamicColor {
     }
 }
 
-extension FoundationUI.DynamicColor {
-    struct ComponentsSet: Hashable {
-        let light: Components
-        let dark: Components
-        let lightAccessible: Components
-        let darkAccessible: Components
-        
-        init(light: Components, dark: Components, lightAccessible: Components? = nil, darkAccessible: Components? = nil) {
-            self.light = light
-            self.dark = dark
-            self.lightAccessible = lightAccessible ?? light
-            self.darkAccessible = darkAccessible ?? dark
-        }
-        
-        init(_ universal: Components) {
-            self.init(light: universal, dark: universal)
-        }
-    }
-}
-
 public extension FoundationUI.DynamicColor {
-    func opacity(_ value: CGFloat) -> Self {
+    func hue(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
-            light: light.multiply(opacity: value),
-            dark: dark.multiply(opacity: value),
-            lightAccessible: lightAccessible.multiply(opacity: value),
-            darkAccessible: darkAccessible.multiply(opacity: value)
+            light: light.hue(value, method: method),
+            dark: dark.hue(value, method: method),
+            lightAccessible: lightAccessible.hue(value, method: method),
+            darkAccessible: darkAccessible.hue(value, method: method)
         )
     }
     
-    func brightness(_ value: CGFloat) -> Self {
+    func hue(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
-            light: light.multiply(brightness: value),
-            dark: dark.multiply(brightness: value),
-            lightAccessible: lightAccessible.multiply(brightness: value),
-            darkAccessible: darkAccessible.multiply(brightness: value)
+            light: light.hue(dynamic: value, method: method),
+            dark: dark.hue(dynamic: value, method: method),
+            lightAccessible: lightAccessible.hue(dynamic: value, method: method),
+            darkAccessible: darkAccessible.hue(dynamic: value, method: method)
         )
     }
     
-    func saturation(_ value: CGFloat) -> Self {
+    func saturation(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
-            light: light.multiply(saturation: value),
-            dark: dark.multiply(saturation: value),
-            lightAccessible: lightAccessible.multiply(saturation: value),
-            darkAccessible: darkAccessible.multiply(saturation: value)
+            light: light.saturation(value, method: method),
+            dark: dark.saturation(value, method: method),
+            lightAccessible: lightAccessible.saturation(value, method: method),
+            darkAccessible: darkAccessible.saturation(value, method: method)
         )
     }
     
-    func hue(_ value: CGFloat) -> Self {
+    func saturation(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
-            light: light.override(hue: value),
-            dark: dark.override(hue: value),
-            lightAccessible: lightAccessible.override(hue: value),
-            darkAccessible: darkAccessible.override(hue: value)
+            light: light.saturation(dynamic: value, method: method),
+            dark: dark.saturation(dynamic: value, method: method),
+            lightAccessible: lightAccessible.saturation(dynamic: value, method: method),
+            darkAccessible: darkAccessible.saturation(dynamic: value, method: method)
+        )
+    }
+    
+    func brightness(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
+        .init(
+            light: light.brightness(value, method: method),
+            dark: dark.brightness(value, method: method),
+            lightAccessible: lightAccessible.brightness(value, method: method),
+            darkAccessible: darkAccessible.brightness(value, method: method)
+        )
+    }
+    
+    func brightness(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
+        .init(
+            light: light.brightness(dynamic: value, method: method),
+            dark: dark.brightness(dynamic: value, method: method),
+            lightAccessible: lightAccessible.brightness(dynamic: value, method: method),
+            darkAccessible: darkAccessible.brightness(dynamic: value, method: method)
+        )
+    }
+    
+    func opacity(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
+        .init(
+            light: light.opacity(value, method: method),
+            dark: dark.opacity(value, method: method),
+            lightAccessible: lightAccessible.opacity(value, method: method),
+            darkAccessible: darkAccessible.opacity(value, method: method)
+        )
+    }
+    
+    func opacity(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
+        .init(
+            light: light.opacity(dynamic: value, method: method),
+            dark: dark.opacity(dynamic: value, method: method),
+            lightAccessible: lightAccessible.opacity(dynamic: value, method: method),
+            darkAccessible: darkAccessible.opacity(dynamic: value, method: method)
         )
     }
 }
@@ -209,13 +199,10 @@ public extension FoundationUI.DynamicColor {
         func adjustColor(_ color: FoundationUI.DynamicColor) -> FoundationUI.DynamicColor {
             switch self {
             case .vibrant:
-                color
-                    .makeVariation(
-                        light: { _ in color.light.multiply(opacity: 0.65) },
-                        dark: { _ in color.dark.multiply(opacity: 0.5) },
-                        lightAccessible: { $0 },
-                        darkAccessible: { $0 }
-                    )                
+                var copy = color
+                copy.light = copy.light.opacity(0.65)
+                copy.dark = copy.dark.opacity(0.5)
+                return copy
             }
         }
         

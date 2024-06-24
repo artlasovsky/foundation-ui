@@ -252,6 +252,15 @@ public struct VariableScaleOffset: RawRepresentable {
     }
 }
 
+#warning("Simplify! Disable base/current -> Changes to color should be irrevertable")
+// TODO: Try to hide variations:
+// dynamicColor.{adjustments} // .primary.opacity(0.5).blendMode(.vibrant)
+// dynamicColor.{variation} // .primary.background
+// .foundation(.modifier(\.{variation}))
+// TODO: Add override:
+// .primary.opacity(0.5, method: .{multiply | override}) - multiply by default
+// .primary.opacity((components) -> Value, method:)
+
 // TODO: Previews for all theme values
 struct VariablePreview: PreviewProvider {
     // All values should be accessible without explicit type
