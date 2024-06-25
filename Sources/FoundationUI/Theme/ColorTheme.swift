@@ -72,7 +72,8 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
                 .brightness(dynamic: { $0.isSaturated ? 0.98 : 0.97 }, method: .override)
                 .saturation(0.02),
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.1 : 0.05 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.07 : 0.05 }, method: .override)
+                .saturation(0.5)
         )
     }
     /// Content background
@@ -113,7 +114,8 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
                 .brightness(dynamic: { $0.isSaturated ? 0.94 : 0.87 }, method: .override)
                 .saturation(0.35),
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.61 : 0.27 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.49 : 0.27 }, method: .override)
+                .saturation(1)
         )
     }
     /// Active / Selected UI element background
@@ -123,7 +125,8 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
                 .brightness(dynamic: { $0.isSaturated ? 0.92 : 0.83 }, method: .override)
                 .saturation(0.5),
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.68 : 0.32 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.54 : 0.32 }, method: .override)
+                .saturation(1)
         )
     }
     /// Subtle borders and separators
@@ -133,8 +136,8 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
                 .brightness(dynamic: { $0.isSaturated ? 0.82 : 0.77 }, method: .override)
                 .saturation(0.58),
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.72 : 0.37 }, method: .override)
-                .saturation(0.97)
+                .brightness(dynamic: { $0.isSaturated ? 0.62 : 0.4 }, method: .override)
+                .saturation(1)
         )
     }
     /// UI element border and focus rings
@@ -144,19 +147,19 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
                 .brightness(dynamic: { $0.isSaturated ? 0.78 : 0.7 }, method: .override)
                 .saturation(0.8),
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.8 : 0.42 }, method: .override)
-                .saturation(0.95)
+                .brightness(dynamic: { $0.isSaturated ? 0.7 : 0.45 }, method: .override)
+                .saturation(0.99)
         )
     }
     /// Hovered UI element border
     var borderEmphasized: Self {
         .init(
             light: self.light
-                .brightness(dynamic: { $0.isSaturated ? 0.65 : 0.6 }, method: .override)
-                .saturation(0.8),
+                .brightness(dynamic: { $0.isSaturated ? 0.7 : 0.6 }, method: .override)
+                .saturation(0.9),
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.85 : 0.48 }, method: .override)
-                .saturation(0.9)
+                .brightness(dynamic: { $0.isSaturated ? 0.76 : 0.49 }, method: .override)
+                .saturation(1)
         )
     }
     /// Solid backgrounds
@@ -176,10 +179,10 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     var text: Self {
         .init(
             light: self.light
-                .brightness(dynamic: { $0.isSaturated ? 0.45 : 0.24 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.38 : 0.24 }, method: .override)
                 .saturation(0.95),
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.92 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.96 : 0.95 }, method: .override)
                 .saturation(0.15)
         )
     }
@@ -187,11 +190,11 @@ public extension DynamicColorDefaults where Self == FoundationUI.DynamicColor {
     var textEmphasized: Self {
         .init(
             light: self.light
-                .brightness(dynamic: { $0.isSaturated ? 0.35 : 0.12 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.24 : 0.12 }, method: .override)
                 .saturation(0.8)
             ,
             dark: self.dark
-                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.98 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.97 : 0.99 }, method: .override)
                 .saturation(0.05)
         )
     }
@@ -234,7 +237,7 @@ struct DynamicColorPreview: PreviewProvider {
                     ZStack {
                         Rectangle()
                             .foundation(.foreground(variant))
-                            .foundation(.size([\.solid, \.border, \.fill, \.background, \.text].contains(variant) ? .small.offset(.quarter.up) : .small))
+                            .foundation(.size([\.solid/*, \.border, \.fill, \.background, \.text*/].contains(variant) ? .small.offset(.quarter.up) : .small))
                         if variant == \.solid {
                             VStack {
                                 let tint = tint[keyPath: variant]
