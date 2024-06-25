@@ -22,6 +22,7 @@ public extension Animation {
 }
 
 // MARK: - Variable Theme
+#warning("Initializable theme struct")
 public extension FoundationUI.Variable {
     struct Theme<V>: VariableTheme {
         public typealias Value = V
@@ -252,15 +253,6 @@ public struct VariableScaleOffset: RawRepresentable {
     }
 }
 
-#warning("Simplify! Disable base/current -> Changes to color should be irrevertable")
-// TODO: Try to hide variations:
-// dynamicColor.{adjustments} // .primary.opacity(0.5).blendMode(.vibrant)
-// dynamicColor.{variation} // .primary.background
-// .foundation(.modifier(\.{variation}))
-// TODO: Add override:
-// .primary.opacity(0.5, method: .{multiply | override}) - multiply by default
-// .primary.opacity((components) -> Value, method:)
-
 // TODO: Previews for all theme values
 struct VariablePreview: PreviewProvider {
     // All values should be accessible without explicit type
@@ -268,9 +260,6 @@ struct VariablePreview: PreviewProvider {
     static let padding: CGFloat = .foundation.padding(.regular)
     static var previews: some View {
         HStack(alignment: .top, spacing: 10) {
-            Rectangle().frame(width: .foundation.size(.regular),
-                              height: FoundationUI.Variable.Theme.size(.small))
-            Text(FoundationUI.Variable.Theme.padding(.small).description)
             FoundationUI.Variable.Padding.swatch(for: [
                 .xxSmall,
                 .xSmall,
@@ -289,7 +278,7 @@ struct VariablePreview: PreviewProvider {
                 .xLarge,
                 .xxLarge
             ])
-            FoundationUI.Variable.Font.swatch(for: [
+            FoundationUI.Variable.Radius.swatch(for: [
                 .xxSmall,
                 .xSmall,
                 .small,
@@ -298,6 +287,24 @@ struct VariablePreview: PreviewProvider {
                 .xLarge,
                 .xxLarge
             ])
+            FoundationUI.Variable.Size.swatch(for: [
+                .xxSmall,
+                .xSmall,
+                .small,
+                .regular,
+                .large,
+                .xLarge,
+                .xxLarge
+            ])
+//            FoundationUI.Variable.Font.swatch(for: [
+//                .xxSmall,
+//                .xSmall,
+//                .small,
+//                .regular,
+//                .large,
+//                .xLarge,
+//                .xxLarge
+//            ])
         }
         .padding()
     }
