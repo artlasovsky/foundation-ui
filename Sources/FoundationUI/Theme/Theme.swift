@@ -23,10 +23,15 @@ extension FoundationUI {
         public init(baseValue: CGFloat = 8) {
             self.baseValue = baseValue
         }
-        public var padding: FoundationUI.Token.Padding { .init(baseValue) }
-        public var spacing: FoundationUI.Token.Spacing { .init(baseValue / 2) }
+        public var padding: FoundationUI.Token.Padding { .init(.init(base: baseValue)) }
+        public var spacing: FoundationUI.Token.Spacing { .init(.init(base: baseValue / 2)) }
 //        public var radius:
-        public var size: MultiplierScale { .init(baseValue, multiplier: 2)}
+        public var size: FoundationUI.Token.Size { .init(.init(base: baseValue * 8)) }
+        
+        public var color: FoundationUI.Token.DynamicColor { .primary }
+        
+        // font
+        // shadow
     }
 }
 
@@ -41,10 +46,13 @@ public protocol ThemeConfiguration {
     associatedtype Spacing = FoundationToken
     associatedtype Size = FoundationToken
     associatedtype Radius = FoundationToken
+    associatedtype ColorToken = FoundationColorToken
     var padding: Padding { get }
     var spacing: Spacing { get }
     var size: Size { get }
 //    var radius: Radius { get }
+    
+    var color: ColorToken { get }
 }
 
 public protocol FoundationUITheme {
@@ -109,15 +117,12 @@ extension FoundationTokenScale {
 extension FoundationUI {
     public enum Token {        
         public struct Padding: FoundationToken {
+            public typealias Result = CGFloat
+            
             public struct Configuration {
                 let base: CGFloat
                 var multiplier: CGFloat = 2
             }
-            public func callAsFunction(_ scale: Scale) -> CGFloat {
-                scale((base.base, base.multiplier))
-            }
-            
-            public typealias Result = CGFloat
             
             public let base: Configuration
             
@@ -125,8 +130,8 @@ extension FoundationUI {
                 self.base = base
             }
             
-            public init(_ base: CGFloat, multiplier: CGFloat = 2) {
-                self.base = .init(base: base, multiplier: multiplier)
+            public func callAsFunction(_ scale: Scale) -> CGFloat {
+                scale((base.base, base.multiplier))
             }
             
             public struct Scale: MultiplierScaleDefault {
@@ -139,15 +144,41 @@ extension FoundationUI {
         
         public struct Spacing: FoundationToken {
             public typealias Result = CGFloat
-            public let base: CGFloat
             
-            public init(_ base: CGFloat) {
+            public struct Configuration {
+                let base: CGFloat
+                var multiplier: CGFloat = 2
+            }
+            
+            public let base: Configuration
+            
+            public init(_ base: Base) {
                 self.base = base
             }
             
-            public struct Scale: FoundationTokenScaleDefault {
-                public var adjust: (CGFloat) -> CGFloat
-                public init(_ adjust: @escaping (CGFloat) -> CGFloat) {
+            public func callAsFunction(_ scale: Scale) -> CGFloat {
+                scale((base.base, base.multiplier))
+            }
+            
+            public struct Scale: MultiplierScaleDefault {
+                public var adjust: ((CGFloat, CGFloat)) -> CGFloat
+                public init(_ adjust: @escaping ((CGFloat, CGFloat)) -> CGFloat) {
+                    self.adjust = adjust
+                }
+            }
+        }
+        
+        #warning("Optimize Spacing and Padding by confirming to FoundationMultiplierToken")
+        public struct Size: FoundationMultiplierToken {
+            public let base: FoundationMultiplierTokenConfiguration
+            
+            public init(_ base: FoundationMultiplierTokenConfiguration) {
+                self.base = base
+            }
+            
+            public struct Scale: MultiplierScaleDefault {
+                public var adjust: ((CGFloat, CGFloat)) -> CGFloat
+                public init(_ adjust: @escaping ((CGFloat, CGFloat)) -> CGFloat) {
                     self.adjust = adjust
                 }
             }
@@ -155,8 +186,23 @@ extension FoundationUI {
     }
 }
 
+public struct FoundationMultiplierTokenConfiguration {
+    let base: CGFloat
+    var multiplier: CGFloat = 2
+}
 
-public protocol FoundationTokenScaleDefault: FoundationTokenScale where SourceValue == CGFloat, ResultValue == CGFloat {}
+public protocol FoundationMultiplierToken: FoundationToken where Base == FoundationMultiplierTokenConfiguration, Scale: MultiplierScaleDefault, Result == CGFloat {
+    
+}
+
+extension FoundationMultiplierToken {
+    public func callAsFunction(_ scale: Scale) -> Result {
+        scale((base.base, base.multiplier))
+    }
+}
+
+
+public protocol FoundationTokenScaleDefault: FoundationTokenSizeScale where SourceValue == CGFloat, ResultValue == CGFloat {}
 
 extension FoundationTokenScaleDefault {
     public static var xxSmall: Self { Self { $0 / 8 } }
@@ -170,7 +216,7 @@ extension FoundationTokenScaleDefault {
 
 // MARK: - Multiplier Scale
 
-public protocol MultiplierScaleDefault: FoundationTokenScale where SourceValue == (CGFloat, CGFloat), ResultValue == CGFloat {}
+public protocol MultiplierScaleDefault: FoundationTokenSizeScale where SourceValue == (CGFloat, CGFloat), ResultValue == CGFloat {}
 
 extension MultiplierScaleDefault {
     public static var xxSmall: Self { Self { $0 / pow($1, 3) } }
@@ -269,14 +315,64 @@ extension FoundationUI.Token {
             public static let xxLarge = Self(value: .init(color: .blue, width: 1))
         }
     }
+}
+
+// MARK: Color Token
+
+public protocol FoundationColorToken: ShapeStyle {
+    associatedtype Scale
     
-//    public struct Color: FoundationToken {
-//        public typealias Result = FoundationUI.DynamicColor
-//        
-//        public var base: FoundationUI.DynamicColor
-//        
-////        struct Scale:
-//    }
+    func scale(_ scale: Scale) -> Self
+    func callAsFunction(_ color: Self) -> Self
+    
+    func opacity(_ value: CGFloat) -> Self
+}
+
+public extension FoundationColorToken {
+    func callAsFunction(_ color: Self) -> Self {
+        color
+    }
+}
+
+extension FoundationUI.DynamicColor: FoundationColorToken {
+    public func opacity(_ value: CGFloat) -> FoundationUI.DynamicColor {
+        opacity(value, method: .multiply)
+    }
+}
+
+public extension FoundationUI.Token {
+    typealias DynamicColor = FoundationUI.DynamicColor
+}
+
+extension FoundationUI.DynamicColor {
+    public func scale(_ scale: Scale) -> Self {
+        scale(self)
+    }
+    
+    public func callAsFunction(_ color: Self) -> Self {
+        color
+    }
+    
+    public struct Scale: DynamicColorScale {
+        public typealias SourceValue = FoundationUI.DynamicColor
+        public typealias ResultValue = FoundationUI.DynamicColor
+        public var adjust: (SourceValue) -> ResultValue
+        
+        public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
+            self.adjust = adjust
+        }
+    }
+}
+
+struct Test {
+    static func color(_ color: FoundationUI.Token.DynamicColor) -> FoundationUI.Token.DynamicColor {
+        color
+    }
+    
+    static func env(_ scale: FoundationUI.Token.DynamicColor.Scale) -> FoundationUI.Token.DynamicColor {
+        let envColor = FoundationUI.Token.DynamicColor.red
+        return envColor.scale(scale)
+    }
 }
 
 // FoundationUI.theme.padding(.large) // scale
@@ -286,6 +382,16 @@ extension FoundationUI.Token {
 
 #Preview {
     VStack {
+        Rectangle().foundation(.size(.small))
+            .foregroundStyle(Test.env(.background))
+        Rectangle().foundation(.size(.small))
+            .foregroundStyle(Test.color(.primary))
+        Rectangle().foundation(.size(.small))
+            .foregroundStyle(Test.color(.primary.scale(.background)))
+        Rectangle().foundation(.size(.small))
+            .foregroundStyle(FoundationUI.theme.color(.primary))
+        
+        
         Text("Hello!").font(FoundationUI.Token.Font(13)(.xxSmall))
         Text("Hello!").font(FoundationUI.Token.Font(13)(.xSmall))
         Text("Hello!").font(FoundationUI.Token.Font(13)(.small))

@@ -9,25 +9,31 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.ForegroundModifier {
-    static func foreground(_ tint: FoundationUI.DynamicColor) -> Self {
-        .init(tint: tint, keyPath: nil)
+    static func foreground(_ color: FoundationUI.Theme.ColorToken) -> Self {
+        .init(tint: color, scale: nil)
     }
     
-    static func foreground(_ keyPath: FoundationUI.DynamicColor.VariationKeyPath = \.text) -> Self {
-        .init(tint: nil, keyPath: keyPath)
+    static func foregroundTinted(_ scale: FoundationUI.Theme.ColorToken.Scale) -> Self {
+        .init(tint: nil, scale: scale)
     }
 }
 
-public extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {    
     struct ForegroundModifier: FoundationUIModifier {
-        @DynamicColorTint private var tint
+        @Environment(\.dynamicColorTint) private var environmentTint
+        let tint: FoundationUI.DynamicColor?
+        let scale: FoundationUI.DynamicColor.Scale?
         
-        init(tint: FoundationUI.DynamicColor?, keyPath: FoundationUI.DynamicColor.VariationKeyPath?) {
-            self._tint = .init(tint, keyPath: keyPath)
+        private var color: FoundationUI.DynamicColor {
+            let tint = tint ?? environmentTint
+            if let scale {
+                return tint.scale(scale)
+            }
+            return tint
         }
         
         public func body(content: Content) -> some View {
-            content.foregroundStyle(tint)
+            content.foregroundStyle(color)
         }
     }
 }
@@ -39,7 +45,7 @@ struct ForegroundModifier_Preview: PreviewProvider {
             Text("Foreground")
                 .foundation(.foreground(.red))
             Text("Foreground")
-                .foundation(.foreground(\.text))
+                .foundation(.foregroundTinted(.text))
                 .foundation(.tint(.red))
         }
         .padding()
