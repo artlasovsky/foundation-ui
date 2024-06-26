@@ -94,13 +94,13 @@ struct BackgroundModifier_Preview: PreviewProvider {
     static var previews: some View {
         VStack {
             Text("Basic")
-                .foundation(.padding())
+                .foundation(.padding(.regular))
                 .foundation(.background(.primary.fillEmphasized))
             Text("Env")
-                .foundation(.padding())
+                .foundation(.padding(.regular))
                 .foundation(.background(\.fillEmphasized))
             Text("Adj")
-                .foundation(.padding())
+                .foundation(.padding(.regular))
                 .border(.white.opacity(0.2))
                 .foundation(.background(\.fillEmphasized)
                     .gradientMask(.init([.black, .clear]))

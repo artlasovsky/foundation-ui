@@ -8,14 +8,13 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Default Theme Configuration
-/// Extract to separate package,
-/// but include it by default
-///
-/// `import FoundationUI` - Core + Default Theme
-/// `import FoundationUICore` - Core only
-///
+extension CGFloat {
+    static var theme: FoundationUI.Theme { FoundationUI.theme }
+}
 
+// MARK: - Default Theme Configuration
+
+#warning("Extract to own file")
 extension FoundationUI {
     public struct Theme: ThemeConfiguration {
         public var baseValue: CGFloat
@@ -26,7 +25,7 @@ extension FoundationUI {
         public var padding: FoundationUI.Token.Padding { .init(.init(base: baseValue)) }
         public var spacing: FoundationUI.Token.Spacing { .init(.init(base: baseValue / 2)) }
 //        public var radius:
-        public var size: FoundationUI.Token.Size { .init(.init(base: baseValue * 8)) }
+        public var size: FoundationUI.Token.Size { .init(base: baseValue * 8, multiplier: 2) }
         
         public var color: FoundationUI.Token.DynamicColor { .primary }
         
@@ -41,13 +40,18 @@ public extension FoundationUITheme {
 
 // MARK: - Theme Protocols
 
-public protocol ThemeConfiguration {
+public protocol ThemeConfigurationCGFloat {
     associatedtype Padding = FoundationToken
+    var padding: Padding { get }
+}
+
+public protocol ThemeConfiguration: ThemeConfigurationCGFloat {
+//    associatedtype Padding = FoundationToken
     associatedtype Spacing = FoundationToken
     associatedtype Size = FoundationToken
     associatedtype Radius = FoundationToken
     associatedtype ColorToken = FoundationColorToken
-    var padding: Padding { get }
+//    var padding: Padding { get }
     var spacing: Spacing { get }
     var size: Size { get }
 //    var radius: Radius { get }
@@ -68,20 +72,13 @@ public protocol FoundationToken {
     associatedtype Base
     associatedtype Result
     associatedtype Scale: FoundationTokenScale
+    
     var base: Base { get }
     
     init(_ base: Base)
     
     func callAsFunction(_ scale: Scale) -> Result
 }
-
-extension FoundationToken {
-    public func callAsFunction(_ scale: Scale) -> Result where Scale.SourceValue == Base, Scale.ResultValue == Result {
-        scale(base)
-    }
-}
-
-// MARK: - Scale Protocol
 
 public protocol FoundationTokenScale {
     associatedtype SourceValue
@@ -93,6 +90,23 @@ public protocol FoundationTokenScale {
     init(_ adjust: @escaping (SourceValue) -> ResultValue)
 }
 
+extension FoundationTokenScale {
+    public func callAsFunction(_ base: SourceValue) -> ResultValue {
+        adjust(base)
+    }
+    public init(value: ResultValue) {
+        self.init({ _ in value })
+    }
+}
+
+extension FoundationToken {
+    public func callAsFunction(_ scale: Scale) -> Result where Scale.SourceValue == Base, Scale.ResultValue == Result {
+        scale(base)
+    }
+}
+
+// MARK: - Sized Token Protocol
+
 public protocol FoundationTokenSizeScale: FoundationTokenScale {
     static var xxSmall: Self { get }
     static var xSmall: Self { get }
@@ -103,14 +117,76 @@ public protocol FoundationTokenSizeScale: FoundationTokenScale {
     static var xxLarge: Self { get }
 }
 
-extension FoundationTokenScale {
-    public func callAsFunction(_ base: SourceValue) -> ResultValue {
-        adjust(base)
+// MARK: - Multiplier Token Protocol
+
+public protocol FoundationTokenWithMultiplier: FoundationToken
+where Base == Configuration,
+      Scale: FoundationTokenMultiplierScale,
+      Result == CGFloat
+{
+    typealias Configuration = (base: CGFloat, multiplier: CGFloat)
+}
+
+public protocol FoundationTokenMultiplierScale: FoundationTokenScale
+where SourceValue == FoundationTokenWithMultiplier.Configuration,
+      ResultValue == CGFloat
+{}
+
+public protocol FoundationTokenMultiplierSizeScale: FoundationTokenSizeScale, FoundationTokenMultiplierScale {}
+
+extension FoundationTokenWithMultiplier {
+    public func callAsFunction(_ scale: Scale) -> Result {
+        scale(base)
     }
-    public init(value: ResultValue) {
-        self.init({ _ in value })
+    
+    public init(base: CGFloat, multiplier: CGFloat = 2) {
+        self.init((base, multiplier))
     }
 }
+
+// MARK: Multiplier Token Defaults
+
+public protocol FoundationTokenWithMultiplierScaleDefault: FoundationTokenMultiplierSizeScale {}
+
+extension FoundationTokenWithMultiplierScaleDefault {
+    public static var xxSmall: Self { Self { $0 / pow($1, 3) } }
+    public static var xSmall: Self { Self { $0 / pow($1, 2) } }
+    public static var small: Self { Self { $0 / $1 } }
+    public static var regular: Self { Self { base, _ in base } }
+    public static var large: Self { Self { $0 * $1 } }
+    public static var xLarge: Self { Self { $0 * pow($1, 2) } }
+    public static var xxLarge: Self { Self { ($0 * pow($1, 3)) } }
+}
+
+// MARK: - Token Scale Step Extensions
+
+public enum TokenScaleStep: CGFloat {
+    case full = 1
+    case half = 0.5
+    case third = 0.33
+    case quarter = 0.25
+}
+
+public extension FoundationTokenScale where SourceValue == (base: CGFloat, multiplier: CGFloat), ResultValue == CGFloat {
+    public func up(_ step: TokenScaleStep) -> Self {
+        .init { base, multiplier in
+            let nextStep = base * multiplier
+            let difference = nextStep - base
+            
+            return nextStep - difference * step.rawValue
+        }
+    }
+    
+    public func down(_ step: TokenScaleStep) -> Self {
+        .init { base, multiplier in
+            let nextStep = base / multiplier
+            let difference = base - nextStep
+            
+            return nextStep + difference * step.rawValue
+        }
+    }
+}
+
 
 // MARK: - Tokens
 
@@ -134,9 +210,9 @@ extension FoundationUI {
                 scale((base.base, base.multiplier))
             }
             
-            public struct Scale: MultiplierScaleDefault {
-                public var adjust: ((CGFloat, CGFloat)) -> CGFloat
-                public init(_ adjust: @escaping ((CGFloat, CGFloat)) -> CGFloat) {
+            public struct Scale: FoundationTokenWithMultiplierScaleDefault {
+                public var adjust: (SourceValue) -> ResultValue
+                public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
                     self.adjust = adjust
                 }
             }
@@ -160,25 +236,25 @@ extension FoundationUI {
                 scale((base.base, base.multiplier))
             }
             
-            public struct Scale: MultiplierScaleDefault {
-                public var adjust: ((CGFloat, CGFloat)) -> CGFloat
-                public init(_ adjust: @escaping ((CGFloat, CGFloat)) -> CGFloat) {
+            public struct Scale: FoundationTokenWithMultiplierScaleDefault {
+                public var adjust: (SourceValue) -> ResultValue
+                public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
                     self.adjust = adjust
                 }
             }
         }
         
         #warning("Optimize Spacing and Padding by confirming to FoundationMultiplierToken")
-        public struct Size: FoundationMultiplierToken {
-            public let base: FoundationMultiplierTokenConfiguration
+        public struct Size: FoundationTokenWithMultiplier {
+            public let base: Base
             
-            public init(_ base: FoundationMultiplierTokenConfiguration) {
+            public init(_ base: Base) {
                 self.base = base
             }
             
-            public struct Scale: MultiplierScaleDefault {
-                public var adjust: ((CGFloat, CGFloat)) -> CGFloat
-                public init(_ adjust: @escaping ((CGFloat, CGFloat)) -> CGFloat) {
+            public struct Scale: FoundationTokenWithMultiplierScaleDefault {
+                public var adjust: (SourceValue) -> ResultValue
+                public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
                     self.adjust = adjust
                 }
             }
@@ -186,75 +262,7 @@ extension FoundationUI {
     }
 }
 
-public struct FoundationMultiplierTokenConfiguration {
-    let base: CGFloat
-    var multiplier: CGFloat = 2
-}
-
-public protocol FoundationMultiplierToken: FoundationToken where Base == FoundationMultiplierTokenConfiguration, Scale: MultiplierScaleDefault, Result == CGFloat {
-    
-}
-
-extension FoundationMultiplierToken {
-    public func callAsFunction(_ scale: Scale) -> Result {
-        scale((base.base, base.multiplier))
-    }
-}
-
-
-public protocol FoundationTokenScaleDefault: FoundationTokenSizeScale where SourceValue == CGFloat, ResultValue == CGFloat {}
-
-extension FoundationTokenScaleDefault {
-    public static var xxSmall: Self { Self { $0 / 8 } }
-    public static var xSmall: Self { Self { $0 / 4 } }
-    public static var small: Self { Self { $0 / 2 } }
-    public static var regular: Self { Self { $0 } }
-    public static var large: Self { Self { $0 * 2 } }
-    public static var xLarge: Self { Self { $0 * 4 } }
-    public static var xxLarge: Self { Self { $0 * 8 } }
-}
-
-// MARK: - Multiplier Scale
-
-public protocol MultiplierScaleDefault: FoundationTokenSizeScale where SourceValue == (CGFloat, CGFloat), ResultValue == CGFloat {}
-
-extension MultiplierScaleDefault {
-    public static var xxSmall: Self { Self { $0 / pow($1, 3) } }
-    public static var xSmall: Self { Self { $0 / pow($1, 2) } }
-    public static var small: Self { Self { $0 / $1 } }
-    public static var regular: Self { Self { base, _ in base } }
-    public static var large: Self { Self { $0 * $1 } }
-    public static var xLarge: Self { Self { $0 * pow($1, 2) } }
-    public static var xxLarge: Self { Self { ($0 * pow($1, 3)) } }
-}
-
-public struct MultiplierScale: FoundationToken {
-    public func callAsFunction(_ scale: Scale) -> CGFloat {
-        scale((base, multiplier)).precise(1)
-    }
-    
-    public let base: CGFloat
-    public let multiplier: CGFloat
-    
-    public init(_ base: CGFloat) {
-        self.base = base
-        self.multiplier = 2
-    }
-    
-    public init(_ base: CGFloat, multiplier: CGFloat) {
-        self.base = base
-        self.multiplier = multiplier
-    }
-    
-    public struct Scale: MultiplierScaleDefault {
-        public var adjust: ((CGFloat, CGFloat)) -> CGFloat
-        public init(_ adjust: @escaping ((CGFloat, CGFloat)) -> CGFloat) {
-            self.adjust = adjust
-        }
-    }
-}
-
-// MARK: - Font Scale
+// MARK: - Token: Font
 
 extension FoundationUI.Token {
     // Mixed Types (Input - Output)
@@ -317,7 +325,7 @@ extension FoundationUI.Token {
     }
 }
 
-// MARK: Color Token
+// MARK: Token: Color
 
 public protocol FoundationColorToken: ShapeStyle {
     associatedtype Scale
@@ -325,6 +333,9 @@ public protocol FoundationColorToken: ShapeStyle {
     func scale(_ scale: Scale) -> Self
     func callAsFunction(_ color: Self) -> Self
     
+    func hue(_ value: CGFloat) -> Self
+    func saturation(_ value: CGFloat) -> Self
+    func brightness(_ value: CGFloat) -> Self
     func opacity(_ value: CGFloat) -> Self
 }
 
@@ -335,6 +346,15 @@ public extension FoundationColorToken {
 }
 
 extension FoundationUI.DynamicColor: FoundationColorToken {
+    public func hue(_ value: CGFloat) -> FoundationUI.DynamicColor {
+        hue(value, method: .multiply)
+    }
+    public func saturation(_ value: CGFloat) -> FoundationUI.DynamicColor {
+        saturation(value, method: .multiply)
+    }
+    public func brightness(_ value: CGFloat) -> FoundationUI.DynamicColor {
+        brightness(value, method: .multiply)
+    }
     public func opacity(_ value: CGFloat) -> FoundationUI.DynamicColor {
         opacity(value, method: .multiply)
     }
@@ -397,10 +417,10 @@ struct Test {
         Text("Hello!").font(FoundationUI.Token.Font(13)(.small))
         Text("Hello!").font(FoundationUI.Token.Font(13)(.regular))
             .border(FoundationUI.Token.Border(.init(color: .red, width: 2))(.regular).color)
-        Text(MultiplierScale(9, multiplier: 1.5)(.xSmall).description)
-        Text(MultiplierScale(9, multiplier: 1.5)(.small).description)
-        Text(MultiplierScale(9, multiplier: 1.5)(.regular).description)
-        Text(MultiplierScale(9, multiplier: 1.5)(.large).description)
+//        Text(MultiplierScale(9, multiplier: 1.5)(.xSmall).description)
+//        Text(MultiplierScale(9, multiplier: 1.5)(.small).description)
+//        Text(MultiplierScale(9, multiplier: 1.5)(.regular).description)
+//        Text(MultiplierScale(9, multiplier: 1.5)(.large).description)
         Text(FoundationUI.theme.padding(.regular).description)
         Text(FoundationUI.theme.padding(.large).description)
         Text(FoundationUI.theme.spacing(.regular).description)

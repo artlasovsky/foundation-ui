@@ -578,7 +578,7 @@ struct Button_Preview: PreviewProvider {
         @State private var isHovered: Bool = false
         var body: some View {
             Text("Button")
-                .foundation(.padding())
+                .foundation(.padding(.regular))
                 .foundation(.foregroundTinted(.text))
                 .foundation(.background(isHovered ? \.background : \.backgroundEmphasized))
                 .foundation(.border(\.borderFaded))

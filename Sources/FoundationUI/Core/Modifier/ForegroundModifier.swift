@@ -18,7 +18,7 @@ public extension FoundationUIModifier where Self == FoundationUI.Modifier.Foregr
     }
 }
 
-public extension FoundationUI.Modifier {    
+public extension FoundationUI.Modifier {
     struct ForegroundModifier: FoundationUIModifier {
         @Environment(\.dynamicColorTint) private var environmentTint
         let tint: FoundationUI.DynamicColor?
