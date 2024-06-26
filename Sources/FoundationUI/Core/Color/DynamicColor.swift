@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 
+#warning("Update this")
 /// Permanent color
 /// `color: red.background`
 ///
@@ -34,9 +35,7 @@ public extension FoundationUI {
         private var blendMode: BlendMode = .normal
         private var extendedBlendMode: ExtendedBlendMode? = nil
         
-        private var colorScheme: FoundationUI.ColorScheme?
-        
-        let id = UUID()
+        private var colorScheme: FoundationUI.ColorScheme?        
     }
 }
 
@@ -193,7 +192,7 @@ public extension FoundationUI.DynamicColor {
 // MARK: - Types
 
 public extension FoundationUI.DynamicColor {
-    enum ExtendedBlendMode: Sendable {
+    enum ExtendedBlendMode: Sendable, Hashable {
         case vibrant
         
         func adjustColor(_ color: FoundationUI.DynamicColor) -> FoundationUI.DynamicColor {
