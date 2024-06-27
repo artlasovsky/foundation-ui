@@ -34,14 +34,12 @@ public extension FoundationUI {
         
         private var blendMode: BlendMode = .normal
         private var extendedBlendMode: ExtendedBlendMode? = nil
-        
-        private var colorScheme: FoundationUI.ColorScheme?        
     }
 }
 
 extension FoundationUI.DynamicColor: ShapeStyle {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-        let colorScheme = colorScheme ?? FoundationUI.ColorScheme(environment)
+        let colorScheme = FoundationUI.ColorScheme(environment)
         let color = switch colorScheme {
             case .light: light
             case .dark: dark
@@ -55,15 +53,16 @@ extension FoundationUI.DynamicColor: ShapeStyle {
     }
     
     public func resolveColor(in environment: EnvironmentValues) -> Color {
-        switch FoundationUI.ColorScheme(environment) {
+        let colorScheme = FoundationUI.ColorScheme(environment)
+        switch colorScheme {
         case .light:
-            light.color
+            return light.color
         case .dark:
-            dark.color
+            return dark.color
         case .lightAccessible:
-            lightAccessible.color
+            return lightAccessible.color
         case .darkAccessible:
-            darkAccessible.color
+            return darkAccessible.color
         }
     }
 }
@@ -184,7 +183,22 @@ public extension FoundationUI.DynamicColor {
     
     func colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> Self {
         var copy = self
-        copy.colorScheme = colorScheme
+        let components: Components
+        switch colorScheme {
+        case .light:
+            components = light
+        case .dark:
+            components = dark
+        case .lightAccessible:
+            components = lightAccessible
+        case .darkAccessible:
+            components = darkAccessible
+        }
+        copy.light = components
+        copy.dark = components
+        copy.lightAccessible = components
+        copy.darkAccessible = components
+//        copy.colorScheme = colorScheme
         return copy
     }
 }
@@ -231,7 +245,6 @@ extension FoundationUI.DynamicColor: Equatable {
         && lhs.dark == rhs.dark
         && lhs.lightAccessible == rhs.lightAccessible
         && lhs.darkAccessible == rhs.darkAccessible
-        && lhs.colorScheme == rhs.colorScheme
         && lhs.blendMode == rhs.blendMode
         && lhs.extendedBlendMode == rhs.extendedBlendMode
     }

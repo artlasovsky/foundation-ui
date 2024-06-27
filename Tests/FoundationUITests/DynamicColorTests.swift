@@ -92,6 +92,17 @@ final class DynamicColorTests: XCTestCase {
         XCTAssert(adjustedGrayscale.resolveColor(in: env) == Color(hue: 0, saturation: 0, brightness: 0.8))
     }
     
+    func testColorSchemeOverride() throws {
+        let color = FoundationUI.DynamicColor.primary.scale(.background)
+        
+        XCTAssert(color.light == color.colorScheme(.light).dark)
+        XCTAssert(color.light == color.colorScheme(.light).light)
+        XCTAssert(color.light == color.colorScheme(.light).lightAccessible)
+        XCTAssert(color.light == color.colorScheme(.light).darkAccessible)
+        
+        XCTAssert(color.light.opacity(0.5) == color.colorScheme(.light).opacity(0.5).darkAccessible)
+    }
+    
     #warning("BlendMode Tests")
     #warning("Variation Tests")
     #warning("SwiftUI Tests")
