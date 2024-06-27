@@ -35,11 +35,6 @@ public protocol VariableTheme {
 }
 
 // MARK: - Variable Theme Extensions
-public extension VariableTheme where Value == ShadowConfiguration {
-    static func shadow(_ variable: FoundationUI.Variable.Shadow) -> Value {
-        variable.value
-    }
-}
 
 public extension VariableTheme where Value == Font {
     static func font(_ variable: FoundationUI.Variable.Font) -> Value {
@@ -138,31 +133,8 @@ extension FoundationUI {
             
             public static let `regular` = Self("regular", .interactiveSpring())
         }
-        
-        public struct Shadow: VariableScale {
-            public var value: ShadowConfiguration
-            public var label: String?
-            public init(value: ShadowConfiguration, label: String?) {
-                self.value = value
-                self.label = label
-            }
-            private static let colorVariable: FoundationUI.DynamicColor = .defaultShadow
-            public static var xxSmall = Self("xxSmall", .init(radius: 0.5, colorVariable: colorVariable.opacity(0.1), x: 0, y: 0.5))
-            public static var xSmall = Self("xSmall", .init(radius: 1, colorVariable: colorVariable.opacity(0.15), x: 0, y: 1))
-            public static var small = Self("small", .init(radius: 1.5, colorVariable: colorVariable.opacity(0.2), x: 0, y: 1))
-            public static var regular = Self("regular", .init(radius: 2.5, colorVariable: colorVariable.opacity(0.25), x: 0, y: 1))
-            public static var large = Self("large", .init(radius: 3.5, colorVariable: colorVariable.opacity(0.3), x: 0, y: 1))
-            public static var xLarge = Self("xLarge", .init(radius: 4, colorVariable: colorVariable.opacity(0.4), x: 0, y: 1))
-            public static var xxLarge = Self("xxLarge", .init(radius: 12, colorVariable: colorVariable.opacity(0.6), x: 0, y: 1))
-        }
     }
 }
-
-internal extension FoundationUI.DynamicColor {
-    #warning("Test with dark theme, make it darker if needed")
-    static let defaultShadow = Self(Self.primary.background.dark)
-}
-
 
 // MARK: Swatch
 public extension VariableValue {

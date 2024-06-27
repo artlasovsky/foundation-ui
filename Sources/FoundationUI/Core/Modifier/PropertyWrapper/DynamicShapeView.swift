@@ -19,7 +19,7 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
     var padding: FoundationUI.Variable.Padding = .init(value: 0)
     
     var gradientMask: FoundationUI.Variable.LinearGradient?
-    var shadow: FoundationUI.Variable.Shadow?
+    var shadow: FoundationUI.Token.Shadow.Scale?
     
     var safeAreaRegions: SafeAreaRegions?
     var safeAreaEdges: Edge.Set?

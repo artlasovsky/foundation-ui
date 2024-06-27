@@ -63,7 +63,7 @@ public extension FoundationUI.Modifier {
             return copy
         }
         
-        public func shadow(_ shadow: FoundationUI.Variable.Shadow) -> Self {
+        public func shadow(_ shadow: FoundationUI.Token.Shadow.Scale) -> Self {
             var copy = self
             copy._shapeView.shadow = shadow
             return copy

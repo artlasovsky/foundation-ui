@@ -32,3 +32,9 @@ public protocol FoundationUITheme {
 }
 
 extension FoundationUI: FoundationUITheme {}
+
+public extension CGFloat {
+    #warning("Replace with foundation later")
+    #warning("Try to filter it to show only CGFloat results")
+    var theme: some ThemeConfiguration { FoundationUI.theme }
+}
