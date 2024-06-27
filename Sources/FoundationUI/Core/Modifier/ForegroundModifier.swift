@@ -9,11 +9,11 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.ForegroundModifier {
-    static func foreground(_ color: FoundationUI.Theme.ColorToken) -> Self {
+    static func foreground(_ color: FoundationUI.Theme.Color) -> Self {
         .init(tint: color, scale: nil)
     }
     
-    static func foregroundTinted(_ scale: FoundationUI.Theme.ColorToken.Scale) -> Self {
+    static func foregroundTinted(_ scale: FoundationUI.Theme.Color.Scale) -> Self {
         .init(tint: nil, scale: scale)
     }
 }

@@ -19,6 +19,8 @@ public extension ShapeStyle {
 
 // MARK: - Default Color Tokens
 
+#warning("extract to Theme/Defaults and remove old implementation with KeyPath")
+
 public extension FoundationUI.Token.DynamicColor {
     #warning("TODO: Accessible Variants")
     static let primary = Self(
@@ -45,7 +47,7 @@ public extension FoundationUI.Token.DynamicColor {
 
 // MARK: - Default Color Scale
 
-public protocol DynamicColorScale: FoundationTokenScale where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
+public protocol DynamicColorScale: FoundationTokenAdjustableScale where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
     static var backgroundFaded: Self { get }
     static var background: Self { get }
     static var backgroundEmphasized: Self { get }
@@ -449,7 +451,7 @@ struct DynamicColorPreview: PreviewProvider {
     }
     struct Scale: View {
         @Environment(\.dynamicColorTint) private var tint
-        private let defaultScale: [FoundationUI.Theme.ColorToken.Scale] = [
+        private let defaultScale: [FoundationUI.Theme.Color.Scale] = [
             .backgroundFaded, .background, .backgroundEmphasized,
             .fillFaded, .fill, .fillEmphasized,
             .borderFaded, .border, .borderEmphasized,
