@@ -15,6 +15,4 @@ import SwiftUI
 /// Modifiers
 ///
 
-public struct FoundationUI {
-    private init() {}
-}
+public enum FoundationUI {}

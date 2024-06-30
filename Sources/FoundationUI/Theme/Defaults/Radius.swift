@@ -9,10 +9,10 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI.DefaultTheme {
-    public var radius: FoundationUI.Token.Radius { .init(base: baseValue, multiplier: 1.4) }
+    public var radius: Token.Radius { .init(base: baseValue, multiplier: 1.4) }
 }
 
-extension FoundationUI.Token {
+extension FoundationUI.DefaultTheme.Token {
     public struct Radius: FoundationDefaultThemeMultiplierToken {
         public let value: Configuration
         
@@ -35,7 +35,7 @@ extension FoundationUI.Token {
 
 #Preview {
     VStack {
-        ForEach(FoundationUI.Token.Radius.Scale.all) { token in
+        ForEach(FoundationUI.DefaultTheme.Token.Radius.Scale.all) { token in
             let cornerRadius = FoundationUI.theme.radius(token.value)
             RoundedRectangle(cornerRadius: cornerRadius)
                 .foundation(.size(.large))

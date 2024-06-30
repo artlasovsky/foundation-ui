@@ -8,10 +8,10 @@
 import Foundation
 
 extension FoundationUI.DefaultTheme {
-    public var spacing: FoundationUI.Token.Spacing { .init(base: baseValue) }
+    public var spacing: Token.Spacing { .init(base: baseValue) }
 }
 
-public extension FoundationUI.Token {
+public extension FoundationUI.DefaultTheme.Token {
     struct Spacing: FoundationDefaultThemeMultiplierToken {
         public let value: Configuration
         

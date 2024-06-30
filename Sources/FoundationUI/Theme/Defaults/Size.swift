@@ -8,10 +8,10 @@
 import Foundation
 
 extension FoundationUI.DefaultTheme {
-    public var size: FoundationUI.Token.Size { .init(base: baseValue * 8, multiplier: 2) }
+    public var size: Token.Size { .init(base: baseValue * 8, multiplier: 2) }
 }
 
-public extension FoundationUI.Token {
+public extension FoundationUI.DefaultTheme.Token {
     struct Size: FoundationDefaultThemeMultiplierToken {
         public let value: Configuration
         

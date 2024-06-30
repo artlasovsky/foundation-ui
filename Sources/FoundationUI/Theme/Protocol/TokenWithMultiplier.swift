@@ -47,7 +47,7 @@ extension FoundationDefaultThemeMultiplierTokenDefaults {
 
 // MARK: - Scale Step Extensions
 
-extension FoundationUI.Token {
+extension FoundationUI.DefaultTheme.Token {
     public enum ScaleStep: CGFloat {
         case full = 1
         case half = 0.5
@@ -59,7 +59,7 @@ extension FoundationUI.Token {
 
 public extension FoundationTokenAdjustableScale
 where SourceValue == FoundationDefaultThemeMultiplierToken.Configuration, ResultValue == CGFloat {
-    func up(_ step: FoundationUI.Token.ScaleStep) -> Self {
+    func up(_ step: FoundationUI.DefaultTheme.Token.ScaleStep) -> Self {
         .init { base, multiplier in
             let nextStep = base * multiplier
             let difference = nextStep - base
@@ -68,7 +68,7 @@ where SourceValue == FoundationDefaultThemeMultiplierToken.Configuration, Result
         }
     }
     
-    func down(_ step: FoundationUI.Token.ScaleStep) -> Self {
+    func down(_ step: FoundationUI.DefaultTheme.Token.ScaleStep) -> Self {
         .init { base, multiplier in
             let nextStep = base / multiplier
             let difference = base - nextStep

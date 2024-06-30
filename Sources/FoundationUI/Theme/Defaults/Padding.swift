@@ -8,10 +8,10 @@
 import Foundation
 
 extension FoundationUI.DefaultTheme {
-    public var padding: FoundationUI.Token.Padding { .init(base: baseValue) }
+    public var padding: Token.Padding { .init(base: baseValue) }
 }
 
-public extension FoundationUI.Token {
+public extension FoundationUI.DefaultTheme.Token {
     struct Padding: FoundationDefaultThemeMultiplierToken {
         public let value: Configuration
         

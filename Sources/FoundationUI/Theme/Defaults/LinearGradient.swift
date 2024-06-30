@@ -9,14 +9,14 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI.DefaultTheme {
-    public var linearGradient: FoundationUI.Token.LinearGradient { .init() }
+    public var linearGradient: Token.LinearGradient { .init() }
 }
 
 extension SwiftUI.LinearGradient {
     public static var foundation = FoundationUI.theme.linearGradient
 }
 
-public extension FoundationUI.Token {
+public extension FoundationUI.DefaultTheme.Token {
     struct LinearGradient: FoundationToken {
         public typealias Result = FoundationLinearGradient
 
@@ -29,7 +29,7 @@ public extension FoundationUI.Token {
             )
         }
         
-        public func callAsFunction(colors: [FoundationUI.Token.Color], startPoint: UnitPoint, endPoint: UnitPoint) -> Result {
+        public func callAsFunction(colors: [FoundationUI.Theme.Color], startPoint: UnitPoint, endPoint: UnitPoint) -> Result {
             FoundationLinearGradient(
                 colors: colors,
                 startPoint: startPoint,
@@ -44,9 +44,9 @@ public extension FoundationUI.Token {
         }
         
         public struct Scale: FoundationTokenScale {
-            public var value: FoundationUI.Token.LinearGradient.Configuration
+            public var value: FoundationUI.Theme.LinearGradient.Configuration
             
-            public init(_ value: FoundationUI.Token.LinearGradient.Configuration) {
+            public init(_ value: FoundationUI.Theme.LinearGradient.Configuration) {
                 self.value = value
             }
             public init(colors: [FoundationUI.Theme.Color], startPoint: UnitPoint, endPoint: UnitPoint) {
@@ -56,7 +56,7 @@ public extension FoundationUI.Token {
         }
         
         public struct FoundationLinearGradient: ShapeStyle {
-            let colors: [FoundationUI.Token.Color]
+            let colors: [FoundationUI.Theme.Color]
             let startPoint: UnitPoint
             let endPoint: UnitPoint
             public func resolve(in environment: EnvironmentValues) -> SwiftUI.LinearGradient {

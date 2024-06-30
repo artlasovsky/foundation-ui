@@ -9,10 +9,10 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI.DefaultTheme {
-    public var font: FoundationUI.Token.Font { .init() }
+    public var font: Token.Font { .init() }
 }
 
-extension FoundationUI.Token {
+extension FoundationUI.DefaultTheme.Token {
     public struct Font: FoundationToken {
         public typealias Result = SwiftUI.Font
         

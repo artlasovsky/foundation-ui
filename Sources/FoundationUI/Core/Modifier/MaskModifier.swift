@@ -37,7 +37,7 @@ public extension FoundationUI.Modifier {
 
 
 #if DEBUG
-private extension FoundationUI.Token.LinearGradient.Scale {
+private extension FoundationUI.DefaultTheme.Token.LinearGradient.Scale {
     static let clearTop = Self(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
 }
 #endif

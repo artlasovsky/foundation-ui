@@ -10,7 +10,7 @@ import SwiftUI
 
 // MARK: - DefaultImplementation
 extension FoundationUI.DefaultTheme {
-    public var color: FoundationUI.Token.Color { .primary }
+    public var color: Token.Color { .primary }
 }
 
 // MARK: - Extensions
@@ -23,12 +23,12 @@ extension ShapeStyle where Self == Color {
 }
 
 // MARK: - Conform to FoundationColorToken
-public extension FoundationUI.Token {
-    public typealias Color = FoundationUI.DynamicColor
+public extension FoundationUI.DefaultTheme.Token {
+    typealias Color = FoundationUI.DynamicColor
     // Get rid of FoundationUI.DynamicColor completely
 }
 
-extension FoundationUI.Token.Color: FoundationColorToken {
+extension FoundationUI.DefaultTheme.Token.Color: FoundationColorToken {
     public func hue(_ value: CGFloat) -> Self {
         hue(value, method: .multiply)
     }
@@ -43,7 +43,7 @@ extension FoundationUI.Token.Color: FoundationColorToken {
     }
 }
 
-extension FoundationUI.Token.Color {
+extension FoundationUI.DefaultTheme.Token.Color {
     public func scale(_ scale: Scale) -> Self {
         scale(self)
     }
@@ -64,7 +64,7 @@ extension FoundationUI.Token.Color {
 }
 
 // MARK: - Default Color Tokens
-public extension FoundationUI.Token.Color {
+public extension FoundationUI.DefaultTheme.Token.Color {
     #warning("TODO: Accessible Variants")
     static let primary = Self(
         light: .init(grayscale: 0.5),
@@ -113,10 +113,10 @@ public protocol DynamicColorScale: FoundationTokenAdjustableScale where SourceVa
 }
 
 public extension DynamicColorScale {
-    public typealias Components = FoundationUI.DynamicColor.Components
-    public typealias ComponentAdjust = (Components) -> Components
+    typealias Components = FoundationUI.DynamicColor.Components
+    typealias ComponentAdjust = (Components) -> Components
     
-    public static func adjust(
+    static func adjust(
         light: @escaping ComponentAdjust,
         dark: @escaping ComponentAdjust,
         lightAccessible: ComponentAdjust? = nil,

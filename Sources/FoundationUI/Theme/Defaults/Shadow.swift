@@ -9,10 +9,10 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI.DefaultTheme {
-    public var shadow: FoundationUI.Token.Shadow { .init() }
+    public var shadow: Token.Shadow { .init() }
 }
 
-extension FoundationUI.Token {
+extension FoundationUI.DefaultTheme.Token {
     public struct Shadow: FoundationToken {
         public func callAsFunction(_ scale: Scale) -> Configuration {
             scale.value
@@ -26,9 +26,9 @@ extension FoundationUI.Token {
         }
         
         public struct Scale: FoundationTokenShadowScale {
-            public let value: FoundationUI.Token.Shadow.Configuration
+            public let value: FoundationUI.DefaultTheme.Token.Shadow.Configuration
             
-            public init(color: FoundationUI.DynamicColor, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) {
+            public init(color: FoundationUI.Theme.Color, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) {
                 value = .init(color: color, radius: radius, x: x, y: y)
             }
         }
@@ -36,11 +36,11 @@ extension FoundationUI.Token {
 }
 
 public protocol FoundationTokenShadowScale: FoundationTokenScale, FoundationTokenScaleDefault
-where SourceValue == FoundationUI.Token.Shadow.Configuration {}
+where SourceValue == FoundationUI.DefaultTheme.Token.Shadow.Configuration {}
 
-extension FoundationTokenShadowScale where Self == FoundationUI.Token.Shadow.Scale {
+extension FoundationTokenShadowScale where Self == FoundationUI.DefaultTheme.Token.Shadow.Scale {
     #warning("Test with dark theme, make it darker if needed")
-    private static var color: FoundationUI.DynamicColor { .primary.scale(.background).colorScheme(.dark) }
+    private static var color: FoundationUI.Theme.Color { .primary.scale(.background).colorScheme(.dark) }
     public static var xxSmall: Self { .init(color: color.opacity(0.1), radius: 0.5) }
     public static var xSmall: Self { .init(color: color.opacity(0.15), radius: 1, y: 1) }
     public static var small: Self { .init(color: color.opacity(0.2), radius: 1.5, y: 1) }
@@ -52,7 +52,7 @@ extension FoundationTokenShadowScale where Self == FoundationUI.Token.Shadow.Sca
 
 #Preview {
     VStack(spacing: .foundation.spacing(.large)) {
-        ForEach(FoundationUI.Token.Shadow.Scale.all) { scale in
+        ForEach(FoundationUI.DefaultTheme.Token.Shadow.Scale.all) { scale in
             FoundationUI.Shape.roundedRectangle(.regular)
                 .foundation(.size(.regular))
                 .foundation(.foregroundTinted(.background))

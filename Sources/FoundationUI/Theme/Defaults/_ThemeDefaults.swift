@@ -27,6 +27,6 @@ extension FoundationUITheme {
 
 // MARK: - Tokens
 
-public extension FoundationUI {
+public extension FoundationUI.DefaultTheme {
     enum Token {}
 }
