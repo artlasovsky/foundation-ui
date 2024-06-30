@@ -7,19 +7,19 @@
 
 import Foundation
 
-extension FoundationUI.Theme {
+extension FoundationUI.DefaultTheme {
     public var spacing: FoundationUI.Token.Spacing { .init(base: baseValue) }
 }
 
-extension FoundationUI.Token {
-    public struct Spacing: FoundationTokenWithMultiplier {
+public extension FoundationUI.Token {
+    struct Spacing: FoundationDefaultThemeMultiplierToken {
         public let value: Configuration
         
         public init(_ value: Value) {
             self.value = value
         }
         
-        public struct Scale: FoundationTokenWithMultiplierScaleDefault {
+        public struct Scale: FoundationDefaultThemeMultiplierTokenDefaults {
             public var adjust: (SourceValue) -> ResultValue
             public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
                 self.adjust = adjust

@@ -9,29 +9,37 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.SizeModifier {
-    static func size(width: FoundationUI.Variable.Size? = nil, height: FoundationUI.Variable.Size? = nil) -> Self {
+    static func size(width: FoundationUI.Theme.Size.Scale? = nil, height: FoundationUI.Theme.Size.Scale? = nil) -> Self {
         FoundationUI.Modifier.SizeModifier(width: width, height: height)
     }
-    static func size(_ side: FoundationUI.Variable.Size) -> Self {
+    static func size(_ side: FoundationUI.Theme.Size.Scale) -> Self {
         FoundationUI.Modifier.SizeModifier(width: side, height: side)
     }
 }
 
 public extension FoundationUI.Modifier {
     struct SizeModifier: FoundationUIModifier {
-        private let width: FoundationUI.Variable.Size?
-        private let height: FoundationUI.Variable.Size?
+        private let widthScale: FoundationUI.Theme.Size.Scale?
+        private let heightScale: FoundationUI.Theme.Size.Scale?
         
-        init(width: FoundationUI.Variable.Size?, height: FoundationUI.Variable.Size?) {
-            self.width = width
-            self.height = height
+        init(width: FoundationUI.Theme.Size.Scale?, height: FoundationUI.Theme.Size.Scale?) {
+            self.widthScale = width
+            self.heightScale = height
         }
         
         private var alignment: Alignment = .center
         
+        private var width: CGFloat? {
+            guard let widthScale else { return nil }
+            return FoundationUI.theme.size(widthScale)
+        }
+        
+        private var height: CGFloat? {
+            guard let heightScale else { return nil }
+            return FoundationUI.theme.size(heightScale)
+        }
+        
         public func body(content: Content) -> some View {
-            let width = width?.value
-            let height = height?.value
             if width == .infinity || height == .infinity {
                 content.frame(maxWidth: width, maxHeight: height, alignment: alignment)
             } else {
@@ -45,4 +53,14 @@ public extension FoundationUI.Modifier {
             return copy
         }
     }
+}
+
+#Preview {
+    VStack {
+        Rectangle().foundation(.size(.xSmall))
+        Rectangle().foundation(.size(.small))
+        Rectangle().foundation(.size(.regular))
+        Rectangle().foundation(.size(.large))
+    }
+    .padding()
 }

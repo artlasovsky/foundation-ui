@@ -9,23 +9,24 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.LinearGradientMaskModifier {
-    static func gradientMask(_ variable: FoundationUI.Variable.LinearGradient?) -> Self {
-        .init(linearGradient: variable)
+    static func gradientMask(_ scale: FoundationUI.Theme.LinearGradient.Scale?) -> Self {
+        .init(scale: scale)
     }
     
-    static func gradientMask(_ colors: [FoundationUI.DynamicColor], startPoint: UnitPoint = .top, endPoint: UnitPoint = .bottom) -> Self {
-        .init(linearGradient: .init(colors, startPoint: startPoint, endPoint: endPoint))
+    static func gradientMask(_ colors: [FoundationUI.Theme.Color], startPoint: UnitPoint = .top, endPoint: UnitPoint = .bottom) -> Self {
+        .init(scale: .init(colors: colors, startPoint: startPoint, endPoint: endPoint))
     }
 }
 
 public extension FoundationUI.Modifier {
     struct LinearGradientMaskModifier: FoundationUIModifier {
-        let linearGradient: FoundationUI.Variable.LinearGradient?
+        let scale: FoundationUI.Theme.LinearGradient.Scale?
         
         public func body(content: Content) -> some View {
-            if let linearGradient {
+            if let scale {
                 content.mask {
-                        linearGradient
+                    Rectangle()
+                        .foregroundStyle(FoundationUI.theme.linearGradient(scale))
                     }
             } else {
                 content
@@ -34,18 +35,19 @@ public extension FoundationUI.Modifier {
     }
 }
 
-private extension FoundationUI.Variable.LinearGradient {
-    static let clearTop = Self([.clear, .black], startPoint: .top, endPoint: .bottom)
-}
 
-struct MaskModifier_Preview: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            Rectangle()
-                .foundation(.size(.large))
-                .foundation(.gradientMask(.clearTop))
-        }
-        .padding()
-        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+#if DEBUG
+private extension FoundationUI.Token.LinearGradient.Scale {
+    static let clearTop = Self(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+}
+#endif
+
+#Preview {
+    VStack {
+        Rectangle()
+            .foundation(.size(.large))
+            .foundation(.gradientMask(.clearTop))
+            .foregroundStyle(LinearGradient.foundation(.clearTop))
     }
+    .padding()
 }

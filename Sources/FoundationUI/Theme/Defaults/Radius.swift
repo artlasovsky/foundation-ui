@@ -8,19 +8,19 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.Theme {
+extension FoundationUI.DefaultTheme {
     public var radius: FoundationUI.Token.Radius { .init(base: baseValue, multiplier: 1.4) }
 }
 
-public extension FoundationUI.Token {
-    public struct Radius: FoundationTokenWithMultiplier {
+extension FoundationUI.Token {
+    public struct Radius: FoundationDefaultThemeMultiplierToken {
         public let value: Configuration
         
         public init(_ value: Value) {
             self.value = value
         }
         
-        public struct Scale: FoundationTokenWithMultiplierScaleDefault {
+        public struct Scale: FoundationDefaultThemeMultiplierTokenDefaults {
             public var adjust: (SourceValue) -> ResultValue
             public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
                 self.adjust = adjust

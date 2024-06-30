@@ -9,22 +9,42 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.ClipModifier {
-    static func clip(cornerRadius: FoundationUI.Variable.Radius? = nil) -> Self {
-        FoundationUI.Modifier.ClipModifier(cornerRadius: cornerRadius)
+    /// Clip with Rectangle or RoundedRectangle
+    static func clip(cornerRadius: FoundationUI.Theme.Radius.Scale? = nil) -> Self {
+        FoundationUI.Modifier.ClipModifier(scale: cornerRadius)
     }
 }
 
 public extension FoundationUI.Modifier {
     struct ClipModifier: FoundationUIModifier {
         @Environment(\.FoundationUICornerRadius) private var envCornerRadius
-        let cornerRadius: FoundationUI.Variable.Radius?
+        let scale: FoundationUI.Theme.Radius.Scale?
+    
+        private var cornerRadius: CGFloat? {
+            guard let scale else { return envCornerRadius }
+            return FoundationUI.theme.radius(scale)
+        }
         
         public func body(content: Content) -> some View {
-            if let cornerRadius = cornerRadius?.value ?? envCornerRadius {
+            if let cornerRadius {
                 content.clipShape(FoundationUI.Shape.roundedRectangle(radius: cornerRadius))
             } else {
-                content
+                content.clipShape(Rectangle())
             }
         }
     }
+}
+
+#Preview {
+    VStack {
+        Rectangle()
+            .foundation(.size(.regular))
+            .overlay {
+                Rectangle()
+                    .foundation(.size(width: .large, height: .small))
+            }
+            .foundation(.clip())
+            .foundation(.cornerRadius(.regular))
+    }
+    .padding()
 }

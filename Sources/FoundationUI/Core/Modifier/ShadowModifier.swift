@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.ShadowModifier {
-    static func shadow(color: FoundationUI.DynamicColor, radius: CGFloat, x: CGFloat, y: CGFloat) -> Self {
+    static func shadow(color: FoundationUI.Theme.Color, radius: CGFloat, x: CGFloat, y: CGFloat) -> Self {
         FoundationUI.Modifier.ShadowModifier(
             configuration: .init(
                 color: color,
@@ -19,7 +19,7 @@ public extension FoundationUIModifier where Self == FoundationUI.Modifier.Shadow
             )
         )
     }
-    static func shadow(_ scale: FoundationUI.Token.Shadow.Scale?, color: FoundationUI.Token.DynamicColor? = nil) -> Self {
+    static func shadow(_ scale: FoundationUI.Theme.Shadow.Scale?, color: FoundationUI.Theme.Color? = nil) -> Self {
         var configuration = scale?.value
         if let color {
             configuration?.color = color
@@ -28,20 +28,10 @@ public extension FoundationUIModifier where Self == FoundationUI.Modifier.Shadow
     }
 }
 
-#Preview {
-    VStack {
-        FoundationUI.Shape.roundedRectangle(.regular)
-            .foundation(.size(.regular))
-            .foundation(.foregroundTinted(.background))
-            .foundation(.shadow(.regular))
-    }
-    .foundation(.padding(.regular))
-}
-
 public extension FoundationUI.Modifier {
     struct ShadowModifier: FoundationUIModifier {
         @Environment(\.self) private var environment
-        public typealias Configuration = FoundationUI.Token.Shadow.Configuration
+        public typealias Configuration = FoundationUI.Theme.Shadow.Configuration
         public let configuration: Configuration?
     
         public func body(content: Content) -> some View {
@@ -57,4 +47,14 @@ public extension FoundationUI.Modifier {
             }
         }
     }
+}
+
+#Preview {
+    VStack {
+        FoundationUI.Shape.roundedRectangle(.regular)
+            .foundation(.size(.regular))
+            .foundation(.foregroundTinted(.background))
+            .foundation(.shadow(.regular))
+    }
+    .foundation(.padding(.regular))
 }

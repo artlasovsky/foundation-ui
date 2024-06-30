@@ -8,6 +8,8 @@
 import Foundation
 
 // MARK: - Token
+#warning("Decide on naming Token or Variable")
+#warning("TODO: Tests! To make sure it's working all the time!")
 
 public protocol FoundationToken {
     associatedtype Result

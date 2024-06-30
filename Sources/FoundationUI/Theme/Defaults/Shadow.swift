@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.Theme {
+extension FoundationUI.DefaultTheme {
     public var shadow: FoundationUI.Token.Shadow { .init() }
 }
 
@@ -51,7 +51,7 @@ extension FoundationTokenShadowScale where Self == FoundationUI.Token.Shadow.Sca
 }
 
 #Preview {
-    VStack(spacing: .theme.spacing(.large)) {
+    VStack(spacing: .foundation.spacing(.large)) {
         ForEach(FoundationUI.Token.Shadow.Scale.all) { scale in
             FoundationUI.Shape.roundedRectangle(.regular)
                 .foundation(.size(.regular))

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.TintModifier {
-    static func tint(_ dynamicColor: FoundationUI.DynamicColor?) -> Self {
+    static func tint(_ dynamicColor: FoundationUI.Theme.Color?) -> Self {
         FoundationUI.Modifier.TintModifier(tint: dynamicColor)
     }
     @available(macOS 14.0, iOS 17.0, *)

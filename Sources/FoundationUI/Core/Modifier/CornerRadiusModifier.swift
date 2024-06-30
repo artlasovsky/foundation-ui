@@ -9,16 +9,21 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.CornerRadiusModifier {
-    static func cornerRadius(_ variable: FoundationUI.Variable.Radius?) -> Self {
-        FoundationUI.Modifier.CornerRadiusModifier(variable: variable)
+    static func cornerRadius(_ scale: FoundationUI.Theme.Radius.Scale?) -> Self {
+        FoundationUI.Modifier.CornerRadiusModifier(scale: scale)
     }
 }
 public extension FoundationUI.Modifier {
     struct CornerRadiusModifier: FoundationUIModifier {
-        let variable: FoundationUI.Variable.Radius?
+        let scale: FoundationUI.Theme.Radius.Scale?
+        
+        private var value: CGFloat? {
+            guard let scale else { return nil }
+            return FoundationUI.theme.radius(scale)
+        }
         
         public func body(content: Content) -> some View {
-            content.environment(\.FoundationUICornerRadius, variable?.value)
+            content.environment(\.FoundationUICornerRadius, value)
         }
     }
 }

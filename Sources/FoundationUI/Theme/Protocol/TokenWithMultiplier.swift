@@ -10,18 +10,18 @@ import Foundation
 // MARK: - Token with Multiplier
 
 /// Token with multiplier
-public protocol FoundationTokenWithMultiplier: FoundationTokenWithValue
-where Value == Configuration, Scale: FoundationTokenWithMultiplierScale, Result == CGFloat
+public protocol FoundationDefaultThemeMultiplierToken: FoundationTokenWithValue
+where Value == Configuration, Scale: FoundationDefaultThemeMultiplierTokenScale, Result == CGFloat
 {
     typealias Configuration = (base: CGFloat, multiplier: CGFloat)
 }
 
-public protocol FoundationTokenWithMultiplierScale: FoundationTokenAdjustableScale
-where SourceValue == FoundationTokenWithMultiplier.Configuration, ResultValue == CGFloat {}
+public protocol FoundationDefaultThemeMultiplierTokenScale: FoundationTokenAdjustableScale
+where SourceValue == FoundationDefaultThemeMultiplierToken.Configuration, ResultValue == CGFloat {}
 
-public protocol FoundationTokenMultiplierSizeScale: FoundationTokenScaleDefault, FoundationTokenWithMultiplierScale {}
+public protocol FoundationTokenMultiplierSizeScale: FoundationTokenScaleDefault, FoundationDefaultThemeMultiplierTokenScale {}
 
-extension FoundationTokenWithMultiplier {
+extension FoundationDefaultThemeMultiplierToken {
     public func callAsFunction(_ scale: Scale) -> Result {
         scale(value)
     }
@@ -33,9 +33,9 @@ extension FoundationTokenWithMultiplier {
 
 // MARK: Default Multiplier Token Scale
 
-public protocol FoundationTokenWithMultiplierScaleDefault: FoundationTokenMultiplierSizeScale {}
+public protocol FoundationDefaultThemeMultiplierTokenDefaults: FoundationTokenMultiplierSizeScale {}
 
-extension FoundationTokenWithMultiplierScaleDefault {
+extension FoundationDefaultThemeMultiplierTokenDefaults {
     public static var xxSmall: Self { Self { $0 / pow($1, 3) } }
     public static var xSmall: Self { Self { $0 / pow($1, 2) } }
     public static var small: Self { Self { $0 / $1 } }
@@ -57,13 +57,14 @@ extension FoundationUI.Token {
 }
 
 
-public extension FoundationTokenAdjustableScale where SourceValue == FoundationTokenWithMultiplier.Configuration, ResultValue == CGFloat {
+public extension FoundationTokenAdjustableScale
+where SourceValue == FoundationDefaultThemeMultiplierToken.Configuration, ResultValue == CGFloat {
     func up(_ step: FoundationUI.Token.ScaleStep) -> Self {
         .init { base, multiplier in
             let nextStep = base * multiplier
             let difference = nextStep - base
             
-            return nextStep - difference * step.rawValue
+            return base + difference * step.rawValue
         }
     }
     
@@ -72,7 +73,13 @@ public extension FoundationTokenAdjustableScale where SourceValue == FoundationT
             let nextStep = base / multiplier
             let difference = base - nextStep
             
-            return nextStep + difference * step.rawValue
+            return base - difference * step.rawValue
+        }
+    }
+    
+    func negative() -> Self {
+        .init { value in
+            self.adjust(value) * -1
         }
     }
 }

@@ -8,13 +8,13 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<FoundationUI.DynamicColor> {
-    static func background(_ tint: FoundationUI.DynamicColor) -> Self {
-        .init(tint, keyPath: nil)
+public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<FoundationUI.Theme.Color> {
+    static func background(_ color: FoundationUI.Theme.Color) -> Self {
+        .init(fill: color)
     }
-
-    static func background(_ keyPath: FoundationUI.DynamicColor.VariationKeyPath = \.background) -> Self {
-        .init(nil, keyPath: keyPath)
+    
+    static func backgroundTinted(_ scale: FoundationUI.Theme.Color.Scale) -> Self {
+        .init(scale: scale)
     }
 }
 
@@ -41,12 +41,12 @@ public extension FoundationUI.Modifier {
     struct BackgroundModifier<S: ShapeStyle>: FoundationUIModifier {
         @DynamicShapeView<S> private var shapeView
         
-        public init(_ tint: FoundationUI.DynamicColor? = nil, keyPath: FoundationUI.DynamicColor.VariationKeyPath? = nil) where S == FoundationUI.DynamicColor {
-            self._shapeView = .init(tint: tint, keyPath: keyPath)
-        }
-        
         public init(fill: S) {
             self._shapeView = .init(fill: fill)
+        }
+        
+        public init(scale: FoundationUI.Theme.Color.Scale) where S == FoundationUI.Theme.Color {
+            self._shapeView = .init(scale: scale)
         }
         
         public func body(content: Content) -> some View {
@@ -57,19 +57,19 @@ public extension FoundationUI.Modifier {
         /// > Note: It will override environment value set by `.foundation(cornerRadius:)`
         ///
         /// > Note: While using with `.padding()` modifier it will adjust the cornerRadius `foundation(.background().padding())`
-        public func cornerRadius(_ cornerRadius: FoundationUI.Variable.Radius) -> Self {
+        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Scale) -> Self {
             var copy = self
-            copy._shapeView.cornerRadius = cornerRadius
+            copy._shapeView = copy._shapeView.cornerRadius(scale: cornerRadius)
             return copy
         }
         
-        public func shadow(_ shadow: FoundationUI.Token.Shadow.Scale) -> Self {
+        public func shadow(_ shadow: FoundationUI.Theme.Shadow.Scale) -> Self {
             var copy = self
             copy._shapeView.shadow = shadow
             return copy
         }
         
-        public func gradientMask(_ gradientMask: FoundationUI.Variable.LinearGradient) -> Self {
+        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Scale) -> Self {
             var copy = self
             copy._shapeView.gradientMask = gradientMask
             return copy
@@ -82,9 +82,9 @@ public extension FoundationUI.Modifier {
             return copy
         }
         
-        public func padding(_ padding: FoundationUI.Variable.Padding) -> Self {
+        public func padding(_ padding: FoundationUI.Theme.Padding.Scale) -> Self {
             var copy = self
-            copy._shapeView.padding = padding
+            copy._shapeView = copy._shapeView.padding(scale: padding)
             return copy
         }
     }
@@ -98,12 +98,12 @@ struct BackgroundModifier_Preview: PreviewProvider {
                 .foundation(.background(.primary.fillEmphasized))
             Text("Env")
                 .foundation(.padding(.regular))
-                .foundation(.background(\.fillEmphasized))
+                .foundation(.backgroundTinted(.fillEmphasized))
             Text("Adj")
                 .foundation(.padding(.regular))
                 .border(.white.opacity(0.2))
-                .foundation(.background(\.fillEmphasized)
-                    .gradientMask(.init([.black, .clear]))
+                .foundation(.backgroundTinted(.fillEmphasized)
+                    .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
                     .shadow(.regular)
                     .cornerRadius(.regular)
                     .padding(.regular.negative())

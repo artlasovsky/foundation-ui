@@ -9,11 +9,11 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.BorderModifier<FoundationUI.DynamicColor> {
-    static func border(_ tint: FoundationUI.DynamicColor) -> Self {
-        FoundationUI.Modifier.BorderModifier(tint: tint, keyPath: nil)
+    static func border(_ color: FoundationUI.Theme.Color) -> Self {
+        Self(fill: color)
     }
-    static func border(_ keyPath: FoundationUI.DynamicColor.VariationKeyPath = \.border) -> Self {
-        FoundationUI.Modifier.BorderModifier(tint: nil, keyPath: keyPath)
+    static func borderTinted(_ scale: FoundationUI.Theme.Color.Scale) -> Self {
+        Self(scale: scale)
     }
 }
 
@@ -27,14 +27,15 @@ public extension FoundationUIModifier where Self == FoundationUI.Modifier.Border
 public extension FoundationUI.Modifier {
     struct BorderModifier<S: ShapeStyle>: FoundationUIModifier {
         @DynamicShapeView<S> private var shapeView
-
-        init(tint: FoundationUI.DynamicColor?, keyPath: FoundationUI.DynamicColor.VariationKeyPath?) where S == FoundationUI.DynamicColor {
-            _shapeView = .init(tint: tint, keyPath: keyPath)
-            _shapeView.stroke = .init(width: 1, placement: .inside)
-        }
         
         init(fill: S) {
             _shapeView = .init(fill: fill)
+            _shapeView.stroke = .init(width: 1, placement: .center)
+        }
+        
+        public init(scale: FoundationUI.Theme.Color.Scale) where S == FoundationUI.Theme.Color {
+            _shapeView = .init(scale: scale)
+            _shapeView.stroke = .init(width: 1, placement: .center)
         }
         
         private var placement: BorderPlacement = .inside
@@ -55,13 +56,13 @@ public extension FoundationUI.Modifier {
             return copy
         }
 
-        public func cornerRadius(_ cornerRadius: FoundationUI.Variable.Radius?) -> Self {
+        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Scale?) -> Self {
             var copy = self
-            copy._shapeView.cornerRadius = cornerRadius
+            copy._shapeView = copy._shapeView.cornerRadius(scale: cornerRadius)
             return copy
         }
 
-        public func gradientMask(_ gradientMask: FoundationUI.Variable.LinearGradient) -> Self {
+        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Scale) -> Self {
             var copy = self
             copy._shapeView.gradientMask = gradientMask
             return copy
@@ -75,6 +76,7 @@ public enum BorderPlacement {
     case center
 }
 
+#if DEBUG
 struct BorderModifier_Preview: PreviewProvider {
     struct Test: View {
         @Environment(\.self) private var env
@@ -89,17 +91,32 @@ struct BorderModifier_Preview: PreviewProvider {
             ZStack {
                 Text("")
                     .foundation(.size(.regular))
-                    .foundation(.border(.primary).width(2).placement(.inside).gradientMask(.init([.black, .clear])))
+                    .foundation(
+                        .border(.primary).width(2)
+                        .placement(.inside)
+                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
+                    )
                     .foundation(.cornerRadius(.regular))
                     .opacity(0.5)
                 Text("Border")
                     .foundation(.size(.regular))
-                    .foundation(.border().width(2).placement(.center).gradientMask(.init([.black, .clear])))
+                    .foundation(
+                        .border(.primary)
+                        .width(2)
+                        .placement(.center)
+                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
+                    )
                     .foundation(.cornerRadius(.regular))
                     .opacity(0.5)
                 Text("")
                     .foundation(.size(.regular))
-                    .foundation(.border(\.fill).width(2).placement(.outside).gradientMask(.init([.black, .clear])))
+//                    .foundation(.backgroundTinted(.fillFaded))
+                    .foundation(
+                        .borderTinted(.fill)
+                        .width(2)
+                        .placement(.outside)
+                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
+                    )
                     .foundation(.cornerRadius(.regular))
                     .opacity(0.5)
             }
@@ -114,3 +131,4 @@ struct BorderModifier_Preview: PreviewProvider {
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
     }
 }
+#endif

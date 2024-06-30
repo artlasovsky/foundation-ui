@@ -39,16 +39,13 @@ public extension FoundationUI.Modifier {
 }
 
 
-struct ForegroundModifier_Preview: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            Text("Foreground")
-                .foundation(.foreground(.red))
-            Text("Foreground")
-                .foundation(.foregroundTinted(.text))
-                .foundation(.tint(.red))
-        }
-        .padding()
-        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+#Preview {
+    VStack {
+        Text("Foreground")
+            .foundation(.foreground(.red))
+        Text("Foreground")
+            .foundation(.foregroundTinted(.text))
+            .foundation(.tint(.red))
     }
+    .padding()
 }

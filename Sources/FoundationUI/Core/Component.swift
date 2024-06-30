@@ -43,10 +43,10 @@ public extension FoundationUI.Shape {
     
     @available(macOS 13.0, iOS 16.0, *)
     static func roundedRectangle(
-        topLeadingRadius: FoundationUI.Variable.Radius,
-        bottomLeadingRadius: FoundationUI.Variable.Radius,
-        bottomTrailingRadius: FoundationUI.Variable.Radius,
-        topTrailingRadius: FoundationUI.Variable.Radius
+        topLeadingRadius: FoundationUI.Theme.Radius.Scale,
+        bottomLeadingRadius: FoundationUI.Theme.Radius.Scale,
+        bottomTrailingRadius: FoundationUI.Theme.Radius.Scale,
+        topTrailingRadius: FoundationUI.Theme.Radius.Scale
     ) -> UnevenRoundedRectangle {
         UnevenRoundedRectangle(
             topLeadingRadius: .foundation.radius(topLeadingRadius),
@@ -60,11 +60,11 @@ public extension FoundationUI.Shape {
     static func roundedRectangle(radius: CGFloat) -> RoundedRectangle {
         return RoundedRectangle(cornerRadius: radius, style: cornerRadiusStyle)
     }
-    static func roundedRectangle(_ variable: FoundationUI.Variable.Radius) -> RoundedRectangle {
-        self.roundedRectangle(radius: .foundation.radius(variable))
+    static func roundedRectangle(_ scale: FoundationUI.Theme.Radius.Scale) -> RoundedRectangle {
+        self.roundedRectangle(radius: .foundation.radius(scale))
     }
-    static func roundedSquare(_ variable: FoundationUI.Variable.Radius, size: FoundationUI.Variable.Size) -> some View {
-        self.roundedRectangle(radius: .foundation.radius(variable))
+    static func roundedSquare(_ scale: FoundationUI.Theme.Radius.Scale, size: FoundationUI.Theme.Size.Scale) -> some View {
+        self.roundedRectangle(radius: .foundation.radius(scale))
             .foundation(.size(size))
     }
 }

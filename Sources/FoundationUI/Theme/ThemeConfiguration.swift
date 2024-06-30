@@ -16,6 +16,8 @@ public protocol ThemeConfiguration {
     associatedtype Radius = FoundationToken
     associatedtype Color = FoundationColorToken
     associatedtype Shadow = FoundationToken
+    associatedtype Font = FoundationToken
+    associatedtype LinearGradient = FoundationToken
     
     var padding: Padding { get }
     var spacing: Spacing { get }
@@ -23,7 +25,10 @@ public protocol ThemeConfiguration {
     var radius: Radius { get }
     
     var shadow: Shadow { get }
+    var font: Font { get }
     var color: Color { get }
+    
+    var linearGradient: LinearGradient { get }
 }
 
 public protocol FoundationUITheme {
@@ -33,8 +38,6 @@ public protocol FoundationUITheme {
 
 extension FoundationUI: FoundationUITheme {}
 
-public extension CGFloat {
-    #warning("Replace with foundation later")
-    #warning("Try to filter it to show only CGFloat results")
-    var theme: some ThemeConfiguration { FoundationUI.theme }
+extension CGFloat {
+    public static var foundation: FoundationUI.Theme { FoundationUI.theme }
 }

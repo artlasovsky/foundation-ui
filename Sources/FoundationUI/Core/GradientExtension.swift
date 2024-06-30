@@ -1,5 +1,5 @@
 //
-//  Gradient.swift
+//  GradientExtension.swift
 //
 //
 //  Created by Art Lasovsky on 26/12/2023.
