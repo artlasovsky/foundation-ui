@@ -56,7 +56,6 @@ public extension FoundationUI.Modifier {
         /// Setting the `cornerRadius` for the background shape.
         /// > Note: It will override environment value set by `.foundation(cornerRadius:)`
         ///
-        /// > Note: While using with `.padding()` modifier it will adjust the cornerRadius `foundation(.background().padding())`
         public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Token) -> Self {
             var copy = self
             copy._shapeView.cornerRadiusToken = cornerRadius
@@ -81,12 +80,6 @@ public extension FoundationUI.Modifier {
             copy._shapeView.safeAreaEdges = edges
             return copy
         }
-        
-        public func padding(_ padding: FoundationUI.Theme.Padding.Token) -> Self {
-            var copy = self
-            copy._shapeView.paddingToken = padding
-            return copy
-        }
     }
 }
 
@@ -99,23 +92,23 @@ struct BackgroundModifier_Preview: PreviewProvider {
             Text("Tinted")
                 .foundation(.padding(.regular))
                 .foundation(.backgroundTinted(.fillEmphasized))
-            VStack {
+            ZStack {
                 Text("Radius")
                     .foundation(.padding(.large))
-                    .foundation(.backgroundTinted(.fillEmphasized).padding(.small))
+                    .foundation(.backgroundTinted(.fillEmphasized))
+                    .foundation(.padding(.small))
+                    .foundation(.background(.primary))
             }
-            .foundation(.background(.primary.scale(.fill)))
-            .foundation(.cornerRadius(.regular))
+            .foundation(.cornerRadius(.large))
             Text("Adj")
-                .border(.white.opacity(0.2))
-                .foundation(.padding(.small))
+                .border(.blue.opacity(0.5))
+                .foundation(.padding(.regular))
+                .border(.green.opacity(0.5))
                 .foundation(.backgroundTinted(.fillEmphasized)
                     .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
                     .shadow(.regular)
                     .cornerRadius(.regular)
-                    .padding(.regular.negative())
                 )
-                .foundation(.padding(.regular).edges(.vertical))
         }
         .foundation(.tint(.red))
         .padding()

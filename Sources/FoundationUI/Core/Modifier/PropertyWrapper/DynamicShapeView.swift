@@ -44,7 +44,7 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
             .foundation(.padding(.init(value: strokeWidth)))
             .foundation(.gradientMask(gradientMask))
             .foundation(.padding(.init(value: -strokeWidth)))
-            .foundation(.padding(.init(value: paddingValue)))
+            .foundation(.padding(.init(value: strokePaddingAdjustment)))
         if let safeAreaRegions, let safeAreaEdges {
             base.ignoresSafeArea(safeAreaRegions, edges: safeAreaEdges)
         } else {
@@ -61,17 +61,8 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
         }
     }
     
-    private var paddingTokenValue: CGFloat {
-        var value: CGFloat = 0
-        if let paddingToken {
-            value = .foundation.padding(paddingToken)
-        }
-        return value
-    }
-    
-    private var paddingValue: CGFloat {
-        let strokePaddingAdjustment = stroke?.paddingAdjustment ?? 0
-        return paddingTokenValue + strokePaddingAdjustment
+    private var strokePaddingAdjustment: CGFloat {
+        stroke?.paddingAdjustment ?? 0
     }
     
     private var radius: CGFloat {
@@ -80,9 +71,8 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
             radius = .foundation.radius(cornerRadiusToken)
         }
         guard radius > 0 else { return 0 }
-        let paddingAdjustment = max(0, paddingTokenValue)
         let strokeAdjustment = stroke?.cornerRadiusAdjustment ?? 0
-        return radius - paddingAdjustment + strokeAdjustment
+        return radius + strokeAdjustment
     }
     
     private var strokeWidth: CGFloat {
@@ -106,9 +96,9 @@ struct DynamicShapeView_Preview: PreviewProvider {
     static var previews: some View {
         VStack {
             Text("Background")
-                .border(.blue) // .foundation(.background()) should exceed the blue border
+                .border(.blue)
+                .foundation(.padding(.small))
                 .foundation(.background(.red.scale(.borderFaded))
-                    .padding(.regular.negative())
                     .shadow(.small)
                     .cornerRadius(.small)
                     .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))

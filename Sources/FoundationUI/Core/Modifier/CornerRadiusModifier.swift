@@ -39,3 +39,28 @@ internal extension EnvironmentValues {
         set { self[FoundationUICornerRadiusKey.self] = newValue }
     }
 }
+
+#Preview {
+    VStack {
+        Text("Dynamic Radius")
+            .frame(maxWidth: .infinity)
+            .foundation(.padding(.regular).edges(.vertical))
+            // Use Dynamic Corner Radius
+            .foundation(.backgroundTinted(.fill))
+            .foundation(.padding(.small))
+        Spacer()
+        Text("Custom Radius")
+            .frame(maxWidth: .infinity)
+            .foundation(.padding(.regular).edges(.vertical))
+            // Set Corner Radius manually
+            .foundation(
+                .backgroundTinted(.fill)
+                .cornerRadius(.init(value: 12))
+            )
+            .foundation(.padding(.small))
+    }
+    .frame(width: 200, height: 150)
+    .foundation(.backgroundTinted(.backgroundFaded))
+    .foundation(.cornerRadius(.xLarge))
+    .padding()
+}
