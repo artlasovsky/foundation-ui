@@ -11,15 +11,15 @@ import Foundation
 
 /// Token with multiplier
 public protocol DefaultThemeFoundationVariable: FoundationVariableWithValue
-where Value == Configuration, Token: FoundationDefaultThemeMultiplierTokenScale, Result == CGFloat
+where Value == Configuration, Token: DefaultThemeFoundationVariableToken, Result == CGFloat
 {
     typealias Configuration = (base: CGFloat, multiplier: CGFloat)
 }
 
-public protocol FoundationDefaultThemeMultiplierTokenScale: FoundationVariableToken
+public protocol DefaultThemeFoundationVariableToken: FoundationVariableToken
 where SourceValue == DefaultThemeFoundationVariable.Configuration, ResultValue == CGFloat {}
 
-public protocol FoundationTokenMultiplierSizeScale: DefaultFoundationVariableTokenScale, FoundationDefaultThemeMultiplierTokenScale {}
+public protocol DefaultThemeFoundationVariableTokenScale: DefaultFoundationVariableTokenScale, DefaultThemeFoundationVariableToken {}
 
 extension DefaultThemeFoundationVariable {
     public func callAsFunction(_ token: Token) -> Result {
@@ -33,7 +33,7 @@ extension DefaultThemeFoundationVariable {
 
 // MARK: Default Multiplier Token Scale
 
-public protocol DefaultThemeFoundationVariableTokenScale: FoundationTokenMultiplierSizeScale {}
+//public protocol DefaultThemeFoundationVariableTokenScale: DefaultThemeFoundationVariableTokenScale {}
 
 extension DefaultThemeFoundationVariableTokenScale {
     public static var xxSmall: Self { Self { $0 / pow($1, 3) } }

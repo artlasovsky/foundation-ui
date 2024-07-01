@@ -16,24 +16,8 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
     private var style: S?
     private var token: FoundationUI.Theme.Color.Token?
     
-    private var cornerRadius: CGFloat?
-    private var padding: CGFloat = 0
-    
-    func cornerRadius(token: FoundationUI.Theme.Radius.Token?) -> Self {
-        var copy = self
-        var value: CGFloat?
-        if let token {
-            value = .foundation.radius(token)
-        }
-        copy.cornerRadius = value
-        return copy
-    }
-    
-    func padding(token: FoundationUI.Theme.Padding.Token) -> Self {
-        var copy = self
-        copy.padding = .foundation.padding(token)
-        return copy
-    }
+    var cornerRadiusToken: FoundationUI.Theme.Radius.Token?
+    var paddingToken: FoundationUI.Theme.Padding.Token?
     
     var gradientMask: FoundationUI.Theme.LinearGradient.Token?
     var shadow: FoundationUI.Theme.Shadow.Token?
@@ -77,17 +61,28 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
         }
     }
     
+    private var paddingTokenValue: CGFloat {
+        var value: CGFloat = 0
+        if let paddingToken {
+            value = .foundation.padding(paddingToken)
+        }
+        return value
+    }
+    
     private var paddingValue: CGFloat {
         let strokePaddingAdjustment = stroke?.paddingAdjustment ?? 0
-        return padding + strokePaddingAdjustment
+        return paddingTokenValue + strokePaddingAdjustment
     }
     
     private var radius: CGFloat {
-        let radius: CGFloat = cornerRadius ?? dynamicCornerRadius ?? 0
+        var radius: CGFloat = dynamicCornerRadius ?? 0
+        if let cornerRadiusToken {
+            radius = .foundation.radius(cornerRadiusToken)
+        }
         guard radius > 0 else { return 0 }
+        let paddingAdjustment = max(0, paddingTokenValue)
         let strokeAdjustment = stroke?.cornerRadiusAdjustment ?? 0
-        let paddingAdjustment = max(0, padding)
-        return radius + strokeAdjustment + paddingAdjustment
+        return radius - paddingAdjustment + strokeAdjustment
     }
     
     private var strokeWidth: CGFloat {

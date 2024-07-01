@@ -58,7 +58,7 @@ public extension FoundationUI.Modifier {
 
         public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Token?) -> Self {
             var copy = self
-            copy._shapeView = copy._shapeView.cornerRadius(token: cornerRadius)
+            copy._shapeView.cornerRadiusToken = cornerRadius
             return copy
         }
 
