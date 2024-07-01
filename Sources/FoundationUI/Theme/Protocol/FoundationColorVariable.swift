@@ -1,5 +1,5 @@
 //
-//  ColorToken.swift
+//  FoundationColorVariable.swift
 //  
 //
 //  Created by Art Lasovsky on 27/06/2024.
@@ -8,10 +8,10 @@
 import Foundation
 import SwiftUI
 
-public protocol FoundationColorToken: ShapeStyle {
-    associatedtype Scale
+public protocol FoundationColorVariable: ShapeStyle {
+    associatedtype Token
     
-    func scale(_ scale: Scale) -> Self
+    func scale(_ token: Token) -> Self
     func callAsFunction(_ color: Self) -> Self
     
     func hue(_ value: CGFloat) -> Self
@@ -20,7 +20,7 @@ public protocol FoundationColorToken: ShapeStyle {
     func opacity(_ value: CGFloat) -> Self
 }
 
-public extension FoundationColorToken {
+public extension FoundationColorVariable {
     func callAsFunction(_ color: Self) -> Self {
         color
     }

@@ -10,7 +10,7 @@ import SwiftUI
 
 // MARK: - DefaultImplementation
 extension FoundationUI.DefaultTheme {
-    public var color: Token.Color { .primary }
+    public var color: Variable.Color { .primary }
 }
 
 // MARK: - Extensions
@@ -23,12 +23,12 @@ extension ShapeStyle where Self == Color {
 }
 
 // MARK: - Conform to FoundationColorToken
-public extension FoundationUI.DefaultTheme.Token {
+public extension FoundationUI.DefaultTheme.Variable {
     typealias Color = FoundationUI.DynamicColor
     // Get rid of FoundationUI.DynamicColor completely
 }
 
-extension FoundationUI.DefaultTheme.Token.Color: FoundationColorToken {
+extension FoundationUI.DefaultTheme.Variable.Color: FoundationColorVariable {
     public func hue(_ value: CGFloat) -> Self {
         hue(value, method: .multiply)
     }
@@ -43,16 +43,17 @@ extension FoundationUI.DefaultTheme.Token.Color: FoundationColorToken {
     }
 }
 
-extension FoundationUI.DefaultTheme.Token.Color {
-    public func scale(_ scale: Scale) -> Self {
-        scale(self)
+extension FoundationUI.DefaultTheme.Variable.Color {
+    #warning("TODO: Rename to `token`")
+    public func scale(_ token: Token) -> Self {
+        token(self)
     }
     
     public func callAsFunction(_ color: Self) -> Self {
         color
     }
     
-    public struct Scale: DynamicColorScale {
+    public struct Token: DynamicColorScale {
         public typealias SourceValue = FoundationUI.DynamicColor
         public typealias ResultValue = FoundationUI.DynamicColor
         public var adjust: (SourceValue) -> ResultValue
@@ -64,7 +65,7 @@ extension FoundationUI.DefaultTheme.Token.Color {
 }
 
 // MARK: - Default Color Tokens
-public extension FoundationUI.DefaultTheme.Token.Color {
+public extension FoundationUI.DefaultTheme.Variable.Color {
     #warning("TODO: Accessible Variants")
     static let primary = Self(
         light: .init(grayscale: 0.5),
@@ -86,11 +87,24 @@ public extension FoundationUI.DefaultTheme.Token.Color {
     static var gray: Self {
         .init(.init(grayscale: 0.5, opacity: 1))
     }
+    
+    static var environmentDefault: Self {
+        primary
+    }
+}
+
+extension FoundationUI.DefaultTheme.Variable.Color {
+    static var red: Self {
+        .init(
+            light: .init(red8bit: 255, green: 59, blue: 48),
+            dark: .init(red8bit: 255, green: 69, blue: 58)
+        )
+    }
 }
 
 // MARK: - Default Color Scale
 
-public protocol DynamicColorScale: FoundationTokenAdjustableScale where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
+public protocol DynamicColorScale: FoundationVariableToken where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
     static var backgroundFaded: Self { get }
     static var background: Self { get }
     static var backgroundEmphasized: Self { get }
@@ -284,15 +298,6 @@ public extension DynamicColorScale {
 
 
 // MARK: - Preview
-internal extension DynamicColorDefaults {
-    var defaultScale: [Self.VariationKeyPath] { [
-         \.backgroundFaded, \.background, \.backgroundEmphasized,
-         \.fillFaded, \.fill, \.fillEmphasized,
-         \.borderFaded, \.border, \.borderEmphasized,
-         \.solid,
-         \.textFaded, \.text, \.textEmphasized
-    ]}
-}
 
 struct DynamicColorPreview: PreviewProvider {
     struct ColorPatch: View {
@@ -305,7 +310,7 @@ struct DynamicColorPreview: PreviewProvider {
     }
     struct Scale: View {
         @Environment(\.dynamicColorTint) private var tint
-        private let defaultScale: [FoundationUI.Theme.Color.Scale] = [
+        private let defaultScale: [FoundationUI.Theme.Color.Token] = [
             .backgroundFaded, .background, .backgroundEmphasized,
             .fillFaded, .fill, .fillEmphasized,
             .borderFaded, .border, .borderEmphasized,
@@ -314,7 +319,7 @@ struct DynamicColorPreview: PreviewProvider {
         ]
         struct ScaleSwatch: View {
             @Environment(\.dynamicColorTint) private var tint
-            let scale: FoundationUI.DynamicColor.Scale
+            let scale: FoundationUI.DynamicColor.Token
             
             var isSolid: Bool {
                 let color = FoundationUI.DynamicColor.primary

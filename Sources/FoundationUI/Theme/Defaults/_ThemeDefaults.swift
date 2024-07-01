@@ -1,5 +1,5 @@
 //
-//  ThemeDefaults.swift
+//  _ThemeDefaults.swift
 //  
 //
 //  Created by Art Lasovsky on 27/06/2024.
@@ -28,5 +28,5 @@ extension FoundationUITheme {
 // MARK: - Tokens
 
 public extension FoundationUI.DefaultTheme {
-    enum Token {}
+    enum Variable {}
 }

@@ -24,7 +24,7 @@ final class CustomThemeTests: XCTestCase {
 
 }
 
-public struct ColorToken: FoundationColorToken {
+public struct ColorToken: FoundationColorVariable {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         Color.init(hue: 0, saturation: 0, brightness: 1)
     }

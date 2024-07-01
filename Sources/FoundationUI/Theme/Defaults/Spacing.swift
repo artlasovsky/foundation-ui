@@ -8,18 +8,18 @@
 import Foundation
 
 extension FoundationUI.DefaultTheme {
-    public var spacing: Token.Spacing { .init(base: baseValue) }
+    public var spacing: Variable.Spacing { .init(base: baseValue) }
 }
 
-public extension FoundationUI.DefaultTheme.Token {
-    struct Spacing: FoundationDefaultThemeMultiplierToken {
+public extension FoundationUI.DefaultTheme.Variable {
+    struct Spacing: DefaultThemeFoundationVariable {
         public let value: Configuration
         
         public init(_ value: Value) {
             self.value = value
         }
         
-        public struct Scale: FoundationDefaultThemeMultiplierTokenDefaults {
+        public struct Token: DefaultThemeFoundationVariableTokenScale {
             public var adjust: (SourceValue) -> ResultValue
             public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
                 self.adjust = adjust

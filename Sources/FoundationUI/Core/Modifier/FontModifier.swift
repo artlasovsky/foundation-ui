@@ -9,17 +9,17 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.FontModifier {
-    static func font(_ variable: FoundationUI.Theme.Font.Scale) -> Self {
-        FoundationUI.Modifier.FontModifier(scale: variable)
+    static func font(_ token: FoundationUI.Theme.Font.Token) -> Self {
+        FoundationUI.Modifier.FontModifier(token: token)
     }
 }
 
 public extension FoundationUI.Modifier {
     struct FontModifier: FoundationUIModifier {
-        public let scale: FoundationUI.Theme.Font.Scale
+        public let token: FoundationUI.Theme.Font.Token
         
         private var font: Font {
-            FoundationUI.theme.font(scale)
+            FoundationUI.theme.font(token)
         }
         public func body(content: Content) -> some View {
             content.font(font)

@@ -1,5 +1,5 @@
 //
-//  FontToken.swift
+//  Font.swift
 //
 //
 //  Created by Art Lasovsky on 29/06/2024.
@@ -9,18 +9,18 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI.DefaultTheme {
-    public var font: Token.Font { .init() }
+    public var font: Variable.Font { .init() }
 }
 
-extension FoundationUI.DefaultTheme.Token {
-    public struct Font: FoundationToken {
+extension FoundationUI.DefaultTheme.Variable {
+    public struct Font: FoundationVariable {
         public typealias Result = SwiftUI.Font
         
-        public func callAsFunction(_ scale: Scale) -> Result {
+        public func callAsFunction(_ scale: Token) -> Result {
             scale.value
         }
         
-        public struct Scale: FoundationTokenScale {
+        public struct Token {
             public var value: SwiftUI.Font
             
             public init(_ value: SwiftUI.Font) {

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  DefaultThemeFoundationVariable.swift
 //  
 //
 //  Created by Art Lasovsky on 27/06/2024.
@@ -10,20 +10,20 @@ import Foundation
 // MARK: - Token with Multiplier
 
 /// Token with multiplier
-public protocol FoundationDefaultThemeMultiplierToken: FoundationTokenWithValue
-where Value == Configuration, Scale: FoundationDefaultThemeMultiplierTokenScale, Result == CGFloat
+public protocol DefaultThemeFoundationVariable: FoundationVariableWithValue
+where Value == Configuration, Token: FoundationDefaultThemeMultiplierTokenScale, Result == CGFloat
 {
     typealias Configuration = (base: CGFloat, multiplier: CGFloat)
 }
 
-public protocol FoundationDefaultThemeMultiplierTokenScale: FoundationTokenAdjustableScale
-where SourceValue == FoundationDefaultThemeMultiplierToken.Configuration, ResultValue == CGFloat {}
+public protocol FoundationDefaultThemeMultiplierTokenScale: FoundationVariableToken
+where SourceValue == DefaultThemeFoundationVariable.Configuration, ResultValue == CGFloat {}
 
-public protocol FoundationTokenMultiplierSizeScale: FoundationTokenScaleDefault, FoundationDefaultThemeMultiplierTokenScale {}
+public protocol FoundationTokenMultiplierSizeScale: DefaultFoundationVariableTokenScale, FoundationDefaultThemeMultiplierTokenScale {}
 
-extension FoundationDefaultThemeMultiplierToken {
-    public func callAsFunction(_ scale: Scale) -> Result {
-        scale(value)
+extension DefaultThemeFoundationVariable {
+    public func callAsFunction(_ token: Token) -> Result {
+        token(value)
     }
     
     public init(base: CGFloat, multiplier: CGFloat = 2) {
@@ -33,9 +33,9 @@ extension FoundationDefaultThemeMultiplierToken {
 
 // MARK: Default Multiplier Token Scale
 
-public protocol FoundationDefaultThemeMultiplierTokenDefaults: FoundationTokenMultiplierSizeScale {}
+public protocol DefaultThemeFoundationVariableTokenScale: FoundationTokenMultiplierSizeScale {}
 
-extension FoundationDefaultThemeMultiplierTokenDefaults {
+extension DefaultThemeFoundationVariableTokenScale {
     public static var xxSmall: Self { Self { $0 / pow($1, 3) } }
     public static var xSmall: Self { Self { $0 / pow($1, 2) } }
     public static var small: Self { Self { $0 / $1 } }
@@ -47,7 +47,7 @@ extension FoundationDefaultThemeMultiplierTokenDefaults {
 
 // MARK: - Scale Step Extensions
 
-extension FoundationUI.DefaultTheme.Token {
+extension FoundationUI.DefaultTheme.Variable {
     public enum ScaleStep: CGFloat {
         case full = 1
         case half = 0.5
@@ -57,9 +57,9 @@ extension FoundationUI.DefaultTheme.Token {
 }
 
 
-public extension FoundationTokenAdjustableScale
-where SourceValue == FoundationDefaultThemeMultiplierToken.Configuration, ResultValue == CGFloat {
-    func up(_ step: FoundationUI.DefaultTheme.Token.ScaleStep) -> Self {
+public extension FoundationVariableToken
+where SourceValue == DefaultThemeFoundationVariable.Configuration, ResultValue == CGFloat {
+    func up(_ step: FoundationUI.DefaultTheme.Variable.ScaleStep) -> Self {
         .init { base, multiplier in
             let nextStep = base * multiplier
             let difference = nextStep - base
@@ -68,7 +68,7 @@ where SourceValue == FoundationDefaultThemeMultiplierToken.Configuration, Result
         }
     }
     
-    func down(_ step: FoundationUI.DefaultTheme.Token.ScaleStep) -> Self {
+    func down(_ step: FoundationUI.DefaultTheme.Variable.ScaleStep) -> Self {
         .init { base, multiplier in
             let nextStep = base / multiplier
             let difference = base - nextStep

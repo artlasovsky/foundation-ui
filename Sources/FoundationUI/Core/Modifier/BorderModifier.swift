@@ -10,16 +10,16 @@ import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.BorderModifier<FoundationUI.DynamicColor> {
     static func border(_ color: FoundationUI.Theme.Color) -> Self {
-        Self(fill: color)
+        Self(style: color)
     }
-    static func borderTinted(_ scale: FoundationUI.Theme.Color.Scale) -> Self {
-        Self(scale: scale)
+    static func borderTinted(_ token: FoundationUI.Theme.Color.Token) -> Self {
+        Self(token: token)
     }
 }
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.BorderModifier<LinearGradient> {
     static func borderGradient(_ gradient: LinearGradient) -> Self {
-        FoundationUI.Modifier.BorderModifier(fill: gradient)
+        FoundationUI.Modifier.BorderModifier(style: gradient)
     }
 }
 
@@ -28,13 +28,13 @@ public extension FoundationUI.Modifier {
     struct BorderModifier<S: ShapeStyle>: FoundationUIModifier {
         @DynamicShapeView<S> private var shapeView
         
-        init(fill: S) {
-            _shapeView = .init(fill: fill)
+        init(style: S) {
+            _shapeView = .init(style: style)
             _shapeView.stroke = .init(width: 1, placement: .center)
         }
         
-        public init(scale: FoundationUI.Theme.Color.Scale) where S == FoundationUI.Theme.Color {
-            _shapeView = .init(scale: scale)
+        public init(token: FoundationUI.Theme.Color.Token) where S == FoundationUI.Theme.Color {
+            _shapeView = .init(token: token)
             _shapeView.stroke = .init(width: 1, placement: .center)
         }
         
@@ -50,19 +50,19 @@ public extension FoundationUI.Modifier {
             return copy
         }
 
-        public func placement(_ placement: Stroke.StrokePlacement) -> Self {
+        public func placement(_ placement: Stroke.Placement) -> Self {
             var copy = self
             copy._shapeView.stroke?.placement = placement
             return copy
         }
 
-        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Scale?) -> Self {
+        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Token?) -> Self {
             var copy = self
-            copy._shapeView = copy._shapeView.cornerRadius(scale: cornerRadius)
+            copy._shapeView = copy._shapeView.cornerRadius(token: cornerRadius)
             return copy
         }
 
-        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Scale) -> Self {
+        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Token) -> Self {
             var copy = self
             copy._shapeView.gradientMask = gradientMask
             return copy
@@ -81,7 +81,6 @@ struct BorderModifier_Preview: PreviewProvider {
     struct Test: View {
         @Environment(\.self) private var env
         let tint: FoundationUI.DynamicColor? = nil
-        let gradientVariation: [FoundationUI.DynamicColor.VariationKeyPath] = [\.clear, \.text]
         
         var color: FoundationUI.DynamicColor {
             tint ?? env.dynamicColorTint

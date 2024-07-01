@@ -10,19 +10,19 @@ import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.ClipModifier {
     /// Clip with Rectangle or RoundedRectangle
-    static func clip(cornerRadius: FoundationUI.Theme.Radius.Scale? = nil) -> Self {
-        FoundationUI.Modifier.ClipModifier(scale: cornerRadius)
+    static func clip(cornerRadius: FoundationUI.Theme.Radius.Token? = nil) -> Self {
+        FoundationUI.Modifier.ClipModifier(token: cornerRadius)
     }
 }
 
 public extension FoundationUI.Modifier {
     struct ClipModifier: FoundationUIModifier {
-        @Environment(\.FoundationUICornerRadius) private var envCornerRadius
-        let scale: FoundationUI.Theme.Radius.Scale?
+        @Environment(\.dynamicCornerRadius) private var envCornerRadius
+        let token: FoundationUI.Theme.Radius.Token?
     
         private var cornerRadius: CGFloat? {
-            guard let scale else { return envCornerRadius }
-            return FoundationUI.theme.radius(scale)
+            guard let token else { return envCornerRadius }
+            return FoundationUI.theme.radius(token)
         }
         
         public func body(content: Content) -> some View {

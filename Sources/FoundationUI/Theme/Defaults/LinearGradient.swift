@@ -9,18 +9,18 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI.DefaultTheme {
-    public var linearGradient: Token.LinearGradient { .init() }
+    public var linearGradient: Variable.LinearGradient { .init() }
 }
 
 extension SwiftUI.LinearGradient {
     public static var foundation = FoundationUI.theme.linearGradient
 }
 
-public extension FoundationUI.DefaultTheme.Token {
-    struct LinearGradient: FoundationToken {
+public extension FoundationUI.DefaultTheme.Variable {
+    struct LinearGradient: FoundationVariable {
         public typealias Result = FoundationLinearGradient
 
-        public func callAsFunction(_ scale: Scale) -> Result {
+        public func callAsFunction(_ scale: Token) -> Result {
             let configuration = scale.value
             return FoundationLinearGradient(
                 colors: configuration.colors,
@@ -37,13 +37,13 @@ public extension FoundationUI.DefaultTheme.Token {
             )
         }
         
-        public struct Configuration {
+        public struct Configuration: Sendable {
             let colors: [FoundationUI.Theme.Color]
             let startPoint: UnitPoint
             let endPoint: UnitPoint
         }
         
-        public struct Scale: FoundationTokenScale {
+        public struct Token: Sendable {
             public var value: FoundationUI.Theme.LinearGradient.Configuration
             
             public init(_ value: FoundationUI.Theme.LinearGradient.Configuration) {

@@ -9,13 +9,13 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.CornerRadiusModifier {
-    static func cornerRadius(_ scale: FoundationUI.Theme.Radius.Scale?) -> Self {
-        FoundationUI.Modifier.CornerRadiusModifier(scale: scale)
+    static func cornerRadius(_ token: FoundationUI.Theme.Radius.Token?) -> Self {
+        FoundationUI.Modifier.CornerRadiusModifier(scale: token)
     }
 }
 public extension FoundationUI.Modifier {
     struct CornerRadiusModifier: FoundationUIModifier {
-        let scale: FoundationUI.Theme.Radius.Scale?
+        let scale: FoundationUI.Theme.Radius.Token?
         
         private var value: CGFloat? {
             guard let scale else { return nil }
@@ -23,7 +23,7 @@ public extension FoundationUI.Modifier {
         }
         
         public func body(content: Content) -> some View {
-            content.environment(\.FoundationUICornerRadius, value)
+            content.environment(\.dynamicCornerRadius, value)
         }
     }
 }
@@ -34,7 +34,7 @@ private struct FoundationUICornerRadiusKey: EnvironmentKey {
 }
 
 internal extension EnvironmentValues {
-    var FoundationUICornerRadius: CGFloat? {
+    var dynamicCornerRadius: CGFloat? {
         get { self[FoundationUICornerRadiusKey.self] }
         set { self[FoundationUICornerRadiusKey.self] = newValue }
     }

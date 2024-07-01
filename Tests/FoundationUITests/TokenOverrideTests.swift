@@ -10,8 +10,8 @@ import XCTest
 @testable import FoundationUI
 
 // Token Scale Override
-private extension FoundationUI.Theme.Padding.Scale {
-    static var regular: FoundationUI.Theme.Padding.Scale = .init(value: 10)
+private extension FoundationUI.Theme.Padding.Token {
+    static var regular: FoundationUI.Theme.Padding.Token = .init(value: 10)
 }
 
 final class ThemeOverrideTests: XCTestCase {
@@ -23,7 +23,7 @@ final class ThemeOverrideTests: XCTestCase {
 
 // Token Override
 
-struct SizeToken: FoundationToken {
+struct SizeToken: FoundationVariable {
     func callAsFunction(_ scale: Scale) -> CGFloat {
         scale.rawValue
     }

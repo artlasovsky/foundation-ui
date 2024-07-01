@@ -9,20 +9,20 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.SizeModifier {
-    static func size(width: FoundationUI.Theme.Size.Scale? = nil, height: FoundationUI.Theme.Size.Scale? = nil) -> Self {
+    static func size(width: FoundationUI.Theme.Size.Token? = nil, height: FoundationUI.Theme.Size.Token? = nil) -> Self {
         FoundationUI.Modifier.SizeModifier(width: width, height: height)
     }
-    static func size(_ side: FoundationUI.Theme.Size.Scale) -> Self {
+    static func size(_ side: FoundationUI.Theme.Size.Token) -> Self {
         FoundationUI.Modifier.SizeModifier(width: side, height: side)
     }
 }
 
 public extension FoundationUI.Modifier {
     struct SizeModifier: FoundationUIModifier {
-        private let widthScale: FoundationUI.Theme.Size.Scale?
-        private let heightScale: FoundationUI.Theme.Size.Scale?
+        private let widthScale: FoundationUI.Theme.Size.Token?
+        private let heightScale: FoundationUI.Theme.Size.Token?
         
-        init(width: FoundationUI.Theme.Size.Scale?, height: FoundationUI.Theme.Size.Scale?) {
+        init(width: FoundationUI.Theme.Size.Token?, height: FoundationUI.Theme.Size.Token?) {
             self.widthScale = width
             self.heightScale = height
         }

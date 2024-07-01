@@ -9,22 +9,22 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.PaddingModifier {
-    static func padding(_ scale: FoundationUI.Theme.Padding.Scale) -> Self {
-        FoundationUI.Modifier.PaddingModifier(scale: scale)
+    static func padding(_ token: FoundationUI.Theme.Padding.Token) -> Self {
+        FoundationUI.Modifier.PaddingModifier(token: token)
     }
 }
 public extension FoundationUI.Modifier {
     struct PaddingModifier: FoundationUIModifier {
-        let scale: FoundationUI.Theme.Padding.Scale
+        let token: FoundationUI.Theme.Padding.Token
         
-        init(scale: FoundationUI.Theme.Padding.Scale) {
-            self.scale = scale
+        init(token: FoundationUI.Theme.Padding.Token) {
+            self.token = token
         }
         
         private var edges: Edge.Set = .all
         
         public func body(content: Content) -> some View {
-            content.padding(edges, FoundationUI.theme.padding(scale))
+            content.padding(edges, FoundationUI.theme.padding(token))
         }
         
         public func edges(_ edges: Edge.Set) -> Self {

@@ -1,43 +1,42 @@
 //
-//  Token.swift
-//  
+//  FoundationVariable.swift
+//
 //
 //  Created by Art Lasovsky on 27/06/2024.
 //
 
 import Foundation
 
+/// #Naming
+/// `Variable`
+/// - `Variable Token`
+///     - `Token Scale` (predefined scale like `colorScale` or `sizeScale`)
+
 // MARK: - Token
-#warning("Decide on naming Token or Variable")
 #warning("TODO: Tests! To make sure it's working all the time!")
 
-public protocol FoundationToken {
+public protocol FoundationVariable {
     associatedtype Result
-    associatedtype Scale
-    func callAsFunction(_ scale: Scale) -> Result
+    associatedtype Token
+    func callAsFunction(_ token: Token) -> Result
 }
 
-public protocol FoundationTokenWithValue: FoundationToken {
+public protocol FoundationVariableWithValue: FoundationVariable {
     associatedtype Value
     var value: Value { get }
     init(_ base: Value)
 }
 
-extension FoundationTokenWithValue where Scale: FoundationTokenAdjustableScale {
-    public func callAsFunction(_ scale: Scale) -> Result where Scale.SourceValue == Value, Scale.ResultValue == Result {
-        scale(value)
+extension FoundationVariableWithValue where Token: FoundationVariableToken {
+    public func callAsFunction(_ token: Token) -> Result where Token.SourceValue == Value, Token.ResultValue == Result {
+        token(value)
     }
 }
 
-public protocol FoundationTokenScale {
-    associatedtype SourceValue
-    var value: SourceValue { get }
-}
-
-public protocol FoundationTokenAdjustableScale {
+public protocol FoundationVariableToken: Sendable {
     associatedtype SourceValue
     associatedtype ResultValue
-    typealias Adjust = (SourceValue) -> ResultValue
+    typealias Adjust = @Sendable (SourceValue) -> ResultValue
     var adjust: Adjust { get }
     
     func callAsFunction(_ base: SourceValue) -> ResultValue
@@ -45,7 +44,7 @@ public protocol FoundationTokenAdjustableScale {
     init(_ adjust: @escaping Adjust)
 }
 
-extension FoundationTokenAdjustableScale {
+extension FoundationVariableToken {
     public func callAsFunction(_ base: SourceValue) -> ResultValue {
         adjust(base)
     }
@@ -57,7 +56,7 @@ extension FoundationTokenAdjustableScale {
 // MARK: - Default Token Scale
 
 /// Default size scale from `xxSmall` to `xxLarge`
-public protocol FoundationTokenScaleDefault {
+public protocol DefaultFoundationVariableTokenScale {
     static var xxSmall: Self { get }
     static var xSmall: Self { get }
     static var small: Self { get }
@@ -67,7 +66,7 @@ public protocol FoundationTokenScaleDefault {
     static var xxLarge: Self { get }
 }
 
-internal extension FoundationTokenScaleDefault {
+internal extension DefaultFoundationVariableTokenScale {
     static var all: [NamedValue<Self>] {
         [
             .init("xxSmall", .xxSmall),

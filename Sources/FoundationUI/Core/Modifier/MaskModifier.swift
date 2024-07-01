@@ -9,24 +9,24 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.LinearGradientMaskModifier {
-    static func gradientMask(_ scale: FoundationUI.Theme.LinearGradient.Scale?) -> Self {
-        .init(scale: scale)
+    static func gradientMask(_ token: FoundationUI.Theme.LinearGradient.Token?) -> Self {
+        .init(token: token)
     }
     
     static func gradientMask(_ colors: [FoundationUI.Theme.Color], startPoint: UnitPoint = .top, endPoint: UnitPoint = .bottom) -> Self {
-        .init(scale: .init(colors: colors, startPoint: startPoint, endPoint: endPoint))
+        .init(token: .init(colors: colors, startPoint: startPoint, endPoint: endPoint))
     }
 }
 
 public extension FoundationUI.Modifier {
     struct LinearGradientMaskModifier: FoundationUIModifier {
-        let scale: FoundationUI.Theme.LinearGradient.Scale?
+        let token: FoundationUI.Theme.LinearGradient.Token?
         
         public func body(content: Content) -> some View {
-            if let scale {
+            if let token {
                 content.mask {
                     Rectangle()
-                        .foregroundStyle(FoundationUI.theme.linearGradient(scale))
+                        .foregroundStyle(FoundationUI.theme.linearGradient(token))
                     }
             } else {
                 content
@@ -37,7 +37,7 @@ public extension FoundationUI.Modifier {
 
 
 #if DEBUG
-private extension FoundationUI.DefaultTheme.Token.LinearGradient.Scale {
+private extension FoundationUI.DefaultTheme.Variable.LinearGradient.Token {
     static let clearTop = Self(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
 }
 #endif

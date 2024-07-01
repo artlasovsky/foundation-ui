@@ -10,33 +10,33 @@ import SwiftUI
 
 @propertyWrapper
 struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
-    @Environment(\.FoundationUICornerRadius) private var environmentCornerRadius
+    @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
     @Environment(\.dynamicColorTint) private var dynamicColorTint
     
-    private var scale: FoundationUI.Theme.Color.Scale?
-    private var fill: S?
+    private var style: S?
+    private var token: FoundationUI.Theme.Color.Token?
     
     private var cornerRadius: CGFloat?
     private var padding: CGFloat = 0
     
-    func cornerRadius(scale: FoundationUI.Theme.Radius.Scale?) -> Self {
+    func cornerRadius(token: FoundationUI.Theme.Radius.Token?) -> Self {
         var copy = self
         var value: CGFloat?
-        if let scale {
-            value = .foundation.radius(scale)
+        if let token {
+            value = .foundation.radius(token)
         }
         copy.cornerRadius = value
         return copy
     }
     
-    func padding(scale: FoundationUI.Theme.Padding.Scale) -> Self {
+    func padding(token: FoundationUI.Theme.Padding.Token) -> Self {
         var copy = self
-        copy.padding = .foundation.padding(scale)
+        copy.padding = .foundation.padding(token)
         return copy
     }
     
-    var gradientMask: FoundationUI.Theme.LinearGradient.Scale?
-    var shadow: FoundationUI.Theme.Shadow.Scale?
+    var gradientMask: FoundationUI.Theme.LinearGradient.Token?
+    var shadow: FoundationUI.Theme.Shadow.Token?
     
     var safeAreaRegions: SafeAreaRegions?
     var safeAreaEdges: Edge.Set?
@@ -45,12 +45,12 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
     
     init() where S: ShapeStyle {}
     
-    init(fill: S)  {
-        self.fill = fill
+    init(style: S)  {
+        self.style = style
     }
     
-    init(scale: FoundationUI.Theme.Color.Scale) where S == FoundationUI.Theme.Color {
-        self.scale = scale
+    init(token: FoundationUI.Theme.Color.Token) where S == FoundationUI.Theme.Color {
+        self.token = token
     }
     
     @ViewBuilder
@@ -70,10 +70,10 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
     
     @ViewBuilder
     private var shapeView: some View {
-        if let fill {
-            shape.foregroundStyle(fill)
-        } else if let scale {
-            shape.foregroundStyle(dynamicColorTint.scale(scale))
+        if let style {
+            shape.foregroundStyle(style)
+        } else if let token {
+            shape.foregroundStyle(dynamicColorTint.scale(token))
         }
     }
     
@@ -83,7 +83,7 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
     }
     
     private var radius: CGFloat {
-        let radius: CGFloat = cornerRadius ?? environmentCornerRadius ?? 0
+        let radius: CGFloat = cornerRadius ?? dynamicCornerRadius ?? 0
         guard radius > 0 else { return 0 }
         let strokeAdjustment = stroke?.cornerRadiusAdjustment ?? 0
         let paddingAdjustment = max(0, padding)
@@ -112,13 +112,13 @@ struct DynamicShapeView_Preview: PreviewProvider {
         VStack {
             Text("Background")
                 .border(.blue) // .foundation(.background()) should exceed the blue border
-                .foundation(.background(.red.borderFaded)
+                .foundation(.background(.red.scale(.borderFaded))
                     .padding(.regular.negative())
                     .shadow(.small)
                     .cornerRadius(.small)
                     .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
                 )
-                .foundation(.foreground(.red.textEmphasized))
+                .foundation(.foreground(.red.scale(.textEmphasized)))
 //                ._colorScheme(.dark)
         }
         .padding()
@@ -126,15 +126,15 @@ struct DynamicShapeView_Preview: PreviewProvider {
     }
 }
 
-public struct Stroke {
-    public enum StrokePlacement {
+public struct Stroke: Sendable {
+    public enum Placement: Sendable {
         case inside
         case outside
         case center
     }
     
     var width: CGFloat
-    var placement: StrokePlacement
+    var placement: Placement
     
     var paddingAdjustment: CGFloat {
         switch placement {

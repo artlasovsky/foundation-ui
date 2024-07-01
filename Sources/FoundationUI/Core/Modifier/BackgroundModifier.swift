@@ -10,30 +10,30 @@ import SwiftUI
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<FoundationUI.Theme.Color> {
     static func background(_ color: FoundationUI.Theme.Color) -> Self {
-        .init(fill: color)
+        .init(style: color)
     }
     
-    static func backgroundTinted(_ scale: FoundationUI.Theme.Color.Scale) -> Self {
-        .init(scale: scale)
+    static func backgroundTinted(_ token: FoundationUI.Theme.Color.Token) -> Self {
+        .init(token: token)
     }
 }
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<Material> {
     static func backgroundMaterial(_ material: Material) -> Self {
-        FoundationUI.Modifier.BackgroundModifier(fill: material)
+        FoundationUI.Modifier.BackgroundModifier(style: material)
     }
 }
 
 @available(macOS 13.0, *)
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<Gradient> {
     static func backgroundGradient(_ gradient: Gradient) -> Self {
-        FoundationUI.Modifier.BackgroundModifier(fill: gradient)
+        FoundationUI.Modifier.BackgroundModifier(style: gradient)
     }
 }
 
 public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<Color> {
     static func backgroundColor(_ color: Color) -> Self {
-        FoundationUI.Modifier.BackgroundModifier(fill: color)
+        FoundationUI.Modifier.BackgroundModifier(style: color)
     }
 }
 
@@ -41,12 +41,12 @@ public extension FoundationUI.Modifier {
     struct BackgroundModifier<S: ShapeStyle>: FoundationUIModifier {
         @DynamicShapeView<S> private var shapeView
         
-        public init(fill: S) {
-            self._shapeView = .init(fill: fill)
+        public init(style: S) {
+            self._shapeView = .init(style: style)
         }
         
-        public init(scale: FoundationUI.Theme.Color.Scale) where S == FoundationUI.Theme.Color {
-            self._shapeView = .init(scale: scale)
+        public init(token: FoundationUI.Theme.Color.Token) where S == FoundationUI.Theme.Color {
+            self._shapeView = .init(token: token)
         }
         
         public func body(content: Content) -> some View {
@@ -57,19 +57,19 @@ public extension FoundationUI.Modifier {
         /// > Note: It will override environment value set by `.foundation(cornerRadius:)`
         ///
         /// > Note: While using with `.padding()` modifier it will adjust the cornerRadius `foundation(.background().padding())`
-        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Scale) -> Self {
+        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Token) -> Self {
             var copy = self
-            copy._shapeView = copy._shapeView.cornerRadius(scale: cornerRadius)
+            copy._shapeView = copy._shapeView.cornerRadius(token: cornerRadius)
             return copy
         }
         
-        public func shadow(_ shadow: FoundationUI.Theme.Shadow.Scale) -> Self {
+        public func shadow(_ shadow: FoundationUI.Theme.Shadow.Token) -> Self {
             var copy = self
             copy._shapeView.shadow = shadow
             return copy
         }
         
-        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Scale) -> Self {
+        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Token) -> Self {
             var copy = self
             copy._shapeView.gradientMask = gradientMask
             return copy
@@ -82,9 +82,9 @@ public extension FoundationUI.Modifier {
             return copy
         }
         
-        public func padding(_ padding: FoundationUI.Theme.Padding.Scale) -> Self {
+        public func padding(_ padding: FoundationUI.Theme.Padding.Token) -> Self {
             var copy = self
-            copy._shapeView = copy._shapeView.padding(scale: padding)
+            copy._shapeView = copy._shapeView.padding(token: padding)
             return copy
         }
     }
@@ -95,7 +95,7 @@ struct BackgroundModifier_Preview: PreviewProvider {
         VStack {
             Text("Basic")
                 .foundation(.padding(.regular))
-                .foundation(.background(.primary.fillEmphasized))
+                .foundation(.background(.primary.scale(.fillEmphasized)))
             Text("Env")
                 .foundation(.padding(.regular))
                 .foundation(.backgroundTinted(.fillEmphasized))

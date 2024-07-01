@@ -8,18 +8,18 @@
 import Foundation
 
 extension FoundationUI.DefaultTheme {
-    public var size: Token.Size { .init(base: baseValue * 8, multiplier: 2) }
+    public var size: Variable.Size { .init(base: baseValue * 8, multiplier: 2) }
 }
 
-public extension FoundationUI.DefaultTheme.Token {
-    struct Size: FoundationDefaultThemeMultiplierToken {
+public extension FoundationUI.DefaultTheme.Variable {
+    struct Size: DefaultThemeFoundationVariable {
         public let value: Configuration
         
         public init(_ value: Value) {
             self.value = value
         }
         
-        public struct Scale: FoundationDefaultThemeMultiplierTokenDefaults {
+        public struct Token: DefaultThemeFoundationVariableTokenScale {
             public var adjust: (SourceValue) -> ResultValue
             public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
                 self.adjust = adjust

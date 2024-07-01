@@ -9,12 +9,12 @@ import Foundation
 import XCTest
 @testable import FoundationUI
 
-struct BasicToken: FoundationToken {
-    func callAsFunction(_ scale: Scale) -> CGFloat {
+struct BasicToken: FoundationVariable {
+    func callAsFunction(_ scale: Token) -> CGFloat {
         scale.value
     }
     
-    struct Scale: FoundationTokenScale {
+    struct Token {        
         var value: CGFloat
         
         static let small = Self(value: 4)
@@ -32,14 +32,14 @@ final class TokenTests: XCTestCase {
     }
 }
 
-struct BasicAdjustableToken: FoundationToken {
+struct BasicAdjustableToken: FoundationVariable {
     var baseValue: CGFloat
     
-    func callAsFunction(_ scale: Scale) -> CGFloat {
+    func callAsFunction(_ scale: Token) -> CGFloat {
         scale(baseValue)
     }
     
-    struct Scale: FoundationTokenAdjustableScale {
+    struct Token: FoundationVariableToken {
         typealias SourceValue = CGFloat
         typealias ResultValue = CGFloat
         
@@ -69,18 +69,18 @@ extension TokenTests {
     }
 }
 
-struct TokenWithMultiplier: FoundationDefaultThemeMultiplierToken {
+struct TokenWithMultiplier: DefaultThemeFoundationVariable {
     var value: (base: CGFloat, multiplier: CGFloat)
     init(_ value: (base: CGFloat, multiplier: CGFloat)) {
         self.value = value
     }
     
-    func callAsFunction(_ scale: Scale) -> CGFloat {
+    func callAsFunction(_ scale: Token) -> CGFloat {
         scale(value)
     }
     
-    struct Scale: FoundationDefaultThemeMultiplierTokenDefaults {
-        var adjust: (TokenWithMultiplier.Configuration) -> CGFloat
+    struct Token: DefaultThemeFoundationVariableTokenScale {
+        var adjust: @Sendable (TokenWithMultiplier.Configuration) -> CGFloat
         init(_ adjust: @escaping Adjust) {
             self.adjust = adjust
         }
