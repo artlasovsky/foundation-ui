@@ -40,7 +40,6 @@ public extension FoundationUI.Modifier {
 private extension FoundationUI.DefaultTheme.Variable.LinearGradient.Token {
     static let clearTop = Self(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
 }
-#endif
 
 #Preview {
     VStack {
@@ -51,3 +50,4 @@ private extension FoundationUI.DefaultTheme.Variable.LinearGradient.Token {
     }
     .padding()
 }
+#endif
