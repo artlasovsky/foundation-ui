@@ -22,13 +22,14 @@ public extension FoundationUI.Modifier {
         }
         
         private var edges: Edge.Set = .all
+        private var affectDynamicCornerRadius: Bool = false
         
         public func body(content: Content) -> some View {
             content
                 .padding(edges, FoundationUI.theme.padding(token))
                 .transformEnvironment(\.dynamicCornerRadius) { radius in
-                    if let dynamicRadius = radius {
-                        var newRadius = dynamicRadius - FoundationUI.theme.padding(token)
+                    if let dynamicRadius = radius, affectDynamicCornerRadius {
+                        let newRadius = dynamicRadius - FoundationUI.theme.padding(token)
                         radius = newRadius
                     }
                 }
@@ -37,6 +38,12 @@ public extension FoundationUI.Modifier {
         public func edges(_ edges: Edge.Set) -> Self {
             var copy = self
             copy.edges = edges
+            return copy
+        }
+        
+        public func affectDynamicCornerRadius(_ value: Bool) -> Self {
+            var copy = self
+            copy.affectDynamicCornerRadius = value
             return copy
         }
     }
