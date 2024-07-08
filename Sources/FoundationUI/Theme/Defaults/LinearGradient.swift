@@ -84,8 +84,8 @@ public extension FoundationUI.DefaultTheme.Variable {
             .foundation(.clip())
             .foregroundStyle(FoundationUI.theme.linearGradient(
                 colors: [
-                    .primary.scale(.text),
-                    .red.scale(.borderEmphasized)
+                    .primary.token(.text),
+                    .red.token(.borderEmphasized)
                 ],
                 startPoint: .top,
                 endPoint: .bottom

@@ -36,12 +36,11 @@ extension FoundationVariableWithValue where Token: FoundationVariableToken {
 public protocol FoundationVariableToken: Sendable {
     associatedtype SourceValue
     associatedtype ResultValue
-    typealias Adjust = @Sendable (SourceValue) -> ResultValue
-    var adjust: Adjust { get }
+    var adjust: @Sendable (SourceValue) -> ResultValue { get }
     
     func callAsFunction(_ base: SourceValue) -> ResultValue
     
-    init(_ adjust: @escaping Adjust)
+    init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue)
 }
 
 extension FoundationVariableToken {

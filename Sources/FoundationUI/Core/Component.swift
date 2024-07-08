@@ -48,11 +48,12 @@ public extension FoundationUI.Shape {
         bottomTrailingRadius: FoundationUI.Theme.Radius.Token,
         topTrailingRadius: FoundationUI.Theme.Radius.Token
     ) -> UnevenRoundedRectangle {
-        UnevenRoundedRectangle(
-            topLeadingRadius: .foundation.radius(topLeadingRadius),
-            bottomLeadingRadius: .foundation.radius(bottomLeadingRadius),
-            bottomTrailingRadius: .foundation.radius(bottomTrailingRadius),
-            topTrailingRadius: .foundation.radius(topTrailingRadius),
+        let radius = FoundationUI.theme.radius
+        return UnevenRoundedRectangle(
+            topLeadingRadius: radius(topLeadingRadius),
+            bottomLeadingRadius: radius(bottomLeadingRadius),
+            bottomTrailingRadius: radius(bottomTrailingRadius),
+            topTrailingRadius: radius(topTrailingRadius),
             style: cornerRadiusStyle
         )
     }
@@ -61,10 +62,10 @@ public extension FoundationUI.Shape {
         return RoundedRectangle(cornerRadius: radius, style: cornerRadiusStyle)
     }
     static func roundedRectangle(_ token: FoundationUI.Theme.Radius.Token) -> RoundedRectangle {
-        self.roundedRectangle(radius: .foundation.radius(token))
+        self.roundedRectangle(radius: FoundationUI.theme.radius(token))
     }
     static func roundedSquare(_ token: FoundationUI.Theme.Radius.Token, size sizeToken: FoundationUI.Theme.Size.Token) -> some View {
-        self.roundedRectangle(radius: .foundation.radius(token))
+        self.roundedRectangle(token)
             .foundation(.size(sizeToken))
     }
 }

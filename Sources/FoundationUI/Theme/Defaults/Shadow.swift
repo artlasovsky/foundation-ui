@@ -39,7 +39,7 @@ public protocol FoundationTokenShadowScale: DefaultFoundationVariableTokenScale 
 
 extension FoundationTokenShadowScale where Self == FoundationUI.DefaultTheme.Variable.Shadow.Token {
     #warning("Test with dark theme, make it darker if needed")
-    private static var color: FoundationUI.Theme.Color { .primary.scale(.background).colorScheme(.dark) }
+    private static var color: FoundationUI.Theme.Color { .primary.token(.background).colorScheme(.dark) }
     public static var xxSmall: Self { .init(color: color.opacity(0.1), radius: 0.5) }
     public static var xSmall: Self { .init(color: color.opacity(0.15), radius: 1, y: 1) }
     public static var small: Self { .init(color: color.opacity(0.2), radius: 1.5, y: 1) }
@@ -50,7 +50,7 @@ extension FoundationTokenShadowScale where Self == FoundationUI.DefaultTheme.Var
 }
 
 #Preview {
-    VStack(spacing: .foundation.spacing(.large)) {
+    VStack(spacing: FoundationUI.theme.spacing(.large)) {
         ForEach(FoundationUI.DefaultTheme.Variable.Shadow.Token.all) { scale in
             FoundationUI.Shape.roundedRectangle(.regular)
                 .foundation(.size(.regular))

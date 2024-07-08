@@ -37,7 +37,3 @@ public protocol FoundationUITheme {
 }
 
 extension FoundationUI: FoundationUITheme {}
-
-extension CGFloat {
-    public static var foundation: FoundationUI.Theme { FoundationUI.theme }
-}

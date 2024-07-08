@@ -26,7 +26,6 @@ public extension FoundationUIModifier where Self == FoundationUI.Modifier.Foregr
 
 #warning("Add more ShapeStyles (gradient, ...)")
 
-
 public extension FoundationUI.Modifier {
     struct ForegroundModifier<Style: ShapeStyle>: FoundationUIModifier {
         enum ForegroundStyle<S: ShapeStyle> {
@@ -43,7 +42,7 @@ public extension FoundationUI.Modifier {
             case .style(let style):
                 content.foregroundStyle(style)
             case .token(let token):
-                content.foregroundStyle(environmentTint.scale(token))
+                content.foregroundStyle(environmentTint.token(token))
             }
         }
     }

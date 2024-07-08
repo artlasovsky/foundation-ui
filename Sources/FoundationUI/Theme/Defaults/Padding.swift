@@ -20,8 +20,8 @@ public extension FoundationUI.DefaultTheme.Variable {
         }
         
         public struct Token: DefaultThemeFoundationVariableTokenScale {
-            public var adjust: (SourceValue) -> ResultValue
-            public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
+            public var adjust: @Sendable (SourceValue) -> ResultValue
+            public init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
                 self.adjust = adjust
             }
         }

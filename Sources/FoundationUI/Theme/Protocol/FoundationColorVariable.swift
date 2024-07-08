@@ -11,7 +11,7 @@ import SwiftUI
 public protocol FoundationColorVariable: ShapeStyle {
     associatedtype Token
     
-    func scale(_ token: Token) -> Self
+    func token(_ token: Token) -> Self
     func callAsFunction(_ color: Self) -> Self
     
     func hue(_ value: CGFloat) -> Self

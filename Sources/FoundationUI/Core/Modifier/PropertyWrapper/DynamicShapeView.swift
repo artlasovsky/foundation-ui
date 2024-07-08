@@ -57,7 +57,7 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
         if let style {
             shape.foregroundStyle(style)
         } else if let token {
-            shape.foregroundStyle(dynamicColorTint.scale(token))
+            shape.foregroundStyle(dynamicColorTint.token(token))
         }
     }
     
@@ -68,7 +68,7 @@ struct DynamicShapeView<S: ShapeStyle>: DynamicProperty {
     private var radius: CGFloat {
         var radius: CGFloat = dynamicCornerRadius ?? 0
         if let cornerRadiusToken {
-            radius = .foundation.radius(cornerRadiusToken)
+            radius = FoundationUI.theme.radius(cornerRadiusToken)
         }
         guard radius > 0 else { return 0 }
         let strokeAdjustment = stroke?.cornerRadiusAdjustment ?? 0
@@ -98,12 +98,12 @@ struct DynamicShapeView_Preview: PreviewProvider {
             Text("Background")
                 .border(.blue)
                 .foundation(.padding(.small))
-                .foundation(.background(.red.scale(.borderFaded))
+                .foundation(.background(.red.token(.borderFaded))
                     .shadow(.small)
                     .cornerRadius(.small)
                     .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
                 )
-                .foundation(.foreground(.red.scale(.textEmphasized)))
+                .foundation(.foreground(.red.token(.textEmphasized)))
 //                ._colorScheme(.dark)
         }
         .padding()

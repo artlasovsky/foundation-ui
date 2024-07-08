@@ -16,8 +16,8 @@ private extension FoundationUI.Theme.Padding.Token {
 
 final class ThemeOverrideTests: XCTestCase {
     func testTokenScaleOverride() throws {
-        XCTAssert(CGFloat.foundation.padding(.small) == 8 / 2)
-        XCTAssert(CGFloat.foundation.padding(.regular) == 10)
+        XCTAssert(FoundationUI.theme.padding(.small) == 8 / 2)
+        XCTAssert(FoundationUI.theme.padding(.regular) == 10)
     }
 }
 
@@ -43,7 +43,6 @@ extension ThemeOverrideTests {
     func testTokenOverride() throws {
         XCTAssert(FoundationUI.theme.size(.regular) == 24)
         XCTAssert(FoundationUI.theme.size(.small) == 18)
-        XCTAssert(CGFloat.foundation.size(.regular) == 24)
-        XCTAssert(CGFloat.foundation.size(.large) == 32)
+        XCTAssert(FoundationUI.theme.size(.large) == 32)
     }
 }

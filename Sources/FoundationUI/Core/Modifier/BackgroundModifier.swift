@@ -88,7 +88,7 @@ struct BackgroundModifier_Preview: PreviewProvider {
         VStack {
             Text("Basic")
                 .foundation(.padding(.regular))
-                .foundation(.background(.primary.scale(.fillEmphasized)))
+                .foundation(.background(.primary.token(.fillEmphasized)))
             Text("Tinted")
                 .foundation(.padding(.regular))
                 .foundation(.backgroundTinted(.fillEmphasized))

@@ -13,19 +13,13 @@ extension FoundationUI.DefaultTheme {
     public var color: Variable.Color { .primary }
 }
 
-// MARK: - Extensions
 extension Color {
-    public static var foundation: FoundationUI.Theme.Color { FoundationUI.theme.color }
-}
-
-extension ShapeStyle where Self == Color {
-    public static var foundation: FoundationUI.Theme.Color { FoundationUI.theme.color }
+    static let theme = FoundationUI.theme.color
 }
 
 // MARK: - Conform to FoundationColorToken
 public extension FoundationUI.DefaultTheme.Variable {
     typealias Color = FoundationUI.DynamicColor
-    // Get rid of FoundationUI.DynamicColor completely
 }
 
 extension FoundationUI.DefaultTheme.Variable.Color: FoundationColorVariable {
@@ -44,8 +38,7 @@ extension FoundationUI.DefaultTheme.Variable.Color: FoundationColorVariable {
 }
 
 extension FoundationUI.DefaultTheme.Variable.Color {
-    #warning("TODO: Rename to `token`")
-    public func scale(_ token: Token) -> Self {
+    public func token(_ token: Token) -> Self {
         token(self)
     }
     
@@ -53,12 +46,10 @@ extension FoundationUI.DefaultTheme.Variable.Color {
         color
     }
     
-    public struct Token: DynamicColorScale {
-        public typealias SourceValue = FoundationUI.DynamicColor
-        public typealias ResultValue = FoundationUI.DynamicColor
-        public var adjust: (SourceValue) -> ResultValue
+    public struct Token: DynamicColorToken {
+        public var adjust: @Sendable (SourceValue) -> ResultValue
         
-        public init(_ adjust: @escaping (SourceValue) -> ResultValue) {
+        public init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
             self.adjust = adjust
         }
     }
@@ -104,7 +95,7 @@ extension FoundationUI.DefaultTheme.Variable.Color {
 
 // MARK: - Default Color Scale
 
-public protocol DynamicColorScale: FoundationVariableToken where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
+public protocol DynamicColorToken: FoundationVariableToken where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
     static var backgroundFaded: Self { get }
     static var background: Self { get }
     static var backgroundEmphasized: Self { get }
@@ -126,7 +117,7 @@ public protocol DynamicColorScale: FoundationVariableToken where SourceValue == 
     static var clear: Self { get }
 }
 
-public extension DynamicColorScale {
+public extension DynamicColorToken {
     typealias Components = FoundationUI.DynamicColor.Components
     typealias ComponentAdjust = (Components) -> Components
     
@@ -324,7 +315,7 @@ struct DynamicColorPreview: PreviewProvider {
             var isSolid: Bool {
                 let color = FoundationUI.DynamicColor.primary
                 
-                return color.scale(.solid) == color.scale(scale)
+                return color.token(.solid) == color.token(scale)
             }
             var body: some View {
                 ZStack {
@@ -333,7 +324,7 @@ struct DynamicColorPreview: PreviewProvider {
                         .foundation(.size(isSolid ? .small.up(.quarter) : .small))
                     if isSolid {
                         VStack {
-                            let tint = tint.scale(scale)
+                            let tint = tint.token(scale)
                             let h = String(format: "%.2f", tint.light.hue)
                             let s = String(format: "%.2f", tint.light.saturation)
                             let b = String(format: "%.2f", tint.light.brightness)

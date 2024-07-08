@@ -41,7 +41,7 @@ public extension FoundationUI.Modifier {
             return copy
         }
         
-        public func affectDynamicCornerRadius(_ value: Bool) -> Self {
+        public func adjustNestedCornerRadius(_ value: Bool) -> Self {
             var copy = self
             copy.affectDynamicCornerRadius = value
             return copy
@@ -61,16 +61,16 @@ public extension FoundationUI.Modifier {
             .foundation(.size(.regular))
             .overlay {
                 FoundationUI.Shape.roundedRectangle(.regular)
-                    .foundation(.padding(.init(value: .foundation.padding(.regular))).edges(.horizontal))
+                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular))).edges(.horizontal))
                     .foundation(.padding(.regular).edges(.vertical))
                     .foundation(.size(.regular))
                     .foundation(.foreground(.white))
                 FoundationUI.Shape.roundedRectangle(.regular)
-                    .foundation(.padding(.init(value: .foundation.padding(.regular.up(.half)))).edges(.horizontal))
+                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular.up(.half)))).edges(.horizontal))
 //                    .foundation(.padding_(.init(value: FoundationUI.theme.padding(.regular))).edges(.horizontal))
                     .foundation(.padding(.regular).edges(.vertical))
                     .foundation(.size(.regular))
-                    .foundation(.foreground(.gray.scale(.fill)))
+                    .foundation(.foreground(.gray.token(.fill)))
             }
     }.padding()
 }
