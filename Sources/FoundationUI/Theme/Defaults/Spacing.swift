@@ -8,7 +8,7 @@
 import Foundation
 
 extension FoundationUI.DefaultTheme {
-    public var spacing: Variable.Spacing { .init(base: baseValue) }
+    public var spacing: Variable.Spacing { .init(base: baseValue * 1.25) }
 }
 
 public extension FoundationUI.DefaultTheme.Variable {

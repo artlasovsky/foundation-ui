@@ -34,13 +34,13 @@ extension DefaultThemeFoundationVariable {
 // MARK: Default Multiplier Token Scale
 
 extension DefaultThemeFoundationVariableTokenScale {
-    public static var xxSmall: Self { xSmall.down(.full) }
-    public static var xSmall: Self { small.down(.full) }
-    public static var small: Self { regular.down(.full) }
+    public static var xxSmall: Self { regular.down(4) }
+    public static var xSmall: Self { regular.down(2) }
+    public static var small: Self { regular.down(1) }
     public static var regular: Self { Self { base, _ in base } }
-    public static var large: Self { regular.up(.full) }
-    public static var xLarge: Self { large.up(.full) }
-    public static var xxLarge: Self { xLarge.up(.full) }
+    public static var large: Self { regular.up(1) }
+    public static var xLarge: Self { regular.up(2) }
+    public static var xxLarge: Self { regular.up(3) }
 }
 
 // MARK: - Scale Step Extensions
@@ -54,31 +54,33 @@ extension FoundationUI.DefaultTheme.Variable {
     }
 }
 
-import SwiftUI
-
-#Preview {
-    Text(FoundationUI.theme.padding(.regular).description)
-}
-
 
 public extension FoundationVariableToken
 where SourceValue == DefaultThemeFoundationVariable.Configuration, ResultValue == CGFloat {
-    func up(_ step: FoundationUI.DefaultTheme.Variable.Step) -> Self {
+    func up(_ value: CGFloat) -> Self {
         .init { base, multiplier in
-            let nextStep = base * multiplier
+            let nextStep = base * multiplier * value
             let difference = nextStep - base
             
-            return base + difference * step.rawValue
+            return base + difference
+        }
+    }
+    
+    func up(_ step: FoundationUI.DefaultTheme.Variable.Step) -> Self {
+        up(step.rawValue)
+    }
+    
+    func down(_ value: CGFloat) -> Self {
+        .init { base, multiplier in
+            let nextStep = base / multiplier / value
+            let difference = base - nextStep
+            
+            return base - difference
         }
     }
     
     func down(_ step: FoundationUI.DefaultTheme.Variable.Step) -> Self {
-        .init { base, multiplier in
-            let nextStep = base / multiplier
-            let difference = base - nextStep
-            
-            return base - difference * step.rawValue
-        }
+        down(step.rawValue)
     }
     
     func negative() -> Self {

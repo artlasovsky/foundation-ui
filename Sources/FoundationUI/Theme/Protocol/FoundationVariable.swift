@@ -52,6 +52,12 @@ extension FoundationVariableToken {
     }
 }
 
+extension FoundationVariableToken where ResultValue == CGFloat {
+    public init(_ value: CGFloat) {
+        self.init(value: value)
+    }
+}
+
 // MARK: - Default Token Scale
 
 /// Default size scale from `xxSmall` to `xxLarge`
