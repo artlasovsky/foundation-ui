@@ -34,13 +34,13 @@ extension DefaultThemeFoundationVariable {
 // MARK: Default Multiplier Token Scale
 
 extension DefaultThemeFoundationVariableTokenScale {
-    public static var xxSmall: Self { regular.down(4) }
-    public static var xSmall: Self { regular.down(2) }
-    public static var small: Self { regular.down(1) }
+    public static var xxSmall: Self { xSmall.down(.full) }
+    public static var xSmall: Self { small.down(.full) }
+    public static var small: Self { regular.down(.full) }
     public static var regular: Self { Self { base, _ in base } }
-    public static var large: Self { regular.up(1) }
-    public static var xLarge: Self { regular.up(2) }
-    public static var xxLarge: Self { regular.up(3) }
+    public static var large: Self { regular.up(.full) }
+    public static var xLarge: Self { large.up(.full) }
+    public static var xxLarge: Self { xLarge.up(.full) }
 }
 
 // MARK: - Scale Step Extensions
@@ -57,12 +57,13 @@ extension FoundationUI.DefaultTheme.Variable {
 
 public extension FoundationVariableToken
 where SourceValue == DefaultThemeFoundationVariable.Configuration, ResultValue == CGFloat {
-    func up(_ value: CGFloat) -> Self {
+    private func up(_ value: CGFloat) -> Self {
         .init { base, multiplier in
-            let nextStep = base * multiplier * value
-            let difference = nextStep - base
+            let current = self.adjust((base, multiplier))
+            let nextStep = current * multiplier
+            let difference = nextStep - current
             
-            return base + difference
+            return (current + difference * value).precise()
         }
     }
     
@@ -70,12 +71,13 @@ where SourceValue == DefaultThemeFoundationVariable.Configuration, ResultValue =
         up(step.rawValue)
     }
     
-    func down(_ value: CGFloat) -> Self {
+    private func down(_ value: CGFloat) -> Self {
         .init { base, multiplier in
-            let nextStep = base / multiplier / value
-            let difference = base - nextStep
+            let current = self.adjust((base, multiplier))
+            let nextStep = current / multiplier
+            let difference = current - nextStep
             
-            return base - difference
+            return (current - difference * value).precise()
         }
     }
     

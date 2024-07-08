@@ -35,15 +35,13 @@ private extension FoundationUITheme {
     static var theme: CustomTheme { CustomTheme() }
 }
 
-let Theme = FoundationUI.theme
-
 final class CustomThemeTests: XCTestCase {
     func testCustomThemeValues() throws {
         XCTAssert(FoundationUI.theme.padding(.sm) == 2)
         print(Color.theme(.primary))
 //        let view = Text("").foregroundStyle(.theme(.primary))
-        print(Theme.color(.primary).token(.background))
-        print(Theme.color(.primary.token(.background)))
+        print(theme.color(.primary).token(.background))
+        print(theme.color(.primary.token(.background)))
 //        print(FoundationUI.theme.color(.primary))
     }
 }

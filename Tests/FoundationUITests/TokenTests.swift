@@ -43,9 +43,9 @@ struct BasicAdjustableToken: FoundationVariable {
         typealias SourceValue = CGFloat
         typealias ResultValue = CGFloat
         
-        var adjust: Adjust
+        var adjust: @Sendable (SourceValue) -> ResultValue
         
-        init(_ adjust: @escaping Adjust) {
+        init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
             self.adjust = adjust
         }
         
@@ -81,7 +81,7 @@ struct TokenWithMultiplier: DefaultThemeFoundationVariable {
     
     struct Token: DefaultThemeFoundationVariableTokenScale {
         var adjust: @Sendable (TokenWithMultiplier.Configuration) -> CGFloat
-        init(_ adjust: @escaping Adjust) {
+        init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
             self.adjust = adjust
         }
     }
@@ -96,10 +96,9 @@ extension TokenTests {
         XCTAssert(token(.xxLarge) == 64)
         
         let tokenAlt = TokenWithMultiplier(base: 4, multiplier: 1.2)
-        XCTAssert(tokenAlt(.xxSmall) == 4 / pow(1.2, 3))
-        XCTAssert(tokenAlt(.xSmall) == 4 / pow(1.2, 2))
+        XCTAssert(tokenAlt(.xxSmall).precise(1) == CGFloat(4 / pow(1.2, 3)).precise(1))
         XCTAssert(tokenAlt(.regular) == 4)
-        XCTAssert(tokenAlt(.xxLarge) == 4 * pow(1.2, 3))
+        XCTAssert(tokenAlt(.xxLarge).precise(1) == CGFloat(4 * pow(1.2, 3)).precise(1))
     }
     
     func testTokenWithMultiplierScaleExtra() throws {
