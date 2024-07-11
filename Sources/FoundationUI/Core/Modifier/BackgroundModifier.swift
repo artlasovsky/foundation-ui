@@ -92,11 +92,18 @@ struct BackgroundModifier_Preview: PreviewProvider {
             Text("Tinted")
                 .foundation(.padding(.regular))
                 .foundation(.backgroundTinted(.fillEmphasized))
+            Text("Shadow")
+                .foundation(.padding(.regular))
+                .foundation(
+                    .background(.primary.token(.background))
+                    .cornerRadius(.regular)
+                    .shadow(.regular)
+                )
             ZStack {
                 Text("Radius")
                     .foundation(.padding(.large))
                     .foundation(.backgroundTinted(.fillEmphasized))
-                    .foundation(.padding(.small))
+                    .foundation(.padding(.small).adjustNestedCornerRadius(true))
                     .foundation(.background(.primary))
             }
             .foundation(.cornerRadius(.large))

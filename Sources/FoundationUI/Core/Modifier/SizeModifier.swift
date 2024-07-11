@@ -12,8 +12,8 @@ public extension FoundationUIModifier where Self == FoundationUI.Modifier.SizeMo
     static func size(width: FoundationUI.Theme.Size.Token? = nil, height: FoundationUI.Theme.Size.Token? = nil) -> Self {
         FoundationUI.Modifier.SizeModifier(width: width, height: height)
     }
-    static func size(_ side: FoundationUI.Theme.Size.Token) -> Self {
-        FoundationUI.Modifier.SizeModifier(width: side, height: side)
+    static func size(_ square: FoundationUI.Theme.Size.Token) -> Self {
+        FoundationUI.Modifier.SizeModifier(width: square, height: square)
     }
 }
 
