@@ -79,7 +79,7 @@ public extension FoundationUI.DefaultTheme.Variable.Color {
         .init(.init(grayscale: 0.5, opacity: 1))
     }
     
-    static var environmentDefault: Self {
+    internal static var dynamic: Self {
         primary
     }
 }
