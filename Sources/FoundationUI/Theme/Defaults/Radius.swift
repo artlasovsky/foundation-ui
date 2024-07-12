@@ -33,16 +33,19 @@ extension FoundationUI.DefaultTheme.Variable {
     }
 }
 
+extension FoundationUI.DefaultTheme.Variable.Radius.Token {
+    static let zero = Self(0)
+}
+
 #Preview {
     VStack {
         ForEach(FoundationUI.DefaultTheme.Variable.Radius.Token.all) { token in
-            let cornerRadius = FoundationUI.theme.radius(token.value)
-            RoundedRectangle(cornerRadius: cornerRadius)
+            RoundedRectangle(cornerRadius: theme.radius(token.value))
                 .foundation(.size(.large))
-                .foundation(.foregroundTinted(.solid))
+                .foundation(.foregroundToken(.solid))
                 .overlay {
-                    Text(cornerRadius.description)
-                        .foundation(.foregroundTinted(.background))
+                    Text(token.name)
+                        .foundation(.foregroundToken(.background))
                         .foundation(.font(.xSmall))
                 }
         }

@@ -55,6 +55,12 @@ extension FoundationUI.DefaultTheme.Variable.Color {
     }
 }
 
+extension FoundationUI.DefaultTheme.Variable.Color.Token: ShapeStyle {
+    public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
+        environment.dynamicTint.token(self)
+    }
+}
+
 // MARK: - Default Color Tokens
 public extension FoundationUI.DefaultTheme.Variable.Color {
     #warning("TODO: Accessible Variants")
@@ -320,7 +326,7 @@ struct DynamicColorPreview: PreviewProvider {
             var body: some View {
                 ZStack {
                     Rectangle()
-                        .foundation(.foregroundTinted(scale))
+                        .foundation(.foregroundToken(scale))
                         .foundation(.size(isSolid ? .small.up(.quarter) : .small))
                     if isSolid {
                         VStack {
@@ -335,7 +341,7 @@ struct DynamicColorPreview: PreviewProvider {
                             Text(o).fixedSize()
                         }
                         .foundation(.font(.init(.system(size: 7))))
-                        .foundation(.foregroundTinted(.backgroundFaded))
+                        .foundation(.foregroundToken(.backgroundFaded))
                     }
                 }
             }
@@ -343,7 +349,9 @@ struct DynamicColorPreview: PreviewProvider {
         var body: some View {
             VStack(spacing: 0) {
                 TextSample()
-                Divider().foundation(.size(width: .small)).foundation(.foregroundTinted(.borderFaded))
+                Divider()
+                    .foundation(.size(width: .small))
+                    .foundation(.foregroundToken(.borderFaded))
                 ScaleSwatch(scale: .backgroundFaded)
                 ScaleSwatch(scale: .background)
                 ScaleSwatch(scale: .backgroundEmphasized)
@@ -360,7 +368,7 @@ struct DynamicColorPreview: PreviewProvider {
                 
             }
             .foundation(.padding(.regular))
-            .foundation(.backgroundTinted(.backgroundFaded))
+            .foundation(.foregroundToken(.backgroundFaded))
         }
     }
     
@@ -368,7 +376,7 @@ struct DynamicColorPreview: PreviewProvider {
         var body: some View {
             Text("Text")
                 .foundation(.padding(.regular))
-                .foundation(.foregroundTinted(.text))
+                .foundation(.foregroundToken(.text))
                 .foundation(.font(.small))
                 .fixedSize()
         }
@@ -417,7 +425,7 @@ struct DynamicColorPreview: PreviewProvider {
                 .foundation(.tint(.primary))
             
         }
-        .foundation(.clip(cornerRadius: .regular))
+        .foundation(.clip(.rect(cornerRadius: 8)))
         .scenePadding()
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
     }

@@ -8,30 +8,20 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.ClipModifier {
-    /// Clip with Rectangle or RoundedRectangle
-    static func clip(cornerRadius: FoundationUI.Theme.Radius.Token? = nil) -> Self {
-        FoundationUI.Modifier.ClipModifier(token: cornerRadius)
+extension FoundationUI.ModifierLibrary {
+    struct ClipModifier<S: Shape>: ViewModifier {
+        @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
+        let shape: S
+        func body(content: Content) -> some View {
+            content
+                .clipShape(ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius))
+        }
     }
 }
 
-public extension FoundationUI.Modifier {
-    struct ClipModifier: FoundationUIModifier {
-        @Environment(\.dynamicCornerRadius) private var envCornerRadius
-        let token: FoundationUI.Theme.Radius.Token?
-    
-        private var cornerRadius: CGFloat? {
-            guard let token else { return envCornerRadius }
-            return FoundationUI.theme.radius(token)
-        }
-        
-        public func body(content: Content) -> some View {
-            if let cornerRadius {
-                content.clipShape(FoundationUI.Shape.roundedRectangle(radius: cornerRadius))
-            } else {
-                content.clipShape(Rectangle())
-            }
-        }
+extension FoundationUI.Modifier {
+    static func clip<S: Shape>(_ shape: S = .dynamicRoundedRectangle()) -> Modifier<Library.ClipModifier<S>> {
+        .init(.init(shape: shape))
     }
 }
 

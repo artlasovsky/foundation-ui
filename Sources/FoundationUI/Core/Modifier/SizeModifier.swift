@@ -8,35 +8,16 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.SizeModifier {
-    static func size(width: FoundationUI.Theme.Size.Token? = nil, height: FoundationUI.Theme.Size.Token? = nil) -> Self {
-        FoundationUI.Modifier.SizeModifier(width: width, height: height)
-    }
-    static func size(_ square: FoundationUI.Theme.Size.Token) -> Self {
-        FoundationUI.Modifier.SizeModifier(width: square, height: square)
-    }
-}
-
-public extension FoundationUI.Modifier {
-    struct SizeModifier: FoundationUIModifier {
-        private let widthScale: FoundationUI.Theme.Size.Token?
-        private let heightScale: FoundationUI.Theme.Size.Token?
+extension FoundationUI.ModifierLibrary {
+    struct SizeModifier: ViewModifier {
+        @OptionalTokenValue<FoundationUI.Theme.Size> private var width: CGFloat?
+        @OptionalTokenValue<FoundationUI.Theme.Size> private var height: CGFloat?
+        private let alignment: Alignment
         
-        init(width: FoundationUI.Theme.Size.Token?, height: FoundationUI.Theme.Size.Token?) {
-            self.widthScale = width
-            self.heightScale = height
-        }
-        
-        private var alignment: Alignment = .center
-        
-        private var width: CGFloat? {
-            guard let widthScale else { return nil }
-            return FoundationUI.theme.size(widthScale)
-        }
-        
-        private var height: CGFloat? {
-            guard let heightScale else { return nil }
-            return FoundationUI.theme.size(heightScale)
+        init(width: FoundationUI.Theme.Size.Token?, height: FoundationUI.Theme.Size.Token?, alignment: Alignment) {
+            self._width = .init(token: width, value: theme.size, defaultValue: nil)
+            self._height = .init(token: height, value: theme.size, defaultValue: nil)
+            self.alignment = alignment
         }
         
         public func body(content: Content) -> some View {
@@ -46,12 +27,23 @@ public extension FoundationUI.Modifier {
                 content.frame(width: width, height: height, alignment: alignment)
             }
         }
-        
-        public func alignment(_ alignment: Alignment) -> Self {
-            var copy = self
-            copy.alignment = alignment
-            return copy
-        }
+    }
+}
+
+extension FoundationUI.Modifier {
+    static func size(
+        width: FoundationUI.Theme.Size.Token? = nil,
+        height: FoundationUI.Theme.Size.Token? = nil,
+        alignment: Alignment = .center
+    ) -> Modifier<Library.SizeModifier> {
+        .init(.init(width: width, height: height, alignment: alignment))
+    }
+    
+    static func size(
+        _ square: FoundationUI.Theme.Size.Token,
+        alignment: Alignment = .center
+    ) -> Modifier<Library.SizeModifier> {
+        .init(.init(width: square, height: square, alignment: alignment))
     }
 }
 

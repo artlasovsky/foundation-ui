@@ -8,44 +8,40 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.PaddingModifier {
-    static func padding(_ token: FoundationUI.Theme.Padding.Token) -> Self {
-        FoundationUI.Modifier.PaddingModifier(token: token)
-    }
-}
-public extension FoundationUI.Modifier {
-    struct PaddingModifier: FoundationUIModifier {
-        let token: FoundationUI.Theme.Padding.Token
-        
-        init(token: FoundationUI.Theme.Padding.Token) {
-            self.token = token
-        }
-        
-        private var edges: Edge.Set = .all
-        private var affectDynamicCornerRadius: Bool = false
-        
-        public func body(content: Content) -> some View {
-            content
-                .padding(edges, FoundationUI.theme.padding(token))
+extension FoundationUI.ModifierLibrary {
+    struct PaddingModifier: ViewModifier {
+        let padding: CGFloat
+        let edges: Edge.Set
+        let adjustNestedCornerRadius: AdjustNestedCornerRadius?
+        func body(content: Content) -> some View {
+            content.padding(edges, padding)
                 .transformEnvironment(\.dynamicCornerRadius) { radius in
-                    if let dynamicRadius = radius, affectDynamicCornerRadius {
-                        let newRadius = dynamicRadius - FoundationUI.theme.padding(token)
-                        radius = newRadius
+                    if let cornerRadius = radius, let adjustNestedCornerRadius {
+                        var minCornerRadius: CGFloat = 0
+                        switch adjustNestedCornerRadius {
+                        case .minimum(let radius):
+                            minCornerRadius = radius
+                        case .soft:
+                            minCornerRadius = 2
+                        case .sharp:
+                            minCornerRadius = 0
+                        }
+                        radius = max(cornerRadius - padding, minCornerRadius)
                     }
                 }
         }
         
-        public func edges(_ edges: Edge.Set) -> Self {
-            var copy = self
-            copy.edges = edges
-            return copy
+        enum AdjustNestedCornerRadius {
+            case minimum(CGFloat = 2)
+            case soft
+            case sharp
         }
-        
-        public func adjustNestedCornerRadius(_ value: Bool) -> Self {
-            var copy = self
-            copy.affectDynamicCornerRadius = value
-            return copy
-        }
+    }
+}
+
+extension FoundationUI.Modifier {
+    static func padding(_ token: FoundationUI.Theme.Padding.Token = .regular, _ edges: Edge.Set = .all, adjustNestedCornerRadius: Library.PaddingModifier.AdjustNestedCornerRadius? = .none) -> Modifier<Library.PaddingModifier> {
+        .init(.init(padding: theme.padding(token), edges: edges, adjustNestedCornerRadius: adjustNestedCornerRadius))
     }
 }
 
@@ -61,14 +57,13 @@ public extension FoundationUI.Modifier {
             .foundation(.size(.regular))
             .overlay {
                 FoundationUI.Shape.roundedRectangle(.regular)
-                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular))).edges(.horizontal))
-                    .foundation(.padding(.regular).edges(.vertical))
+                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular)), .horizontal))
+                    .foundation(.padding(.regular, .vertical))
                     .foundation(.size(.regular))
                     .foundation(.foreground(.white))
                 FoundationUI.Shape.roundedRectangle(.regular)
-                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular.up(.half)))).edges(.horizontal))
-//                    .foundation(.padding_(.init(value: FoundationUI.theme.padding(.regular))).edges(.horizontal))
-                    .foundation(.padding(.regular).edges(.vertical))
+                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular.up(.half))), .horizontal))
+                    .foundation(.padding(.regular, .vertical))
                     .foundation(.size(.regular))
                     .foundation(.foreground(.gray.token(.fill)))
             }

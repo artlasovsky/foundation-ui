@@ -21,6 +21,7 @@ extension FoundationUI.DefaultTheme.Variable {
         public struct Configuration: Sendable {
             var color: FoundationUI.DynamicColor
             var radius: CGFloat
+            var spread: CGFloat
             var x: CGFloat
             var y: CGFloat
         }
@@ -28,8 +29,8 @@ extension FoundationUI.DefaultTheme.Variable {
         public struct Token: FoundationTokenShadowScale, Sendable {
             public let value: FoundationUI.DefaultTheme.Variable.Shadow.Configuration
             
-            public init(color: FoundationUI.Theme.Color, radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) {
-                value = .init(color: color, radius: radius, x: x, y: y)
+            public init(color: FoundationUI.Theme.Color, radius: CGFloat, spread: CGFloat = 0, x: CGFloat = 0, y: CGFloat = 0) {
+                value = .init(color: color, radius: radius, spread: spread, x: x, y: y)
             }
         }
     }
@@ -48,15 +49,15 @@ extension FoundationTokenShadowScale where Self == FoundationUI.DefaultTheme.Var
     public static var xLarge: Self { .init(color: color.opacity(0.35), radius: 4.5, y: 1) }
     public static var xxLarge: Self { .init(color: color.opacity(0.4), radius: 6, y: 1) }
 }
-
-#Preview {
-    VStack(spacing: FoundationUI.theme.spacing(.large)) {
-        ForEach(FoundationUI.DefaultTheme.Variable.Shadow.Token.all) { scale in
-            FoundationUI.Shape.roundedRectangle(.regular)
-                .foundation(.size(.regular))
-                .foundation(.foregroundTinted(.background))
-                .foundation(.shadow(scale.value))
-        }
-    }
-    .foundation(.padding(.large))
-}
+//
+//#Preview {
+//    VStack(spacing: FoundationUI.theme.spacing(.large)) {
+//        ForEach(FoundationUI.DefaultTheme.Variable.Shadow.Token.all) { scale in
+//            FoundationUI.Shape.roundedRectangle(.regular)
+//                .foundation(.size(.regular))
+//                .foundation(.foregroundToken(.background))
+//                .foundation(.shadow(scale.value))
+//        }
+//    }
+//    .foundation(.padding(.large))
+//}

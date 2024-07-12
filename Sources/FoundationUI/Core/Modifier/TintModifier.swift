@@ -8,24 +8,23 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.TintModifier {
-    static func tint(_ dynamicColor: FoundationUI.Theme.Color?) -> Self {
-        FoundationUI.Modifier.TintModifier(tint: dynamicColor)
-    }
-    @available(macOS 14.0, iOS 17.0, *)
-    static func tintColor(_ color: Color?) -> Self {
-        guard let color else {
-            return tint(.dynamic)
+extension FoundationUI.ModifierLibrary {
+    struct TintModifier: ViewModifier {
+        let tint: FoundationUI.Theme.Color
+        func body(content: Content) -> some View {
+            content
+                .environment(\.dynamicTint, tint)
         }
-        return tint(.from(color: color))
     }
 }
 
-public extension FoundationUI.Modifier {
-    struct TintModifier: FoundationUIModifier {
-        let tint: FoundationUI.DynamicColor?
-        public func body(content: Content) -> some View {
-            content.environment(\.dynamicColorTint, tint ?? .dynamic)
-        }
+extension FoundationUI.Modifier {
+    static func tint(_ color: FoundationUI.Theme.Color) -> Modifier<Library.TintModifier> {
+        .init(.init(tint: color))
+    }
+    
+    @available(macOS 14.0, *)
+    static func tintColor(_ color: Color) -> Modifier<Library.TintModifier> {
+        .init(.init(tint: .from(color: color)))
     }
 }

@@ -8,23 +8,24 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.CornerRadiusModifier {
-    static func cornerRadius(_ token: FoundationUI.Theme.Radius.Token?) -> Self {
-        FoundationUI.Modifier.CornerRadiusModifier(scale: token)
+extension FoundationUI.ModifierLibrary {
+    struct CornerRadiusModifier: ViewModifier {
+        @OptionalTokenValue<FoundationUI.Theme.Radius> var cornerRadius: CGFloat?
+        
+        init(cornerRadius: FoundationUI.Theme.Radius.Token? = nil) {
+            self._cornerRadius = .init(token: cornerRadius, value: theme.radius, defaultValue: nil)
+        }
+        
+        func body(content: Content) -> some View {
+            content
+                .environment(\.dynamicCornerRadius, cornerRadius)
+        }
     }
 }
-public extension FoundationUI.Modifier {
-    struct CornerRadiusModifier: FoundationUIModifier {
-        let scale: FoundationUI.Theme.Radius.Token?
-        
-        private var value: CGFloat? {
-            guard let scale else { return nil }
-            return FoundationUI.theme.radius(scale)
-        }
-        
-        public func body(content: Content) -> some View {
-            content.environment(\.dynamicCornerRadius, value)
-        }
+
+extension FoundationUI.Modifier {
+    static func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Token?) -> Modifier<Library.CornerRadiusModifier> {
+        .init(.init(cornerRadius: cornerRadius))
     }
 }
 
@@ -44,23 +45,23 @@ internal extension EnvironmentValues {
     VStack {
         Text("Dynamic Radius")
             .frame(maxWidth: .infinity)
-            .foundation(.padding(.regular).edges(.vertical))
+            .foundation(.padding(.regular, .vertical))
             // Use Dynamic Corner Radius
-            .foundation(.backgroundTinted(.fill))
+            .foundation(.backgroundToken(.fill))
+//            .foundation(.back)
             .foundation(.padding(.small))
         Spacer()
         Text("Custom Radius")
             .frame(maxWidth: .infinity)
-            .foundation(.padding(.regular).edges(.vertical))
+            .foundation(.padding(.regular, .vertical))
             // Set Corner Radius manually
             .foundation(
-                .backgroundTinted(.fill)
-                .cornerRadius(.init(value: 12))
+                .backgroundToken(.fill, in: .rect(cornerRadius: 12))
             )
             .foundation(.padding(.small))
     }
     .frame(width: 200, height: 150)
-    .foundation(.backgroundTinted(.backgroundFaded))
+    .foundation(.backgroundToken(.backgroundFaded))
     .foundation(.cornerRadius(.xLarge))
     .padding()
 }

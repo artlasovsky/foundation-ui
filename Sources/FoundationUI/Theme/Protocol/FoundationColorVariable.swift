@@ -18,6 +18,8 @@ public protocol FoundationColorVariable: ShapeStyle {
     func saturation(_ value: CGFloat) -> Self
     func brightness(_ value: CGFloat) -> Self
     func opacity(_ value: CGFloat) -> Self
+    
+    static var primary: Self { get }
 }
 
 public extension FoundationColorVariable {

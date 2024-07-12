@@ -8,78 +8,54 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<FoundationUI.Theme.Color> {
-    static func background(_ color: FoundationUI.Theme.Color) -> Self {
-        .init(style: color)
+extension FoundationUI.ModifierLibrary {
+    struct BackgroundModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
+        @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
+        let style: Style
+        let shape: S
+        
+        func body(content: Content) -> some View {
+            content
+                .background {
+                    ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius)
+                        .foregroundStyle(style)
+                }
+        }
+    }
+}
+
+
+extension FoundationUI.Modifier {
+    static func background<S: Shape, VM: ViewModifier>(
+        _ color: FoundationUI.Theme.Color,
+        in shape: S = .viewShape,
+        modifier: VM = EmptyModifier()
+    ) -> Modifier<Library.BackgroundModifier<FoundationUI.Theme.Color, S>> {
+        .init(.init(style: color, shape: shape))
     }
     
-    static func backgroundTinted(_ token: FoundationUI.Theme.Color.Token) -> Self {
-        .init(token: token)
+    static func backgroundStyle<Style: ShapeStyle, S: Shape, VM: ViewModifier>(
+        _ style: Style,
+        in shape: S = .viewShape,
+        modifier: VM = EmptyModifier()
+    ) -> Modifier<Library.BackgroundModifier<Style, S>> {
+        .init(.init(style: style, shape: shape))
     }
-}
-
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<Material> {
-    static func backgroundMaterial(_ material: Material) -> Self {
-        FoundationUI.Modifier.BackgroundModifier(style: material)
+    
+    static func backgroundColor<S: Shape, VM: ViewModifier>(
+        _ color: Color,
+        in shape: S = .viewShape,
+        modifier: VM = EmptyModifier()
+    ) -> Modifier<Library.BackgroundModifier<Color, S>> {
+        .init(.init(style: color, shape: shape))
     }
-}
-
-@available(macOS 13.0, *)
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<Gradient> {
-    static func backgroundGradient(_ gradient: Gradient) -> Self {
-        FoundationUI.Modifier.BackgroundModifier(style: gradient)
-    }
-}
-
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.BackgroundModifier<Color> {
-    static func backgroundColor(_ color: Color) -> Self {
-        FoundationUI.Modifier.BackgroundModifier(style: color)
-    }
-}
-
-public extension FoundationUI.Modifier {
-    struct BackgroundModifier<S: ShapeStyle>: FoundationUIModifier {
-        @DynamicShapeView<S> private var shapeView
-        
-        public init(style: S) {
-            self._shapeView = .init(style: style)
-        }
-        
-        public init(token: FoundationUI.Theme.Color.Token) where S == FoundationUI.Theme.Color {
-            self._shapeView = .init(token: token)
-        }
-        
-        public func body(content: Content) -> some View {
-            content.background(shapeView)
-        }
-        
-        /// Setting the `cornerRadius` for the background shape.
-        /// > Note: It will override environment value set by `.foundation(cornerRadius:)`
-        ///
-        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Token) -> Self {
-            var copy = self
-            copy._shapeView.cornerRadiusToken = cornerRadius
-            return copy
-        }
-        
-        public func shadow(_ shadow: FoundationUI.Theme.Shadow.Token) -> Self {
-            var copy = self
-            copy._shapeView.shadow = shadow
-            return copy
-        }
-        
-        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Token) -> Self {
-            var copy = self
-            copy._shapeView.gradientMask = gradientMask
-            return copy
-        }
-        
-        public func ignoreEdges(_ regions: SafeAreaRegions = .all, edges: Edge.Set = .all) -> Self {
-            var copy = self
-            copy._shapeView.safeAreaRegions = regions
-            copy._shapeView.safeAreaEdges = edges
-            return copy
-        }
+    
+    static func backgroundToken<S: Shape, VM: ViewModifier>(
+        _ token: FoundationUI.Theme.Color.Token,
+        in shape: S = .viewShape,
+        modifier: VM = EmptyModifier()
+    ) -> Modifier<Library.BackgroundModifier<FoundationUI.Theme.Color.Token, S>> {
+        .init(.init(style: token, shape: shape))
     }
 }
 
@@ -91,30 +67,28 @@ struct BackgroundModifier_Preview: PreviewProvider {
                 .foundation(.background(.primary.token(.fillEmphasized)))
             Text("Tinted")
                 .foundation(.padding(.regular))
-                .foundation(.backgroundTinted(.fillEmphasized))
+                .foundation(.backgroundToken(.fillEmphasized))
             Text("Shadow")
                 .foundation(.padding(.regular))
-                .foundation(
-                    .background(.primary.token(.background))
-                    .cornerRadius(.regular)
-                    .shadow(.regular)
-                )
+                .foundation(.background(.primary.token(.background), in: .roundedRectangle(.regular)))
+//                .foundation(.shadow(.regular, in: .roundedRectangle(.regular)))
+            //
             ZStack {
                 Text("Radius")
                     .foundation(.padding(.large))
-                    .foundation(.backgroundTinted(.fillEmphasized))
-                    .foundation(.padding(.small).adjustNestedCornerRadius(true))
-                    .foundation(.background(.primary))
+                    .foundation(.backgroundToken(.fillEmphasized, in: .dynamicRoundedRectangle()))
+                    .foundation(.padding(.small, adjustNestedCornerRadius: .sharp))
+                    .foundation(.background(.primary, in: .dynamicRoundedRectangle()))
             }
             .foundation(.cornerRadius(.large))
             Text("Adj")
                 .border(.blue.opacity(0.5))
                 .foundation(.padding(.regular))
                 .border(.green.opacity(0.5))
-                .foundation(.backgroundTinted(.fillEmphasized)
-                    .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
-                    .shadow(.regular)
-                    .cornerRadius(.regular)
+                .foundation(.backgroundToken(.fillEmphasized)
+//                    .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
+//                    .shadow(.regular)
+//                    .cornerRadius(.regular)
                 )
         }
         .foundation(.tint(.red))

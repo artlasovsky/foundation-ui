@@ -8,53 +8,71 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.ShadowModifier {
-    static func shadow(color: FoundationUI.Theme.Color, radius: CGFloat, x: CGFloat, y: CGFloat) -> Self {
-        FoundationUI.Modifier.ShadowModifier(
-            configuration: .init(
-                color: color,
-                radius: radius,
-                x: x,
-                y: y
-            )
-        )
-    }
-    static func shadow(_ token: FoundationUI.Theme.Shadow.Token?, color: FoundationUI.Theme.Color? = nil) -> Self {
-        var configuration = token?.value
-        if let color {
-            configuration?.color = color
+extension FoundationUI.ModifierLibrary {
+    struct ShadowModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
+        @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
+        let style: Style
+        let shape: S
+        let radius: CGFloat
+        let spread: CGFloat
+        let x: CGFloat
+        let y: CGFloat
+        
+        func body(content: Content) -> some View {
+            content
+                .background {
+                    ShapeBuilder.resolveShape(shape, dynamicCornerRadius: cornerRadius)
+                        .foregroundStyle(style)
+                        .blur(radius: radius)
+                        .padding(spread * -1)
+                        .offset(x: x, y: y)
+                }
         }
-        return FoundationUI.Modifier.ShadowModifier(configuration: configuration)
+        
+        private var cornerRadius: CGFloat? {
+            if let dynamicCornerRadius {
+                return dynamicCornerRadius + spread
+            }
+            return nil
+        }
     }
 }
 
-public extension FoundationUI.Modifier {
-    struct ShadowModifier: FoundationUIModifier {
-        @Environment(\.self) private var environment
-        public typealias Configuration = FoundationUI.Theme.Shadow.Configuration
-        public let configuration: Configuration?
+extension FoundationUI.Modifier {
+    static func shadow<Style: ShapeStyle, S: Shape>(
+        style: Style,
+        radius: CGFloat,
+        spread: CGFloat = 0,
+        x: CGFloat = 0,
+        y: CGFloat = 0,
+        in shape: S = .viewShape
+    ) -> Modifier<Library.ShadowModifier<Style, S>> {
+        .init(.init(style: style, shape: shape, radius: radius, spread: spread, x: x, y: y))
+    }
     
-        public func body(content: Content) -> some View {
-            if let configuration {
-                content
-                    .shadow(
-                        color: configuration.color.resolveColor(in: environment),
-                        radius: configuration.radius,
-                        x: configuration.x,
-                        y: configuration.y)
-            } else {
-                content
-            }
-        }
+    static func shadow<S: Shape>(
+        _ token: FoundationUI.Theme.Shadow.Token,
+        in shape: S = .viewShape
+    ) -> Modifier<Library.ShadowModifier<FoundationUI.Theme.Color, S>> {
+        let configuration = token.value
+        return .init(.init(
+            style: configuration.color,
+            shape: shape,
+            radius: configuration.radius,
+            spread: configuration.spread,
+            x: configuration.x,
+            y: configuration.y
+        ))
     }
 }
 
 #Preview {
     VStack {
-        FoundationUI.Shape.roundedRectangle(.regular)
+        Text("Shadow")
             .foundation(.size(.regular))
-            .foundation(.foregroundTinted(.background))
-            .foundation(.shadow(.regular))
+            .foundation(.backgroundToken(.background, in: .dynamicRoundedRectangle()))
+            .foundation(.shadow(style: .black.opacity(0.3), radius: 2.5, spread: -1.5, y: 2, in: .dynamicRoundedRectangle()))
+            .foundation(.cornerRadius(.regular))
     }
     .foundation(.padding(.regular))
 }

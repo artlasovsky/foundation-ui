@@ -8,43 +8,35 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.ForegroundModifier<FoundationUI.Theme.Color> {
-    static func foreground(_ color: FoundationUI.Theme.Color) -> Self {
-        .init(style: .style(color))
+extension FoundationUI.ModifierLibrary {
+    struct ForegroundModifier<S: ShapeStyle>: ViewModifier {
+        let style: S
+        
+        func body(content: Content) -> some View {
+            content
+                .foregroundStyle(style)
+        }
+    }
+}
+
+extension FoundationUI.Modifier {
+    typealias Foreground<Style: ShapeStyle> = Modifier<Library.ForegroundModifier<Style>>
+    typealias ThemeColor = FoundationUI.Theme.Color
+    
+    static func foreground(_ color: ThemeColor) -> Foreground<ThemeColor> {
+        .init(.init(style: color))
     }
     
-    static func foregroundTinted(_ token: FoundationUI.Theme.Color.Token) -> Self {
-        .init(style: .token(token))
+    static func foregroundStyle<S: ShapeStyle>(_ style: S) -> Foreground<S> {
+        .init(.init(style: style))
     }
-}
-
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.ForegroundModifier<Color> {
-    static func foregroundColor(_ color: SwiftUI.Color) -> Self {
-        .init(style: .style(color))
+    
+    static func foregroundColor(_ color: Color) -> Foreground<Color> {
+        .init(.init(style: color))
     }
-}
-
-#warning("Add more ShapeStyles (gradient, ...)")
-
-public extension FoundationUI.Modifier {
-    struct ForegroundModifier<Style: ShapeStyle>: FoundationUIModifier {
-        enum ForegroundStyle<S: ShapeStyle> {
-            case token(FoundationUI.Theme.Color.Token)
-            case style(S)
-        }
-        
-        @Environment(\.dynamicColorTint) private var environmentTint
-        
-        let style: ForegroundStyle<Style>
-        
-        public func body(content: Content) -> some View {
-            switch style {
-            case .style(let style):
-                content.foregroundStyle(style)
-            case .token(let token):
-                content.foregroundStyle(environmentTint.token(token))
-            }
-        }
+    
+    static func foregroundToken(_ token: ThemeColor.Token) -> Foreground<ThemeColor.Token> {
+        .init(.init(style: token))
     }
 }
 
@@ -54,7 +46,7 @@ public extension FoundationUI.Modifier {
         Text("Foreground")
             .foundation(.foreground(.red))
         Text("Foreground Tint")
-            .foundation(.foregroundTinted(.text))
+            .foundation(.foregroundToken(.text))
             .foundation(.tint(.red))
         Text("Foreground SwiftUI")
             .foundation(.foregroundColor(.red))

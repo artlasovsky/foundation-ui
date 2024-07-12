@@ -8,72 +8,74 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.BorderModifier<FoundationUI.DynamicColor> {
-    static func border(_ color: FoundationUI.Theme.Color) -> Self {
-        Self(style: color)
-    }
-    static func borderTinted(_ token: FoundationUI.Theme.Color.Token) -> Self {
-        Self(token: token)
-    }
-}
-
-public extension FoundationUIModifier where Self == FoundationUI.Modifier.BorderModifier<LinearGradient> {
-    static func borderGradient(_ gradient: LinearGradient) -> Self {
-        FoundationUI.Modifier.BorderModifier(style: gradient)
-    }
-}
-
-
-public extension FoundationUI.Modifier {
-    struct BorderModifier<S: ShapeStyle>: FoundationUIModifier {
-        @DynamicShapeView<S> private var shapeView
-        
-        init(style: S) {
-            _shapeView = .init(style: style)
-            _shapeView.stroke = .init(width: 1, placement: .center)
-        }
-        
-        public init(token: FoundationUI.Theme.Color.Token) where S == FoundationUI.Theme.Color {
-            _shapeView = .init(token: token)
-            _shapeView.stroke = .init(width: 1, placement: .center)
-        }
-        
-        private var placement: BorderPlacement = .inside
-
-        public func body(content: Content) -> some View {
-            content.overlay { shapeView }
-        }
-
-        public func width(_ width: CGFloat) -> Self {
-            var copy = self
-            copy._shapeView.stroke?.width = width
-            return copy
-        }
-
-        public func placement(_ placement: Stroke.Placement) -> Self {
-            var copy = self
-            copy._shapeView.stroke?.placement = placement
-            return copy
-        }
-
-        public func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius.Token?) -> Self {
-            var copy = self
-            copy._shapeView.cornerRadiusToken = cornerRadius
-            return copy
-        }
-
-        public func gradientMask(_ gradientMask: FoundationUI.Theme.LinearGradient.Token) -> Self {
-            var copy = self
-            copy._shapeView.gradientMask = gradientMask
-            return copy
+extension FoundationUI.ModifierLibrary {
+    struct BorderModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
+        @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
+        let style: Style
+        let shape: S
+        let width: CGFloat
+        func body(content: Content) -> some View {
+            content
+                .overlay {
+                    ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius)
+                        .stroke(lineWidth: width)
+                        .foregroundStyle(style)
+                }
         }
     }
 }
 
-public enum BorderPlacement {
-    case inside
-    case outside
-    case center
+extension FoundationUI.Modifier {
+    static func border<S: Shape>(
+        _ color: FoundationUI.Theme.Color,
+        width: CGFloat = 1,
+        in shape: S = .viewShape
+    ) -> Modifier<Library.BorderModifier<FoundationUI.Theme.Color, S>> {
+        .init(.init(style: color, shape: shape, width: width))
+    }
+    static func borderStyle<Style: ShapeStyle, S: Shape>(
+        _ style: Style,
+        width: CGFloat = 1,
+        in shape: S = .viewShape
+    ) -> Modifier<Library.BorderModifier<Style, S>> {
+        .init(.init(style: style, shape: shape, width: width))
+    }
+    
+    static func borderToken<S: Shape>(
+        _ token: FoundationUI.Theme.Color.Token,
+        width: CGFloat = 1,
+        in shape: S = .viewShape
+    ) -> Modifier<Library.BorderModifier<FoundationUI.Theme.Color.Token, S>> {
+        .init(.init(style: token, shape: shape, width: width))
+    }
+    
+    enum Placement {
+        case inside
+        case center
+        case outside
+        
+        func getPaddingOffset(forWidth width: CGFloat) -> CGFloat {
+            switch self {
+            case .center: 0
+            case .inside: width / 2
+            case .outside: width / -2
+            }
+        }
+    }
+    
+    static func roundedBorder<Style: ShapeStyle>(
+        _ style: Style,
+        width: CGFloat = 1,
+        placement: Placement
+    ) -> Modifier<Library.BorderModifier<Style, DynamicRoundedRectangle>> {
+        .init(.init(
+            style: style,
+            shape: DynamicRoundedRectangle(
+                padding: placement.getPaddingOffset(forWidth: width)
+            ),
+            width: width
+        ))
+    }
 }
 
 #if DEBUG
@@ -91,33 +93,26 @@ struct BorderModifier_Preview: PreviewProvider {
                 Text("")
                     .foundation(.size(.regular))
                     .foundation(
-                        .border(.primary).width(2)
-                        .placement(.inside)
-                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
+                        .border(.primary, width: 2, in: .dynamicRoundedRectangle())
                     )
                     .foundation(.cornerRadius(.regular))
                     .opacity(0.5)
                 Text("Border")
                     .foundation(.size(.regular))
-                    .foundation(
-                        .border(.primary)
-                        .width(2)
-                        .placement(.center)
-                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
-                    )
+                    .foundation(.border(.primary, width: 2))
                     .foundation(.cornerRadius(.regular))
                     .opacity(0.5)
-                Text("")
-                    .foundation(.size(.regular))
-//                    .foundation(.backgroundTinted(.fillFaded))
-                    .foundation(
-                        .borderTinted(.fill)
-                        .width(2)
-                        .placement(.outside)
-                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
-                    )
-                    .foundation(.cornerRadius(.regular))
-                    .opacity(0.5)
+//                Text("")
+//                    .foundation(.size(.regular))
+////                    .foundation(.backgroundTinted(.fillFaded))
+//                    .foundation(
+//                        .borderTinted(.fill)
+//                        .width(2)
+//                        .placement(.outside)
+//                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
+//                    )
+//                    .foundation(.cornerRadius(.regular))
+//                    .opacity(0.5)
             }
         }
     }
