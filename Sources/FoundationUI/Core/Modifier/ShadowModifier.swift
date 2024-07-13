@@ -20,7 +20,10 @@ public extension FoundationUIModifier where Self == FoundationUI.Modifier.Shadow
         )
     }
     static func shadow(_ token: FoundationUI.Theme.Shadow.Token?, color: FoundationUI.Theme.Color? = nil) -> Self {
-        var configuration = token?.value
+        var configuration: FoundationUI.Theme.Shadow.Configuration?
+        if let token {
+            configuration = theme.shadow(token)
+        }
         if let color {
             configuration?.color = color
         }

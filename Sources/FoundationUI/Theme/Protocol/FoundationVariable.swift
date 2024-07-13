@@ -12,7 +12,7 @@ import Foundation
 /// - `Variable Token`
 ///     - `Token Scale` (predefined scale like `colorScale` or `sizeScale`)
 
-// MARK: - Token
+// MARK: - Variable
 #warning("TODO: Tests! To make sure it's working all the time!")
 
 public protocol FoundationVariable {
@@ -25,37 +25,6 @@ public protocol FoundationVariableWithValue: FoundationVariable {
     associatedtype Value
     var value: Value { get }
     init(_ base: Value)
-}
-
-extension FoundationVariableWithValue where Token: FoundationVariableToken {
-    public func callAsFunction(_ token: Token) -> Result where Token.SourceValue == Value, Token.ResultValue == Result {
-        token(value)
-    }
-}
-
-public protocol FoundationVariableToken: Sendable {
-    associatedtype SourceValue
-    associatedtype ResultValue
-    var adjust: @Sendable (SourceValue) -> ResultValue { get }
-    
-    func callAsFunction(_ base: SourceValue) -> ResultValue
-    
-    init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue)
-}
-
-extension FoundationVariableToken {
-    public func callAsFunction(_ base: SourceValue) -> ResultValue {
-        adjust(base)
-    }
-    public init(value: ResultValue) {
-        self.init({ _ in value })
-    }
-}
-
-extension FoundationVariableToken where ResultValue == CGFloat {
-    public init(_ value: CGFloat) {
-        self.init(value: value)
-    }
 }
 
 // MARK: - Default Token Scale

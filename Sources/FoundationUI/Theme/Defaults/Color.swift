@@ -95,7 +95,7 @@ extension FoundationUI.DefaultTheme.Variable.Color {
 
 // MARK: - Default Color Scale
 
-public protocol DynamicColorToken: FoundationVariableToken where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
+public protocol DynamicColorToken: FoundationColorVariableToken where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
     static var backgroundFaded: Self { get }
     static var background: Self { get }
     static var backgroundEmphasized: Self { get }

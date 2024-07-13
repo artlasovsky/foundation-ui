@@ -25,3 +25,22 @@ public extension FoundationColorVariable {
         color
     }
 }
+
+public protocol FoundationColorVariableToken: Sendable {
+    associatedtype SourceValue
+    associatedtype ResultValue
+    var adjust: @Sendable (SourceValue) -> ResultValue { get }
+    
+    func callAsFunction(_ base: SourceValue) -> ResultValue
+    
+    init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue)
+}
+
+extension FoundationColorVariableToken {
+    public func callAsFunction(_ base: SourceValue) -> ResultValue {
+        adjust(base)
+    }
+    public init(value: ResultValue) {
+        self.init({ _ in value })
+    }
+}

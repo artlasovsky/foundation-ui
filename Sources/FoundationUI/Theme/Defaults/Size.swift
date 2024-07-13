@@ -12,18 +12,19 @@ extension FoundationUI.DefaultTheme {
 }
 
 public extension FoundationUI.DefaultTheme.Variable {
-    struct Size: DefaultThemeFoundationVariable {
-        public let value: Configuration
+    struct Size: DefaultFoundationAdjustableVariableWithMultiplier {
+        public typealias Result = CGFloat
+        public let value: CGFloatWithMultiplier
+        public let adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat
         
         public init(_ value: Value) {
             self.value = value
+            self.adjust = { _ in value.base }
         }
         
-        public struct Token: DefaultThemeFoundationVariableTokenScale {
-            public var adjust: @Sendable (SourceValue) -> ResultValue
-            public init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
-                self.adjust = adjust
-            }
+        public init(adjust: @escaping @Sendable (CGFloatWithMultiplier) -> CGFloat) {
+            self.adjust = adjust
+            self.value = .init(base: 0, multiplier: 0)
         }
     }
 }

@@ -32,58 +32,55 @@ final class TokenTests: XCTestCase {
     }
 }
 
-struct BasicAdjustableToken: FoundationVariable {
-    var baseValue: CGFloat
+struct BasicAdjustableToken: FoundationAdjustableVariable {
+    typealias Result = CGFloat
+    typealias Value = CGFloat
     
-    func callAsFunction(_ scale: Token) -> CGFloat {
-        scale(baseValue)
+    var value: Value
+    var adjust: @Sendable (Value) -> Result
+    
+    init(adjust: @escaping @Sendable (Value) -> Value) {
+        self.value = 0
+        self.adjust = adjust
     }
     
-    struct Token: FoundationVariableToken {
-        typealias SourceValue = CGFloat
-        typealias ResultValue = CGFloat
-        
-        var adjust: @Sendable (SourceValue) -> ResultValue
-        
-        init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
-            self.adjust = adjust
-        }
-        
-        static let small = Self { $0 / 2 }
-        static let regular = Self { $0 }
-        static let large = Self { $0 * 2 }
+    init(_ value: Value) {
+        self.value = value
+        self.adjust = { _ in value }
     }
+    
+    static let small = Self { $0 / 2 }
+    static let regular = Self { $0 }
+    static let large = Self { $0 * 2 }
 }
 
 extension TokenTests {
     func testBasicAdjustableTokenGeneration() throws {
-        let token8 = BasicAdjustableToken(baseValue: 8)
+        let token8 = BasicAdjustableToken(8)
         XCTAssert(token8(.small) == 4)
         XCTAssert(token8(.regular) == 8)
         XCTAssert(token8(.large) == 16)
         
-        let token6 = BasicAdjustableToken(baseValue: 6)
+        let token6 = BasicAdjustableToken(6)
         XCTAssert(token6(.small) == 3)
         XCTAssert(token6(.regular) == 6)
         XCTAssert(token6(.large) == 12)
     }
 }
 
-struct TokenWithMultiplier: DefaultThemeFoundationVariable {
-    var value: (base: CGFloat, multiplier: CGFloat)
-    init(_ value: (base: CGFloat, multiplier: CGFloat)) {
+struct TokenWithMultiplier: DefaultFoundationAdjustableVariableWithMultiplier {
+    public typealias Result = CGFloat
+    public let value: CGFloatWithMultiplier
+    public let adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat
+    
+    public init(_ value: Value) {
         self.value = value
+        self.adjust = { _ in value.base }
     }
     
-    func callAsFunction(_ scale: Token) -> CGFloat {
-        scale(value)
-    }
-    
-    struct Token: DefaultThemeFoundationVariableTokenScale {
-        var adjust: @Sendable (TokenWithMultiplier.Configuration) -> CGFloat
-        init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
-            self.adjust = adjust
-        }
+    public init(adjust: @escaping @Sendable (CGFloatWithMultiplier) -> CGFloat) {
+        self.adjust = adjust
+        self.value = .init(base: 0, multiplier: 0)
     }
 }
 
