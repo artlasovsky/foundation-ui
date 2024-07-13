@@ -14,7 +14,7 @@ extension FoundationUI.ModifierLibrary {
         @OptionalTokenValue<FoundationUI.Theme.Size> private var height: CGFloat?
         private let alignment: Alignment
         
-        init(width: FoundationUI.Theme.Size.Token?, height: FoundationUI.Theme.Size.Token?, alignment: Alignment) {
+        init(width: FoundationUI.Theme.Size?, height: FoundationUI.Theme.Size?, alignment: Alignment) {
             self._width = .init(token: width, value: theme.size, defaultValue: nil)
             self._height = .init(token: height, value: theme.size, defaultValue: nil)
             self.alignment = alignment
@@ -32,15 +32,15 @@ extension FoundationUI.ModifierLibrary {
 
 extension FoundationUI.Modifier {
     static func size(
-        width: FoundationUI.Theme.Size.Token? = nil,
-        height: FoundationUI.Theme.Size.Token? = nil,
+        width: FoundationUI.Theme.Size? = nil,
+        height: FoundationUI.Theme.Size? = nil,
         alignment: Alignment = .center
     ) -> Modifier<Library.SizeModifier> {
         .init(.init(width: width, height: height, alignment: alignment))
     }
     
     static func size(
-        _ square: FoundationUI.Theme.Size.Token,
+        _ square: FoundationUI.Theme.Size,
         alignment: Alignment = .center
     ) -> Modifier<Library.SizeModifier> {
         .init(.init(width: square, height: square, alignment: alignment))

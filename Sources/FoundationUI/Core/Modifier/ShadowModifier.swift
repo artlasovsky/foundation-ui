@@ -51,7 +51,7 @@ extension FoundationUI.Modifier {
     }
     
     static func shadow<S: Shape>(
-        _ token: FoundationUI.Theme.Shadow.Token,
+        _ token: FoundationUI.Theme.Shadow,
         in shape: S = .viewShape
     ) -> Modifier<Library.ShadowModifier<FoundationUI.Theme.Color, S>> {
         let configuration = token.value

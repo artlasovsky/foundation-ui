@@ -32,8 +32,8 @@ extension FoundationUI.DefaultTheme.Variable {
     }
 }
 
-extension FoundationUI.DefaultTheme.Variable.Radius.Token {
-    static let zero = Self(0)
+extension FoundationUI.DefaultTheme.Variable.Radius {
+    static let zero = Self(value: 0)
 }
 
 #Preview {

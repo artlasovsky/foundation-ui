@@ -40,7 +40,7 @@ extension FoundationUI.ModifierLibrary {
 }
 
 extension FoundationUI.Modifier {
-    static func padding(_ token: FoundationUI.Theme.Padding.Token = .regular, _ edges: Edge.Set = .all, adjustNestedCornerRadius: Library.PaddingModifier.AdjustNestedCornerRadius? = .none) -> Modifier<Library.PaddingModifier> {
+    static func padding(_ token: FoundationUI.Theme.Padding = .regular, _ edges: Edge.Set = .all, adjustNestedCornerRadius: Library.PaddingModifier.AdjustNestedCornerRadius? = .none) -> Modifier<Library.PaddingModifier> {
         .init(.init(padding: theme.padding(token), edges: edges, adjustNestedCornerRadius: adjustNestedCornerRadius))
     }
 }
