@@ -8,13 +8,13 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct BackgroundModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
         let shape: S
         
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             content
                 .background {
                     ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius)
@@ -25,7 +25,7 @@ extension FoundationUI.ModifierLibrary {
 }
 
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func background<S: Shape, VM: ViewModifier>(
         _ color: FoundationUI.Theme.Color,
         in shape: S = .viewShape,

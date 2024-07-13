@@ -8,21 +8,21 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct FontModifier: ViewModifier {
         @TokenValue<FoundationUI.Theme.Font> private var font: Font
         
         init(_ token: FoundationUI.Theme.Font) {
-            self._font = .init(token: token, value: theme.font)
+            self._font = .init(token: token, value: Theme.font)
         }
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             content
                 .font(font)
         }
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func font(_ token: FoundationUI.Theme.Font) -> Modifier<Library.FontModifier> {
         .init(.init(token))
     }

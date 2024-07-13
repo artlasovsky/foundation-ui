@@ -33,6 +33,6 @@ public protocol FoundationUITheme {
     static var theme: Theme { get }
 }
 
-public let theme = FoundationUI.theme
+public let Theme = FoundationUI.theme
 
 extension FoundationUI: FoundationUITheme {}

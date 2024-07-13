@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @available(macOS 13.0, *)
-struct DynamicGradient: ShapeStyle {
+public struct DynamicGradient: ShapeStyle {
     struct Stop {
         let color: FoundationUI.Theme.Color
         let location: CGFloat
@@ -34,7 +34,7 @@ struct DynamicGradient: ShapeStyle {
         })
     }
     
-    func resolve(in environment: EnvironmentValues) -> Gradient {
+    public func resolve(in environment: EnvironmentValues) -> Gradient {
         Gradient(stops: stops.map({
             .init(
                 color: $0.color.resolveColor(in: environment),
@@ -54,7 +54,7 @@ struct DynamicGradient: ShapeStyle {
 }
 
 @available(macOS 13.0, *)
-extension DynamicGradient {
+public extension DynamicGradient {
     func linearGradient(startPoint: UnitPoint, endPoint: UnitPoint, in colorScheme: FoundationUI.ColorScheme) -> LinearGradient {
         .init(gradient: self.resolve(colorScheme), startPoint: startPoint, endPoint: endPoint)
     }

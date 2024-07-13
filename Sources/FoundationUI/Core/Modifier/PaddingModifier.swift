@@ -8,12 +8,13 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct PaddingModifier: ViewModifier {
         let padding: CGFloat
         let edges: Edge.Set
         let adjustNestedCornerRadius: AdjustNestedCornerRadius?
-        func body(content: Content) -> some View {
+        
+        public func body(content: Content) -> some View {
             content.padding(edges, padding)
                 .transformEnvironment(\.dynamicCornerRadius) { radius in
                     if let cornerRadius = radius, let adjustNestedCornerRadius {
@@ -31,7 +32,7 @@ extension FoundationUI.ModifierLibrary {
                 }
         }
         
-        enum AdjustNestedCornerRadius {
+        public enum AdjustNestedCornerRadius {
             case minimum(CGFloat = 2)
             case soft
             case sharp
@@ -39,9 +40,9 @@ extension FoundationUI.ModifierLibrary {
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func padding(_ token: FoundationUI.Theme.Padding = .regular, _ edges: Edge.Set = .all, adjustNestedCornerRadius: Library.PaddingModifier.AdjustNestedCornerRadius? = .none) -> Modifier<Library.PaddingModifier> {
-        .init(.init(padding: theme.padding(token), edges: edges, adjustNestedCornerRadius: adjustNestedCornerRadius))
+        .init(.init(padding: Theme.padding(token), edges: edges, adjustNestedCornerRadius: adjustNestedCornerRadius))
     }
 }
 

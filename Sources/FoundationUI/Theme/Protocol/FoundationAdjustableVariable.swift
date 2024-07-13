@@ -24,8 +24,8 @@ public extension FoundationAdjustableVariable {
 }
 
 public struct CGFloatWithMultiplier {
-    let base: CGFloat
-    let multiplier: CGFloat
+    public let base: CGFloat
+    public let multiplier: CGFloat
 }
 
 public protocol DefaultFoundationAdjustableVariableWithMultiplier:

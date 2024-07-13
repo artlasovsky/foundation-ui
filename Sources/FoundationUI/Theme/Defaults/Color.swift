@@ -368,7 +368,7 @@ struct DynamicColorPreview: PreviewProvider {
                 
             }
             .foundation(.padding(.regular))
-            .foundation(.foregroundToken(.backgroundFaded))
+            .foundation(.backgroundToken(.backgroundFaded))
         }
     }
     
@@ -423,7 +423,6 @@ struct DynamicColorPreview: PreviewProvider {
             }
             ScaleSet()
                 .foundation(.tint(.primary))
-            
         }
         .foundation(.clip(.rect(cornerRadius: 8)))
         .scenePadding()

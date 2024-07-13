@@ -8,15 +8,15 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct SizeModifier: ViewModifier {
         @OptionalTokenValue<FoundationUI.Theme.Size> private var width: CGFloat?
         @OptionalTokenValue<FoundationUI.Theme.Size> private var height: CGFloat?
         private let alignment: Alignment
         
         init(width: FoundationUI.Theme.Size?, height: FoundationUI.Theme.Size?, alignment: Alignment) {
-            self._width = .init(token: width, value: theme.size, defaultValue: nil)
-            self._height = .init(token: height, value: theme.size, defaultValue: nil)
+            self._width = .init(token: width, value: Theme.size, defaultValue: nil)
+            self._height = .init(token: height, value: Theme.size, defaultValue: nil)
             self.alignment = alignment
         }
         
@@ -30,7 +30,7 @@ extension FoundationUI.ModifierLibrary {
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func size(
         width: FoundationUI.Theme.Size? = nil,
         height: FoundationUI.Theme.Size? = nil,

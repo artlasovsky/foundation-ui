@@ -8,17 +8,17 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct TintModifier: ViewModifier {
         let tint: FoundationUI.Theme.Color
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             content
                 .environment(\.dynamicTint, tint)
         }
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func tint(_ color: FoundationUI.Theme.Color) -> Modifier<Library.TintModifier> {
         .init(.init(tint: color))
     }

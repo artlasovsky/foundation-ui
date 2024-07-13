@@ -8,13 +8,13 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct BorderModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
         let shape: S
         let width: CGFloat
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             content
                 .overlay {
                     ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius)
@@ -25,7 +25,7 @@ extension FoundationUI.ModifierLibrary {
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func border<S: Shape>(
         _ color: FoundationUI.Theme.Color,
         width: CGFloat = 1,

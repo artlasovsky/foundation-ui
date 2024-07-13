@@ -9,9 +9,9 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI {
-    struct Modifier<M: ViewModifier> {
-        typealias Modifier = FoundationUI.Modifier
-        typealias Library = FoundationUI.ModifierLibrary
+    public struct Modifier<M: ViewModifier> {
+        public typealias Modifier = FoundationUI.Modifier
+        public typealias Library = FoundationUI.ModifierLibrary
         
         let value: M
         
@@ -22,11 +22,11 @@ extension FoundationUI {
 }
 
 extension FoundationUI {
-    struct ModifierLibrary {}
+    public struct ModifierLibrary {}
 }
 
 // MARK: - View extension
-extension View {
+public extension View {
     func theme<M: ViewModifier>(_ modifier: FoundationUI.Modifier<M>) -> some View {
         self.modifier(modifier.value)
     }
@@ -46,19 +46,19 @@ extension EnvironmentValues {
     }
 }
 
-struct DynamicRoundedRectangle: Shape {
-    var cornerRadius: CGFloat = 0
-    var padding: CGFloat = 0
-    var style: RoundedCornerStyle = .continuous
+public struct DynamicRoundedRectangle: Shape {
+    public var cornerRadius: CGFloat = 0
+    public var padding: CGFloat = 0
+    public var style: RoundedCornerStyle = .continuous
 
-    func setCornerRadius(_ cornerRadius: CGFloat?) -> Self {
+    public func setCornerRadius(_ cornerRadius: CGFloat?) -> Self {
         guard let cornerRadius else { return self }
         var copy = self
         copy.cornerRadius = cornerRadius
         return copy
     }
 
-    func path(in rect: CGRect) -> Path {
+    public func path(in rect: CGRect) -> Path {
         .init(
             roundedRect: .init(
                 x: rect.minX + padding,
@@ -72,23 +72,23 @@ struct DynamicRoundedRectangle: Shape {
     }
 }
 
-extension Shape where Self == DynamicRoundedRectangle {
+public extension Shape where Self == DynamicRoundedRectangle {
     static func dynamicRoundedRectangle(padding: CGFloat = 0) -> Self { .init(padding: padding) }
 }
 
-extension Shape where Self == RoundedRectangle {
+public extension Shape where Self == RoundedRectangle {
     static func roundedRectangle(_ cornerRadius: FoundationUI.Theme.Radius.Token) -> Self {
         .init(cornerRadius: FoundationUI.theme.radius(cornerRadius))
     }
 }
 
-struct ViewShape: Shape {
-    func path(in rect: CGRect) -> Path {
+public struct ViewShape: Shape {
+    public func path(in rect: CGRect) -> Path {
         .init()
     }
 }
 
-extension Shape where Self == ViewShape {
+public extension Shape where Self == ViewShape {
     static var viewShape: Self { .init() }
 }
 

@@ -39,7 +39,7 @@ extension FoundationUI.DefaultTheme.Variable.Radius {
 #Preview {
     VStack {
         ForEach(FoundationUI.DefaultTheme.Variable.Radius.Token.all) { token in
-            RoundedRectangle(cornerRadius: theme.radius(token.value))
+            RoundedRectangle(cornerRadius: Theme.radius(token.value))
                 .foundation(.size(.large))
                 .foundation(.foregroundToken(.solid))
                 .overlay {

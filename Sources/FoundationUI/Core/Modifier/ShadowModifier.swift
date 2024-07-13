@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct ShadowModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
@@ -18,7 +18,7 @@ extension FoundationUI.ModifierLibrary {
         let x: CGFloat
         let y: CGFloat
         
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             content
                 .background {
                     ShapeBuilder.resolveShape(shape, dynamicCornerRadius: cornerRadius)
@@ -38,7 +38,7 @@ extension FoundationUI.ModifierLibrary {
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func shadow<Style: ShapeStyle, S: Shape>(
         style: Style,
         radius: CGFloat,

@@ -8,22 +8,22 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct CornerRadiusModifier: ViewModifier {
         @OptionalTokenValue<FoundationUI.Theme.Radius> var cornerRadius: CGFloat?
         
         init(cornerRadius: FoundationUI.Theme.Radius? = nil) {
-            self._cornerRadius = .init(token: cornerRadius, value: theme.radius, defaultValue: nil)
+            self._cornerRadius = .init(token: cornerRadius, value: Theme.radius, defaultValue: nil)
         }
         
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             content
                 .environment(\.dynamicCornerRadius, cornerRadius)
         }
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func cornerRadius(_ cornerRadius: FoundationUI.Theme.Radius?) -> Modifier<Library.CornerRadiusModifier> {
         .init(.init(cornerRadius: cornerRadius))
     }

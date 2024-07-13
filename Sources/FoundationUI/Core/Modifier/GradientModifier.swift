@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @available(macOS 13.0, *)
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct GradientModifier: ViewModifier {
         @Environment(\.colorScheme) private var colorScheme
         @Environment(\.colorSchemeContrast) private var colorSchemeContrast
@@ -17,14 +17,8 @@ extension FoundationUI.ModifierLibrary {
         let gradient: DynamicGradient
         let style: Style
         
-        enum Style {
-            case linear(_ startPoint: UnitPoint, _ endPoint: UnitPoint)
-            case radial(_ center: UnitPoint, startRadius: CGFloat, endRadius: CGFloat)
-            case angular(_ center: UnitPoint, angle: Angle)
-        }
-        
         @ViewBuilder
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             let gradient = gradient.resolve(in: .init(colorScheme: colorScheme, colorSchemeContrast: colorSchemeContrast))
             switch style {
             case .linear(let startPoint, let endPoint):
@@ -35,11 +29,17 @@ extension FoundationUI.ModifierLibrary {
                 content.foregroundStyle(RadialGradient(gradient: gradient, center: center, startRadius: startRadius, endRadius: endRadius))
             }
         }
+        
+        public enum Style {
+            case linear(_ startPoint: UnitPoint, _ endPoint: UnitPoint)
+            case radial(_ center: UnitPoint, startRadius: CGFloat, endRadius: CGFloat)
+            case angular(_ center: UnitPoint, angle: Angle)
+        }
     }
 }
 
 @available(macOS 13.0, *)
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func gradient(_ gradient: DynamicGradient, style: Library.GradientModifier.Style = .linear(.top, .bottom)) -> Modifier<Library.GradientModifier> {
         .init(.init(gradient: gradient, style: style))
     }

@@ -8,18 +8,18 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.ModifierLibrary {
+public extension FoundationUI.ModifierLibrary {
     struct ClipModifier<S: Shape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let shape: S
-        func body(content: Content) -> some View {
+        public func body(content: Content) -> some View {
             content
                 .clipShape(ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius))
         }
     }
 }
 
-extension FoundationUI.Modifier {
+public extension FoundationUI.Modifier {
     static func clip<S: Shape>(_ shape: S = .dynamicRoundedRectangle()) -> Modifier<Library.ClipModifier<S>> {
         .init(.init(shape: shape))
     }
