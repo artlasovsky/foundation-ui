@@ -9,26 +9,25 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI.DefaultTheme {
-    public var radius: Variable.Radius { .init(base: baseValue, multiplier: 1.4) }
+    public var radius: Variable.Radius { .init(base: baseValue, multiplier: 1.5) }
 }
 
 extension FoundationUI.DefaultTheme.Variable {
-    public struct Radius: DefaultThemeFoundationVariable {
-        public let value: Configuration
+    public struct Radius: DefaultFoundationAdjustableVariableWithMultiplier {
+        public var value: CGFloatWithMultiplier
+        public var adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat
         
-        public init(_ value: Value) {
-            self.value = value
+        public init(_ configuration: CGFloatWithMultiplier) {
+            value = configuration
+            adjust = { _ in configuration.base }
+        }
+        public init(adjust: @escaping @Sendable (CGFloatWithMultiplier) -> CGFloat) {
+            value = .init(base: 0, multiplier: 0)
+            self.adjust = adjust
         }
         
-        public struct Token: DefaultThemeFoundationVariableTokenScale {
-            public var adjust: @Sendable (SourceValue) -> ResultValue
-            public init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
-                self.adjust = adjust
-            }
-            
-            public func callAsFunction(_ base: (base: CGFloat, multiplier: CGFloat)) -> CGFloat {
-                adjust(base).precise(0)
-            }
+        public func callAsFunction(_ token: Self) -> CGFloat {
+            token.adjust(value).precise(0)
         }
     }
 }

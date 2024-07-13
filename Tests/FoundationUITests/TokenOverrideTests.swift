@@ -10,8 +10,8 @@ import XCTest
 @testable import FoundationUI
 
 // Token Scale Override
-private extension FoundationUI.Theme.Padding.Token {
-    static var regular: FoundationUI.Theme.Padding.Token = .init(value: 10)
+private extension FoundationUI.Theme.Padding {
+    static var regular: FoundationUI.Theme.Padding = .init(value: 10)
 }
 
 final class ThemeOverrideTests: XCTestCase {

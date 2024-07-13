@@ -8,22 +8,23 @@
 import Foundation
 
 extension FoundationUI.DefaultTheme {
-    public var spacing: Variable.Spacing { .init(base: baseValue * 1.25) }
+    public var spacing: Variable.Spacing { .init(base: baseValue * 1.25, multiplier: 2) }
 }
 
 public extension FoundationUI.DefaultTheme.Variable {
-    struct Spacing: DefaultThemeFoundationVariable {
-        public let value: Configuration
+    struct Spacing: DefaultFoundationAdjustableVariableWithMultiplier {
+        public typealias Result = CGFloat
+        public let value: CGFloatWithMultiplier
+        public let adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat
         
         public init(_ value: Value) {
             self.value = value
+            self.adjust = { _ in value.base }
         }
         
-        public struct Token: DefaultThemeFoundationVariableTokenScale {
-            public var adjust: @Sendable (SourceValue) -> ResultValue
-            public init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
-                self.adjust = adjust
-            }
+        public init(adjust: @escaping @Sendable (CGFloatWithMultiplier) -> CGFloat) {
+            self.adjust = adjust
+            self.value = .init(base: 0, multiplier: 0)
         }
     }
 }
