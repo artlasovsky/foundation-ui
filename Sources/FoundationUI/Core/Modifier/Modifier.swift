@@ -35,17 +35,6 @@ public extension View {
     }
 }
 
-private struct DynamicTintKey: EnvironmentKey {
-    static let defaultValue: FoundationUI.Theme.Color = .dynamic
-}
-
-extension EnvironmentValues {
-    var dynamicTint: FoundationUI.Theme.Color {
-        get { self[DynamicTintKey.self] }
-        set { self[DynamicTintKey.self] = newValue }
-    }
-}
-
 public struct DynamicRoundedRectangle: Shape {
     public var cornerRadius: CGFloat = 0
     public var padding: CGFloat = 0

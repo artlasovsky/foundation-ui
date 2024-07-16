@@ -37,6 +37,12 @@ public extension FoundationUI {
     }
 }
 
+extension FoundationUI.DynamicColor {
+    static var dynamic: Self {
+        .primary
+    }
+}
+
 extension FoundationUI.DynamicColor: ShapeStyle {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         let colorScheme = FoundationUI.ColorScheme(environment)

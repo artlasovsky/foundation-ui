@@ -40,8 +40,8 @@ final class CustomThemeTests: XCTestCase {
         XCTAssert(FoundationUI.theme.padding(.sm) == 2)
         print(Color.theme(.primary))
 //        let view = Text("").foregroundStyle(.theme(.primary))
-        print(theme.color(.primary).token(.background))
-        print(theme.color(.primary.token(.background)))
+        print(Theme.color(.primary).token(.background))
+        print(Theme.color(.primary.token(.background)))
 //        print(FoundationUI.theme.color(.primary))
     }
 }

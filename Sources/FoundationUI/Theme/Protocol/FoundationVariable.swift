@@ -7,11 +7,6 @@
 
 import Foundation
 
-/// #Naming
-/// `Variable`
-/// - `Variable Token`
-///     - `Token Scale` (predefined scale like `colorScale` or `sizeScale`)
-
 // MARK: - Variable
 #warning("TODO: Tests! To make sure it's working all the time!")
 

@@ -28,7 +28,7 @@ public extension FoundationColorVariable {
     }
 }
 
-public protocol FoundationColorVariableToken: Sendable {
+public protocol FoundationColorVariableToken: Sendable, ShapeStyle {
     associatedtype SourceValue
     associatedtype ResultValue
     var adjust: @Sendable (SourceValue) -> ResultValue { get }

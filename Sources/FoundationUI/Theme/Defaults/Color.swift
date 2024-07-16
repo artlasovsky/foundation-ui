@@ -84,10 +84,6 @@ public extension FoundationUI.DefaultTheme.Variable.Color {
     static var gray: Self {
         .init(.init(grayscale: 0.5, opacity: 1))
     }
-    
-    internal static var dynamic: Self {
-        primary
-    }
 }
 
 extension FoundationUI.DefaultTheme.Variable.Color {
@@ -306,7 +302,7 @@ struct DynamicColorPreview: PreviewProvider {
         }
     }
     struct Scale: View {
-        @Environment(\.dynamicColorTint) private var tint
+        @Environment(\.dynamicTint) private var tint
         private let defaultScale: [FoundationUI.Theme.Color.Token] = [
             .backgroundFaded, .background, .backgroundEmphasized,
             .fillFaded, .fill, .fillEmphasized,
@@ -315,7 +311,7 @@ struct DynamicColorPreview: PreviewProvider {
             .textFaded, .text, .textEmphasized
         ]
         struct ScaleSwatch: View {
-            @Environment(\.dynamicColorTint) private var tint
+            @Environment(\.dynamicTint) private var tint
             let scale: FoundationUI.DynamicColor.Token
             
             var isSolid: Bool {

@@ -14,14 +14,39 @@ public extension FoundationUI.ModifierLibrary {
         let style: Style
         let shape: S
         let width: CGFloat
+        let placement: BorderPlacement
         public func body(content: Content) -> some View {
             content
                 .overlay {
-                    ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius)
+                    ShapeBuilder.resolveShape(shape, dynamicCornerRadius: cornerRadius)
                         .stroke(lineWidth: width)
                         .foregroundStyle(style)
+                        .padding(padding)
                 }
         }
+        
+        private var padding: CGFloat {
+            var offset: CGFloat = width / 2
+            if offset < 0.5 {
+                offset = 0
+            }
+            switch placement {
+            case .inside: return offset
+            case .outside: return -offset
+            case .center: return 0
+            }
+        }
+        
+        private var cornerRadius: CGFloat? {
+            guard let dynamicCornerRadius else { return nil }
+            return dynamicCornerRadius - padding
+        }
+        
+    }
+    enum BorderPlacement {
+        case inside
+        case outside
+        case center
     }
 }
 
@@ -29,52 +54,27 @@ public extension FoundationUI.Modifier {
     static func border<S: Shape>(
         _ color: FoundationUI.Theme.Color,
         width: CGFloat = 1,
+        placement: Library.BorderPlacement = .inside,
         in shape: S = .viewShape
     ) -> Modifier<Library.BorderModifier<FoundationUI.Theme.Color, S>> {
-        .init(.init(style: color, shape: shape, width: width))
+        .init(.init(style: color, shape: shape, width: width, placement: placement))
     }
     static func borderStyle<Style: ShapeStyle, S: Shape>(
         _ style: Style,
         width: CGFloat = 1,
+        placement: Library.BorderPlacement = .inside,
         in shape: S = .viewShape
     ) -> Modifier<Library.BorderModifier<Style, S>> {
-        .init(.init(style: style, shape: shape, width: width))
+        .init(.init(style: style, shape: shape, width: width, placement: placement))
     }
     
     static func borderToken<S: Shape>(
         _ token: FoundationUI.Theme.Color.Token,
         width: CGFloat = 1,
+        placement: Library.BorderPlacement = .inside,
         in shape: S = .viewShape
     ) -> Modifier<Library.BorderModifier<FoundationUI.Theme.Color.Token, S>> {
-        .init(.init(style: token, shape: shape, width: width))
-    }
-    
-    enum Placement {
-        case inside
-        case center
-        case outside
-        
-        func getPaddingOffset(forWidth width: CGFloat) -> CGFloat {
-            switch self {
-            case .center: 0
-            case .inside: width / 2
-            case .outside: width / -2
-            }
-        }
-    }
-    
-    static func roundedBorder<Style: ShapeStyle>(
-        _ style: Style,
-        width: CGFloat = 1,
-        placement: Placement
-    ) -> Modifier<Library.BorderModifier<Style, DynamicRoundedRectangle>> {
-        .init(.init(
-            style: style,
-            shape: DynamicRoundedRectangle(
-                padding: placement.getPaddingOffset(forWidth: width)
-            ),
-            width: width
-        ))
+        .init(.init(style: token, shape: shape, width: width, placement: placement))
     }
 }
 
@@ -85,7 +85,7 @@ struct BorderModifier_Preview: PreviewProvider {
         let tint: FoundationUI.DynamicColor? = nil
         
         var color: FoundationUI.DynamicColor {
-            tint ?? env.dynamicColorTint
+            tint ?? env.dynamicTint
         }
         
         var body: some View {
