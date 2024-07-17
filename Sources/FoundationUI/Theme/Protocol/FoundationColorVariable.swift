@@ -8,41 +8,28 @@
 import Foundation
 import SwiftUI
 
-public protocol FoundationColorVariable: ShapeStyle {
-    associatedtype Token
+public protocol FoundationColorVariable: FoundationVariable, ShapeStyle {
+    associatedtype Variant
+    associatedtype Resolved = ShapeStyle
+    associatedtype Value
+    var color: Value { get }
     
-    func token(_ token: Token) -> Self
-    func callAsFunction(_ color: Self) -> Self
+    func variant(_ variant: Variant) -> Self
+    static func dynamic(_ variant: Variant) -> Self
     
-    func hue(_ value: CGFloat) -> Self
-    func saturation(_ value: CGFloat) -> Self
-    func brightness(_ value: CGFloat) -> Self
-    func opacity(_ value: CGFloat) -> Self
+    func hue(_ hue: CGFloat) -> Self
+    func saturation(_ saturation: CGFloat) -> Self
+    func brightness(_ brightness: CGFloat) -> Self
+    func opacity(_ opacity: CGFloat) -> Self
     
-    static var primary: Self { get }
+    func colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> Self
+    func blendMode(_ blendMode: BlendMode) -> Self
+    
+    func resolve(in: EnvironmentValues) -> Resolved
 }
 
 public extension FoundationColorVariable {
-    func callAsFunction(_ color: Self) -> Self {
-        color
-    }
-}
-
-public protocol FoundationColorVariableToken: Sendable, ShapeStyle {
-    associatedtype SourceValue
-    associatedtype ResultValue
-    var adjust: @Sendable (SourceValue) -> ResultValue { get }
-    
-    func callAsFunction(_ base: SourceValue) -> ResultValue
-    
-    init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue)
-}
-
-extension FoundationColorVariableToken {
-    public func callAsFunction(_ base: SourceValue) -> ResultValue {
-        adjust(base)
-    }
-    public init(value: ResultValue) {
-        self.init({ _ in value })
+    func callAsFunction(_ value: Self) -> Self {
+        value
     }
 }

@@ -16,7 +16,7 @@ public protocol FoundationTokenShadowScale: DefaultFoundationVariableTokenScale 
 
 extension FoundationTokenShadowScale where Self == FoundationUI.DefaultTheme.Variable.Shadow {
     #warning("Test with dark theme, make it darker if needed")
-    private static var color: FoundationUI.Theme.Color { .primary.token(.background).colorScheme(.dark) }
+    private static var color: FoundationUI.Theme.Color { .primary.variant(.background).colorScheme(.dark) }
     public static var xxSmall: Self { .init(color: color.opacity(0.1), radius: 0.5, y: 0.5) }
     public static var xSmall: Self { .init(color: color.opacity(0.15), radius: 1, spread: -1, y: 1) }
     public static var small: Self { .init(color: color.opacity(0.2), radius: 2, spread: -1.5, y: 1) }
@@ -47,7 +47,7 @@ extension FoundationUI.DefaultTheme.Variable {
         }
         
         public struct Configuration: Sendable {
-            var color: FoundationUI.DynamicColor
+            var color: FoundationUI.Theme.Variable.Color
             var radius: CGFloat
             var spread: CGFloat = 0
             var x: CGFloat = 0
@@ -56,15 +56,17 @@ extension FoundationUI.DefaultTheme.Variable {
     }
 }
 
-#Preview {
-    VStack(spacing: FoundationUI.theme.spacing(.large)) {
-        ForEach(FoundationUI.DefaultTheme.Variable.Shadow.Token.all) { scale in
-            Text(scale.name)
-                .foundation(.size(.regular))
-                .foundation(.backgroundToken(.background, in: .dynamicRoundedRectangle()))
-                .foundation(.shadow(scale.value, in: .dynamicRoundedRectangle()))
-                .foundation(.cornerRadius(.regular))
+struct ShadowPreview: PreviewProvider {
+    static var previews: some View {
+        VStack(spacing: FoundationUI.theme.spacing(.large)) {
+            ForEach(FoundationUI.DefaultTheme.Variable.Shadow.Token.all) { scale in
+                Text(scale.name)
+                    .foundation(.size(.regular))
+                    .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))
+                    .foundation(.shadow(scale.value, in: .dynamicRoundedRectangle()))
+                    .foundation(.cornerRadius(.regular))
+            }
         }
+        .foundation(.padding(.large))
     }
-    .foundation(.padding(.large))
 }

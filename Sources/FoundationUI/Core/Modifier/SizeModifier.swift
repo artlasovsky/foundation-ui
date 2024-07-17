@@ -47,12 +47,14 @@ public extension FoundationUI.Modifier {
     }
 }
 
-#Preview {
-    VStack {
-        Rectangle().foundation(.size(.xSmall))
-        Rectangle().foundation(.size(.small))
-        Rectangle().foundation(.size(.regular))
-        Rectangle().foundation(.size(.large))
+struct SizeModifierPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Rectangle().foundation(.size(.xSmall))
+            Rectangle().foundation(.size(.small))
+            Rectangle().foundation(.size(.regular))
+            Rectangle().foundation(.size(.large))
+        }
+        .padding()
     }
-    .padding()
 }

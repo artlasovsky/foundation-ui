@@ -67,15 +67,6 @@ public extension FoundationUI.Modifier {
     ) -> Modifier<Library.BorderModifier<Style, S>> {
         .init(.init(style: style, shape: shape, width: width, placement: placement))
     }
-    
-    static func borderToken<S: Shape>(
-        _ token: FoundationUI.Theme.Color.Token,
-        width: CGFloat = 1,
-        placement: Library.BorderPlacement = .inside,
-        in shape: S = .viewShape
-    ) -> Modifier<Library.BorderModifier<FoundationUI.Theme.Color.Token, S>> {
-        .init(.init(style: token, shape: shape, width: width, placement: placement))
-    }
 }
 
 #if DEBUG
@@ -85,7 +76,7 @@ struct BorderModifier_Preview: PreviewProvider {
         let tint: FoundationUI.DynamicColor? = nil
         
         var color: FoundationUI.DynamicColor {
-            tint ?? env.dynamicTint
+            tint ?? env.dynamicTint.color
         }
         
         var body: some View {

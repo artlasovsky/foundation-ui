@@ -34,14 +34,21 @@ public extension FoundationUI {
         
         private var blendMode: BlendMode = .normal
         private var extendedBlendMode: ExtendedBlendMode? = nil
+        
+        internal func copyBlendMode(from source: Self) -> Self {
+            var copy = self
+            copy.blendMode = source.blendMode
+            copy.extendedBlendMode = source.extendedBlendMode
+            return copy
+        }
     }
 }
 
-extension FoundationUI.DynamicColor {
-    static var dynamic: Self {
-        .primary
-    }
-}
+//extension FoundationUI.DynamicColor {
+//    static var dynamic: Self {
+//        .primary
+//    }
+//}
 
 extension FoundationUI.DynamicColor: ShapeStyle {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {

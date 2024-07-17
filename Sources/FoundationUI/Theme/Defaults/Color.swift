@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: - DefaultImplementation
 extension FoundationUI.DefaultTheme {
     public var color: Variable.Color { .primary }
 }
@@ -17,76 +16,176 @@ extension Color {
     static let theme = FoundationUI.theme.color
 }
 
-// MARK: - Conform to FoundationColorToken
-public extension FoundationUI.DefaultTheme.Variable {
-    typealias Color = FoundationUI.DynamicColor
-}
-
-extension FoundationUI.DefaultTheme.Variable.Color: FoundationColorVariable {
-    public func hue(_ value: CGFloat) -> Self {
-        hue(value, method: .multiply)
-    }
-    public func saturation(_ value: CGFloat) -> Self {
-        saturation(value, method: .multiply)
-    }
-    public func brightness(_ value: CGFloat) -> Self {
-        brightness(value, method: .multiply)
-    }
-    public func opacity(_ value: CGFloat) -> Self {
-        opacity(value, method: .multiply)
-    }
-}
-
-extension FoundationUI.DefaultTheme.Variable.Color {
-    public func token(_ token: Token) -> Self {
-        token(self)
-    }
-    
-    public func callAsFunction(_ color: Self) -> Self {
-        color
-    }
-    
-    public struct Token: DynamicColorToken {
-        public var adjust: @Sendable (SourceValue) -> ResultValue
+extension FoundationUI.DefaultTheme.Variable {
+    public struct Color: FoundationColorVariable {
+        public var color: FoundationUI.DynamicColor
+        private var variant: Variant?
         
-        public init(_ adjust: @escaping @Sendable (SourceValue) -> ResultValue) {
-            self.adjust = adjust
+        public init(_ color: FoundationUI.DynamicColor) {
+            self.color = color
         }
     }
 }
 
-extension FoundationUI.DefaultTheme.Variable.Color.Token: ShapeStyle {
-    public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-        environment.dynamicTint.token(self)
+public extension FoundationUI.DefaultTheme.Variable.Color {
+    struct Variant: Sendable {
+        public typealias ColorValue = FoundationUI.DynamicColor
+        var adjust: @Sendable (ColorValue) -> ColorValue
+        
+        public init(adjust: @escaping @Sendable (ColorValue) -> ColorValue) {
+            self.adjust = adjust
+        }
+    }
+    
+    func variant(_ variant: Variant) -> Self {
+        .init(variant.adjust(color).copyBlendMode(from: color))
+    }
+    
+    static func dynamic(_ variant: Variant) -> Self {
+        /// the color itself will be replaces with by the enviroment tint (`.dynamicTint`)
+        /// adjustment applied to this color will be applied to the environment tint
+        var color: Self = .init(.init(hue: 1, saturation: 1, brightness: 1))
+        color.variant = variant
+        return color
     }
 }
 
-// MARK: - Default Color Tokens
+extension FoundationUI.DefaultTheme.Variable.Color: Equatable {
+    public static func == (lhs: FoundationUI.DefaultTheme.Variable.Color, rhs: FoundationUI.DefaultTheme.Variable.Color) -> Bool {
+        if let lhsVariant = lhs.variant, let rhsVariant = rhs.variant {
+            lhsVariant.adjust(lhs.color) == rhsVariant.adjust(rhs.color)
+        } else {
+            lhs.color == rhs.color
+        }
+    }
+}
+
 public extension FoundationUI.DefaultTheme.Variable.Color {
-    #warning("TODO: Accessible Variants")
-    static let primary = Self(
-        light: .init(grayscale: 0.5),
-        dark: .init(grayscale: 0.57)
-    )
+    private func updateValue(_ value: FoundationUI.DynamicColor) -> Self {
+        var copy = self
+        copy.color = value
+        return copy
+    }
     
-    static var clear: Self {
+    func hue(_ value: CGFloat) -> Self {
+        updateValue(color.hue(value))
+    }
+    
+    func brightness(_ value: CGFloat) -> Self {
+        updateValue(color.brightness(value))
+    }
+    
+    func saturation(_ value: CGFloat) -> Self {
+        updateValue(color.saturation(value))
+    }
+    
+    func opacity(_ value: CGFloat) -> Self {
+        updateValue(color.opacity(value))
+    }
+    
+    func colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> Self {
+        updateValue(color.colorScheme(colorScheme))
+    }
+    
+    func blendMode(_ mode: BlendMode) -> Self {
+        updateValue(color.blendMode(mode))
+    }
+    
+    func blendMode(_ mode: FoundationUI.DynamicColor.ExtendedBlendMode) -> Self {
+        updateValue(color.blendMode(mode))
+    }
+}
+
+public extension FoundationUI.DefaultTheme.Variable.Color {
+    init(_ universal: FoundationUI.ColorComponents) {
+        color = .init(universal)
+    }
+    
+    init(light: FoundationUI.ColorComponents, dark: FoundationUI.ColorComponents, lightAccessible: FoundationUI.ColorComponents? = nil, darkAccessible: FoundationUI.ColorComponents? = nil) {
+        color = .init(
+            light: light,
+            dark: dark,
+            lightAccessible: lightAccessible,
+            darkAccessible: darkAccessible
+        )
+    }
+}
+
+// MARK: - Conform to ShapeStyle
+extension FoundationUI.DefaultTheme.Variable.Color {
+    public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
+        resolveColorValue(in: environment)
+    }
+    
+    public func resolveColor(in environment: EnvironmentValues) -> SwiftUI.Color {
+        resolveColorValue(in: environment).resolveColor(in: environment)
+    }
+    
+    private func resolveColorValue(in environment: EnvironmentValues) -> Value {
+        if let variant {
+            var tint = environment.dynamicTint.color
+            if color.light.hue != 1 {
+                tint = tint.hue(color.light.hue)
+            }
+            if color.light.saturation != 1 {
+                tint = tint.saturation(color.light.saturation)
+            }
+            if color.light.brightness != 1 {
+                tint = tint.brightness(color.light.brightness)
+            }
+            if color.light.opacity != 1 {
+                tint = tint.opacity(color.light.opacity, method: .multiply)
+            }
+            if color.light.opacity != 1 {
+                tint = tint.opacity(color.light.opacity)
+            }
+            return variant.adjust(tint).copyBlendMode(from: color)
+        } else {
+            return color
+        }
+    }
+}
+
+// MARK: - Defaults
+
+public protocol FoundationColorDefaultValues {
+    static var primary: Self { get }
+}
+
+public extension FoundationColorDefaultValues where Self == FoundationUI.DefaultTheme.Variable.Color {
+    static var primary: Self {
+        .init(
+            light: .init(grayscale: 0.5),
+            dark: .init(grayscale: 0.57)
+        )
+    }
+}
+
+extension FoundationUI.DefaultTheme.Variable.Color: FoundationColorDefaultValues {
+    public static var clear: Self {
         .init(.init(grayscale: 0, opacity: 0))
     }
     
-    static var black: Self {
+    public static var black: Self {
         .init(.init(grayscale: 0, opacity: 1))
     }
     
-    static var white: Self {
+    public static var white: Self {
         .init(.init(grayscale: 1, opacity: 1))
     }
     
-    static var gray: Self {
+    public static var gray: Self {
         .init(.init(grayscale: 0.5, opacity: 1))
     }
 }
 
-extension FoundationUI.DefaultTheme.Variable.Color {
+internal extension FoundationUI.DefaultTheme.Variable.Color {
+    static var blue: Self {
+        .init(
+            light: .init(red8bit: 0, green: 122, blue: 255),
+            dark: .init(red8bit: 10, green: 132, blue: 255)
+        )
+    }
     static var red: Self {
         .init(
             light: .init(red8bit: 255, green: 59, blue: 48),
@@ -95,9 +194,7 @@ extension FoundationUI.DefaultTheme.Variable.Color {
     }
 }
 
-// MARK: - Default Color Scale
-
-public protocol DynamicColorToken: FoundationColorVariableToken where SourceValue == FoundationUI.DynamicColor, ResultValue == SourceValue {
+public protocol FoundationColorDefaultVariant {
     static var backgroundFaded: Self { get }
     static var background: Self { get }
     static var backgroundEmphasized: Self { get }
@@ -115,13 +212,12 @@ public protocol DynamicColorToken: FoundationColorVariableToken where SourceValu
     static var textFaded: Self { get }
     static var text: Self { get }
     static var textEmphasized: Self { get }
-    
-    static var clear: Self { get }
 }
 
-public extension DynamicColorToken {
-    typealias Components = FoundationUI.DynamicColor.Components
-    typealias ComponentAdjust = (Components) -> Components
+extension FoundationUI.DefaultTheme.Variable.Color.Variant: FoundationColorDefaultVariant {}
+
+public extension FoundationColorDefaultVariant where Self == FoundationUI.DefaultTheme.Variable.Color.Variant {
+    typealias ComponentAdjust = (FoundationUI.DynamicColor.Components) -> FoundationUI.DynamicColor.Components
     
     static func adjust(
         light: @escaping ComponentAdjust,
@@ -129,15 +225,16 @@ public extension DynamicColorToken {
         lightAccessible: ComponentAdjust? = nil,
         darkAccessible: ComponentAdjust? = nil
     ) -> Self {
-        .init {
+        .init { source in
             .init(
-                light: light($0.light),
-                dark: dark($0.dark),
-                lightAccessible: (lightAccessible ?? light)($0.lightAccessible),
-                darkAccessible: (darkAccessible ?? dark)($0.darkAccessible)
+                light: light(source.light),
+                dark: dark(source.dark),
+                lightAccessible: (lightAccessible ?? light)(source.lightAccessible),
+                darkAccessible: (darkAccessible ?? dark)(source.darkAccessible)
             )
         }
     }
+    
     static var backgroundFaded: Self {
         .adjust(
             light: { $0
@@ -283,18 +380,13 @@ public extension DynamicColorToken {
             }
         )
     }
-    
-    static var clear: Self {
-        .init { $0.opacity(0) }
-    }
 }
 
+// MARK: - Previews
 
-// MARK: - Preview
-
-struct DynamicColorPreview: PreviewProvider {
+struct ColorScalePreview: PreviewProvider {
     struct ColorPatch: View {
-        let color: FoundationUI.DynamicColor
+        let color: FoundationUI.Theme.Color
         var body: some View {
             FoundationUI.Shape.roundedRectangle(.regular)
                 .foundation(.foreground(color))
@@ -303,7 +395,7 @@ struct DynamicColorPreview: PreviewProvider {
     }
     struct Scale: View {
         @Environment(\.dynamicTint) private var tint
-        private let defaultScale: [FoundationUI.Theme.Color.Token] = [
+        private let defaultScale: [FoundationUI.Theme.Color.Variant] = [
             .backgroundFaded, .background, .backgroundEmphasized,
             .fillFaded, .fill, .fillEmphasized,
             .borderFaded, .border, .borderEmphasized,
@@ -312,34 +404,40 @@ struct DynamicColorPreview: PreviewProvider {
         ]
         struct ScaleSwatch: View {
             @Environment(\.dynamicTint) private var tint
-            let scale: FoundationUI.DynamicColor.Token
+            let variant: FoundationUI.Theme.Color.Variant
             
-            var isSolid: Bool {
-                let color = FoundationUI.DynamicColor.primary
-                
-                return color.token(.solid) == color.token(scale)
+            init(_ variant: FoundationUI.Theme.Color.Variant) {
+                self.variant = variant
             }
+
             var body: some View {
                 ZStack {
                     Rectangle()
-                        .foundation(.foregroundToken(scale))
+                        .foundation(.foreground(.dynamic(variant)))
                         .foundation(.size(isSolid ? .small.up(.quarter) : .small))
                     if isSolid {
                         VStack {
-                            let tint = tint.token(scale)
-                            let h = String(format: "%.2f", tint.light.hue)
-                            let s = String(format: "%.2f", tint.light.saturation)
-                            let b = String(format: "%.2f", tint.light.brightness)
-                            let o = String(format: "%.2f", tint.light.opacity)
+                            let tint = tint.variant(variant)
+                            let color = tint.color
+                            let h = String(format: "%.2f", color.light.saturation)
+                            let s = String(format: "%.2f", color.light.saturation)
+                            let b = String(format: "%.2f", color.light.brightness)
+                            let o = String(format: "%.2f", color.light.opacity)
                             Text(h).fixedSize()
                             Text(s).fixedSize()
                             Text(b).fixedSize()
                             Text(o).fixedSize()
                         }
                         .foundation(.font(.init(.system(size: 7))))
-                        .foundation(.foregroundToken(.backgroundFaded))
+                        .foundation(.foreground(.dynamic(.backgroundFaded)))
                     }
                 }
+            }
+            
+            private var isSolid: Bool {
+                let color = Theme.color(.primary)
+                
+                return color.variant(.solid) == color.variant(variant)
             }
         }
         var body: some View {
@@ -347,24 +445,24 @@ struct DynamicColorPreview: PreviewProvider {
                 TextSample()
                 Divider()
                     .foundation(.size(width: .small))
-                    .foundation(.foregroundToken(.borderFaded))
-                ScaleSwatch(scale: .backgroundFaded)
-                ScaleSwatch(scale: .background)
-                ScaleSwatch(scale: .backgroundEmphasized)
-                ScaleSwatch(scale: .fillFaded)
-                ScaleSwatch(scale: .fill)
-                ScaleSwatch(scale: .fillEmphasized)
-                ScaleSwatch(scale: .borderFaded)
-                ScaleSwatch(scale: .border)
-                ScaleSwatch(scale: .borderEmphasized)
-                ScaleSwatch(scale: .solid)
-                ScaleSwatch(scale: .textFaded)
-                ScaleSwatch(scale: .text)
-                ScaleSwatch(scale: .textEmphasized)
+                    .foundation(.foreground(.dynamic(.borderFaded)))
+                ScaleSwatch(.backgroundFaded)
+                ScaleSwatch(.background)
+                ScaleSwatch(.backgroundEmphasized)
+                ScaleSwatch(.fillFaded)
+                ScaleSwatch(.fill)
+                ScaleSwatch(.fillEmphasized)
+                ScaleSwatch(.borderFaded)
+                ScaleSwatch(.border)
+                ScaleSwatch(.borderEmphasized)
+                ScaleSwatch(.solid)
+                ScaleSwatch(.textFaded)
+                ScaleSwatch(.text)
+                ScaleSwatch(.textEmphasized)
                 
             }
             .foundation(.padding(.regular))
-            .foundation(.backgroundToken(.backgroundFaded))
+            .foundation(.background(.dynamic(.backgroundFaded)))
         }
     }
     
@@ -372,7 +470,7 @@ struct DynamicColorPreview: PreviewProvider {
         var body: some View {
             Text("Text")
                 .foundation(.padding(.regular))
-                .foundation(.foregroundToken(.text))
+                .foundation(.foreground(.dynamic(.text)))
                 .foundation(.font(.small))
                 .fixedSize()
         }
@@ -381,7 +479,7 @@ struct DynamicColorPreview: PreviewProvider {
     struct ScaleSet: View {
         var body: some View {
             HStack(spacing: 0) {
-//                Scale()._colorScheme(.light)
+                Scale()._colorScheme(.light)
 //                Scale()._colorScheme(.lightAccessible)
                 Scale()._colorScheme(.dark)
 //                Scale()._colorScheme(.darkAccessible)
@@ -423,5 +521,33 @@ struct DynamicColorPreview: PreviewProvider {
         .foundation(.clip(.rect(cornerRadius: 8)))
         .scenePadding()
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+    }
+}
+
+struct ThemeColorPreview: PreviewProvider {
+    private static func test(_ value: FoundationUI.DefaultTheme.Variable.Color) -> FoundationUI.DefaultTheme.Variable.Color {
+        value
+    }
+    static var previews: some View {
+        VStack {
+    //        Rectangle().foundation(.size(.small)).foregroundStyle(test(.primary))
+    //        Rectangle().foundation(.size(.small)).foregroundStyle(test(.primary.variant(.fill)))
+    //        Rectangle().foundation(.size(.small)).foregroundStyle(test(.variant(.fill)))
+    //        Rectangle().foundation(.size(.small)).foregroundStyle(Theme._color(.primary))
+    //        Rectangle().foundation(.size(.small)).foregroundStyle(Theme._color(.primary).variant(.fill))
+    //        Rectangle().foundation(.size(.small)).foregroundStyle(Theme._color(.primary.variant(.fill)))
+    //        Rectangle().foundation(.size(.small)).foregroundStyle(Theme._color(.variant(.fill)))
+            // - Blend Mode
+            Rectangle().foundation(.size(.small)).foregroundStyle(test(.red).variant(.fill).blendMode(.softLight))
+            Rectangle().foundation(.size(.small)).foregroundStyle(Theme.color(.red.variant(.fill).blendMode(.softLight)))
+            Rectangle().foundation(.size(.small)).foregroundStyle(Theme.color(.dynamic(.fill).blendMode(.softLight)))
+            Rectangle().foundation(.size(.small)).foregroundStyle(Theme.color(.dynamic(.fill).blendMode(.softLight)))
+            Rectangle().foundation(.size(.small)).foregroundStyle(test(.red.blendMode(.softLight).variant(.fill)))
+            Rectangle().foundation(.size(.small)).foregroundStyle(test(.red.variant(.fill).opacity(0.5).blendMode(.softLight)))
+            Rectangle().foundation(.size(.small)).foregroundStyle(test(.dynamic(.fill).opacity(0.3).blendMode(.softLight)))
+        }
+        .foundation(.tint(.red))
+        .colorScheme(.dark)
+        .padding()
     }
 }

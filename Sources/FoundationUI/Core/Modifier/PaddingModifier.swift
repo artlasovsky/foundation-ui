@@ -46,27 +46,29 @@ public extension FoundationUI.Modifier {
     }
 }
 
-#Preview {
-    VStack {
-        Text(FoundationUI.theme.padding(.large).description)
-        Text(FoundationUI.theme.padding(.regular.up(.half)).description)
-        Text(FoundationUI.theme.padding(.regular).description)
-        Text(FoundationUI.theme.padding(.regular.down(.half)).description)
-        Text(FoundationUI.theme.padding(.small).description)
+struct PaddingModifierPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Text(FoundationUI.theme.padding(.large).description)
+            Text(FoundationUI.theme.padding(.regular.up(.half)).description)
+            Text(FoundationUI.theme.padding(.regular).description)
+            Text(FoundationUI.theme.padding(.regular.down(.half)).description)
+            Text(FoundationUI.theme.padding(.small).description)
 
-        FoundationUI.Shape.roundedRectangle(.regular)
-            .foundation(.size(.regular))
-            .overlay {
-                FoundationUI.Shape.roundedRectangle(.regular)
-                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular)), .horizontal))
-                    .foundation(.padding(.regular, .vertical))
-                    .foundation(.size(.regular))
-                    .foundation(.foreground(.white))
-                FoundationUI.Shape.roundedRectangle(.regular)
-                    .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular.up(.half))), .horizontal))
-                    .foundation(.padding(.regular, .vertical))
-                    .foundation(.size(.regular))
-                    .foundation(.foreground(.gray.token(.fill)))
-            }
-    }.padding()
+            FoundationUI.Shape.roundedRectangle(.regular)
+                .foundation(.size(.regular))
+                .overlay {
+                    FoundationUI.Shape.roundedRectangle(.regular)
+                        .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular)), .horizontal))
+                        .foundation(.padding(.regular, .vertical))
+                        .foundation(.size(.regular))
+                        .foundation(.foreground(.white))
+                    FoundationUI.Shape.roundedRectangle(.regular)
+                        .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular.up(.half))), .horizontal))
+                        .foundation(.padding(.regular, .vertical))
+                        .foundation(.size(.regular))
+                        .foundation(.foreground(.gray.variant(.fill)))
+                }
+        }.padding()
+    }
 }

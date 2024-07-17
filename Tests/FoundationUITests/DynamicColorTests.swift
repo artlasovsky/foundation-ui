@@ -93,7 +93,7 @@ final class DynamicColorTests: XCTestCase {
     }
     
     func testColorSchemeOverride() throws {
-        let color = FoundationUI.DynamicColor.primary.token(.background)
+        let color = Theme.color(.primary).color
         
         XCTAssert(color.light == color.colorScheme(.light).dark)
         XCTAssert(color.light == color.colorScheme(.light).light)

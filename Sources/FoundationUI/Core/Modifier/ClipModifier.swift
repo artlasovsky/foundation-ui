@@ -25,16 +25,18 @@ public extension FoundationUI.Modifier {
     }
 }
 
-#Preview {
-    VStack {
-        Rectangle()
-            .foundation(.size(.regular))
-            .overlay {
-                Rectangle()
-                    .foundation(.size(width: .large, height: .small))
-            }
-            .foundation(.clip())
-            .foundation(.cornerRadius(.regular))
+struct ClipModifierPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Rectangle()
+                .foundation(.size(.regular))
+                .overlay {
+                    Rectangle()
+                        .foundation(.size(width: .large, height: .small))
+                }
+                .foundation(.clip())
+                .foundation(.cornerRadius(.regular))
+        }
+        .padding()        
     }
-    .padding()
 }

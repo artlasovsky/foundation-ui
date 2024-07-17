@@ -36,18 +36,20 @@ extension FoundationUI.DefaultTheme.Variable.Radius {
     static let zero = Self(value: 0)
 }
 
-#Preview {
-    VStack {
-        ForEach(FoundationUI.DefaultTheme.Variable.Radius.Token.all) { token in
-            RoundedRectangle(cornerRadius: Theme.radius(token.value))
-                .foundation(.size(.large))
-                .foundation(.foregroundToken(.solid))
-                .overlay {
-                    Text(token.name)
-                        .foundation(.foregroundToken(.background))
-                        .foundation(.font(.xSmall))
-                }
+struct RadiusPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            ForEach(FoundationUI.DefaultTheme.Variable.Radius.Token.all) { token in
+                RoundedRectangle(cornerRadius: Theme.radius(token.value))
+                    .foundation(.size(.large))
+                    .foundation(.foreground(.dynamic(.solid)))
+                    .overlay {
+                        Text(token.name)
+                            .foundation(.foreground(.dynamic(.background)))
+                            .foundation(.font(.xSmall))
+                    }
+            }
         }
+        .foundation(.padding(.regular))
     }
-    .foundation(.padding(.regular))
 }

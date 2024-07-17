@@ -41,27 +41,29 @@ internal extension EnvironmentValues {
     }
 }
 
-#Preview {
-    VStack {
-        Text("Dynamic Radius")
-            .frame(maxWidth: .infinity)
-            .foundation(.padding(.regular, .vertical))
-            // Use Dynamic Corner Radius
-            .foundation(.backgroundToken(.fill))
-//            .foundation(.back)
-            .foundation(.padding(.small))
-        Spacer()
-        Text("Custom Radius")
-            .frame(maxWidth: .infinity)
-            .foundation(.padding(.regular, .vertical))
-            // Set Corner Radius manually
-            .foundation(
-                .backgroundToken(.fill, in: .rect(cornerRadius: 12))
-            )
-            .foundation(.padding(.small))
+struct CornerRadiusModifiefPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Text("Dynamic Radius")
+                .frame(maxWidth: .infinity)
+                .foundation(.padding(.regular, .vertical))
+                // Use Dynamic Corner Radius
+                .foundation(.background(.dynamic(.fill)))
+    //            .foundation(.back)
+                .foundation(.padding(.small))
+            Spacer()
+            Text("Custom Radius")
+                .frame(maxWidth: .infinity)
+                .foundation(.padding(.regular, .vertical))
+                // Set Corner Radius manually
+                .foundation(
+                    .background(.dynamic(.fill), in: .rect(cornerRadius: 12))
+                )
+                .foundation(.padding(.small))
+        }
+        .frame(width: 200, height: 150)
+        .foundation(.background(.dynamic(.backgroundFaded)))
+        .foundation(.cornerRadius(.xLarge))
+        .padding()
     }
-    .frame(width: 200, height: 150)
-    .foundation(.backgroundToken(.backgroundFaded))
-    .foundation(.cornerRadius(.xLarge))
-    .padding()
 }

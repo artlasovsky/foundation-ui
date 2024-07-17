@@ -49,14 +49,6 @@ public extension FoundationUI.Modifier {
     ) -> Modifier<Library.BackgroundModifier<Color, S>> {
         .init(.init(style: color, shape: shape))
     }
-    
-    static func backgroundToken<S: Shape, VM: ViewModifier>(
-        _ token: FoundationUI.Theme.Color.Token,
-        in shape: S = .viewShape,
-        modifier: VM = EmptyModifier()
-    ) -> Modifier<Library.BackgroundModifier<FoundationUI.Theme.Color.Token, S>> {
-        .init(.init(style: token, shape: shape))
-    }
 }
 
 struct BackgroundModifier_Preview: PreviewProvider {
@@ -64,19 +56,19 @@ struct BackgroundModifier_Preview: PreviewProvider {
         VStack {
             Text("Basic")
                 .foundation(.padding(.regular))
-                .foundation(.background(.primary.token(.fillEmphasized)))
+                .foundation(.background(.primary.variant(.fillEmphasized)))
             Text("Tinted")
                 .foundation(.padding(.regular))
-                .foundation(.backgroundToken(.fillEmphasized))
+                .foundation(.background(.dynamic(.fillEmphasized)))
             Text("Shadow")
                 .foundation(.padding(.regular))
-                .foundation(.background(.primary.token(.background), in: .roundedRectangle(.regular)))
+                .foundation(.background(.primary.variant(.background), in: .roundedRectangle(.regular)))
 //                .foundation(.shadow(.regular, in: .roundedRectangle(.regular)))
             //
             ZStack {
                 Text("Radius")
                     .foundation(.padding(.large))
-                    .foundation(.backgroundToken(.fillEmphasized, in: .dynamicRoundedRectangle()))
+                    .foundation(.background(.dynamic(.fillEmphasized), in: .dynamicRoundedRectangle()))
                     .foundation(.padding(.small, adjustNestedCornerRadius: .sharp))
                     .foundation(.background(.primary, in: .dynamicRoundedRectangle()))
             }
@@ -85,7 +77,7 @@ struct BackgroundModifier_Preview: PreviewProvider {
                 .border(.blue.opacity(0.5))
                 .foundation(.padding(.regular))
                 .border(.green.opacity(0.5))
-                .foundation(.backgroundToken(.fillEmphasized)
+                .foundation(.background(.dynamic(.fillEmphasized))
 //                    .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
 //                    .shadow(.regular)
 //                    .cornerRadius(.regular)

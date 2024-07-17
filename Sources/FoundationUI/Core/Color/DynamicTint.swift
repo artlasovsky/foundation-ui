@@ -11,7 +11,7 @@ import SwiftUI
 // MARK: Environment
 
 private struct DynamicTintKey: EnvironmentKey {
-    static let defaultValue: FoundationUI.Theme.Color = .dynamic
+    static let defaultValue: FoundationUI.Theme.Color = .primary
 }
 
 extension EnvironmentValues {

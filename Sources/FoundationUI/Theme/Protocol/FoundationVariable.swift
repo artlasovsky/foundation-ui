@@ -19,7 +19,7 @@ public protocol FoundationVariable {
 public protocol FoundationVariableWithValue: FoundationVariable {
     associatedtype Value
     var value: Value { get }
-    init(_ base: Value)
+    init(_ value: Value)
 }
 
 // MARK: - Default Token Scale

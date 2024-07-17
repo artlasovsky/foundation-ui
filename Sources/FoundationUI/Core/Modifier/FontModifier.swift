@@ -28,15 +28,17 @@ public extension FoundationUI.Modifier {
     }
 }
 
-#Preview {
-    VStack {
-        Text("xxSmall").foundation(.font(.xxSmall))
-        Text("xSmall").foundation(.font(.xSmall))
-        Text("small").foundation(.font(.small))
-        Text("regular").foundation(.font(.regular))
-        Text("large").foundation(.font(.large))
-        Text("xLarge").foundation(.font(.xLarge))
-        Text("xxLarge").foundation(.font(.xxLarge))
+struct FontModifierPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Text("xxSmall").foundation(.font(.xxSmall))
+            Text("xSmall").foundation(.font(.xSmall))
+            Text("small").foundation(.font(.small))
+            Text("regular").foundation(.font(.regular))
+            Text("large").foundation(.font(.large))
+            Text("xLarge").foundation(.font(.xLarge))
+            Text("xxLarge").foundation(.font(.xxLarge))
+        }
+        .padding()
     }
-    .padding()
 }

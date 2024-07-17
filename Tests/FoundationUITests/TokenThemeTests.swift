@@ -21,7 +21,7 @@ struct CustomTheme: ThemeConfiguration {
     var font = TestVariable()
     var linearGradient = TestVariable()
     
-    var color = TestColorVariable()
+    var color = TestColorVariable(color: .primary)
     public init() {}
 }
 
@@ -40,8 +40,8 @@ final class CustomThemeTests: XCTestCase {
         XCTAssert(FoundationUI.theme.padding(.sm) == 2)
         print(Color.theme(.primary))
 //        let view = Text("").foregroundStyle(.theme(.primary))
-        print(Theme.color(.primary).token(.background))
-        print(Theme.color(.primary.token(.background)))
+        print(Theme.color(.primary).variant(.background))
+        print(Theme.color(.primary.variant(.background)))
 //        print(FoundationUI.theme.color(.primary))
     }
 }
@@ -60,11 +60,17 @@ struct TestVariable: FoundationVariable {
 }
 
 struct TestColorVariable: FoundationColorVariable {
+    typealias ColorValue = Color
+    
+    static func dynamic(_ variant: Variant) -> TestColorVariable {
+        .primary.variant(variant)
+    }
+    
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         Color.init(hue: 0, saturation: 0, brightness: 1)
     }
     
-    public func token(_ scale: Token) -> Self {
+    public func variant(_ scale: Variant) -> Self {
         self
     }
     
@@ -72,10 +78,12 @@ struct TestColorVariable: FoundationColorVariable {
         color
     }
     
-    public enum Token {
+    public enum Variant {
         case background
         case text
     }
+    
+    var color: Color
     
     public func brightness(_ value: CGFloat) -> Self {
         self
@@ -92,8 +100,16 @@ struct TestColorVariable: FoundationColorVariable {
     public func opacity(_ value: CGFloat) -> Self {
         self
     }
+    
+    func blendMode(_ blendMode: BlendMode) -> TestColorVariable {
+        self
+    }
+    
+    func colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> TestColorVariable {
+        self
+    }
 }
 
 extension TestColorVariable {
-    static let primary = TestColorVariable()
+    static let primary = TestColorVariable(color: .primary)
 }

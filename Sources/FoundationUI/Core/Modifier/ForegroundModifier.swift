@@ -20,8 +20,8 @@ public extension FoundationUI.ModifierLibrary {
 }
 
 public extension FoundationUI.Modifier {
-    public typealias Foreground<Style: ShapeStyle> = Modifier<Library.ForegroundModifier<Style>>
-    public typealias ThemeColor = FoundationUI.Theme.Color
+    typealias Foreground<Style: ShapeStyle> = Modifier<Library.ForegroundModifier<Style>>
+    typealias ThemeColor = FoundationUI.Theme.Color
     
     static func foreground(_ color: ThemeColor) -> Foreground<ThemeColor> {
         .init(.init(style: color))
@@ -34,22 +34,20 @@ public extension FoundationUI.Modifier {
     static func foregroundColor(_ color: Color) -> Foreground<Color> {
         .init(.init(style: color))
     }
-    
-    static func foregroundToken(_ token: ThemeColor.Token) -> Foreground<ThemeColor.Token> {
-        .init(.init(style: token))
-    }
 }
 
 
-#Preview {
-    VStack {
-        Text("Foreground")
-            .foundation(.foreground(.red))
-        Text("Foreground Tint")
-            .foundation(.foregroundToken(.text))
-            .foundation(.tint(.red))
-        Text("Foreground SwiftUI")
-            .foundation(.foregroundColor(.red))
+struct ForegroundModifierPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Text("Foreground")
+                .foundation(.foreground(.red))
+            Text("Foreground Tint")
+                .foundation(.foreground(.dynamic(.text)))
+                .foundation(.tint(.red))
+            Text("Foreground SwiftUI")
+                .foundation(.foregroundColor(.red))
+        }
+        .padding()
     }
-    .padding()
 }
