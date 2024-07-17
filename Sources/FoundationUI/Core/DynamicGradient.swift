@@ -8,19 +8,32 @@
 import Foundation
 import SwiftUI
 
-@available(macOS 13.0, *)
 public struct DynamicGradient: ShapeStyle {
-    struct Stop {
+    public struct Stop: Sendable {
         let color: FoundationUI.Theme.Color
         let location: CGFloat
+        
+        public init(color: FoundationUI.Theme.Color, location: CGFloat) {
+            self.color = color
+            self.location = location
+        }
     }
+    
+    public enum GradientType: Sendable {
+        case linear(startPoint: UnitPoint, endPoint: UnitPoint)
+        case radial(center: UnitPoint, startRadius: CGFloat, endRadius: CGFloat)
+        case angular(center: UnitPoint, startAngle: Angle, endAngle: Angle? = nil)
+    }
+    
     let stops: [Stop]
+    let type: GradientType
     
-    init(stops: [Stop]) {
+    public init(stops: [Stop], type: GradientType) {
         self.stops = stops
+        self.type = type
     }
     
-    init(colors: [FoundationUI.Theme.Color]) {
+    public init(colors: [FoundationUI.Theme.Color], type: GradientType) {
         self.stops = colors.enumerated().map({ item in
             var location: CGFloat
             if item.offset == 0 {
@@ -32,15 +45,24 @@ public struct DynamicGradient: ShapeStyle {
             }
             return .init(color: item.element, location: location)
         })
+        self.type = type
     }
     
-    public func resolve(in environment: EnvironmentValues) -> Gradient {
-        Gradient(stops: stops.map({
-            .init(
-                color: $0.color.resolveColor(in: environment),
-                location: $0.location
-            )
-        }))
+    @ShapeStyleBuilder
+    public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
+        let stops: [Gradient.Stop] = stops.map { .init(color: $0.color.resolveColor(in: environment), location: $0.location )}
+        switch type {
+        case .linear(let startPoint, let endPoint):
+            LinearGradient(stops: stops, startPoint: startPoint, endPoint: endPoint)
+        case .radial(let center, let startRadius, let endRadius):
+            RadialGradient(stops: stops, center: center, startRadius: startRadius, endRadius: endRadius)
+        case .angular(let center, let startAngle, let endAngle):
+            if let endAngle {
+                AngularGradient(stops: stops, center: center, startAngle: startAngle, endAngle: endAngle)
+            } else {
+                AngularGradient(stops: stops, center: center, angle: startAngle)
+            }
+        }
     }
     
     func resolve(_ colorScheme: FoundationUI.ColorScheme) -> Gradient {
@@ -53,18 +75,25 @@ public struct DynamicGradient: ShapeStyle {
     }
 }
 
-@available(macOS 13.0, *)
-public extension DynamicGradient {
-    func linearGradient(startPoint: UnitPoint, endPoint: UnitPoint, in colorScheme: FoundationUI.ColorScheme) -> LinearGradient {
-        .init(gradient: self.resolve(colorScheme), startPoint: startPoint, endPoint: endPoint)
+public extension ShapeStyle where Self == DynamicGradient {
+    static func dynamicGradient(colors: [FoundationUI.Theme.Color], type: DynamicGradient.GradientType) -> DynamicGradient {
+        .init(colors: colors, type: type)
     }
-    func radialGradient(center: UnitPoint, startRadius: CGFloat, endRadius: CGFloat, in colorScheme: FoundationUI.ColorScheme) -> RadialGradient {
-        .init(gradient: self.resolve(colorScheme), center: center, startRadius: startRadius, endRadius: endRadius)
-    }
-    func angularGradient(center: UnitPoint, angle: Angle, in colorScheme: FoundationUI.ColorScheme) -> AngularGradient {
-        .init(gradient: self.resolve(colorScheme), center: center, angle: angle)
-    }
-    func angularGradient(center: UnitPoint, startAngle: Angle, endAngle: Angle, in colorScheme: FoundationUI.ColorScheme) -> AngularGradient {
-        .init(gradient: self.resolve(colorScheme), center: center, startAngle: startAngle, endAngle: endAngle)
+    
+    static func dynamicGradient(stops: [DynamicGradient.Stop], type: DynamicGradient.GradientType) -> DynamicGradient {
+        .init(stops: stops, type: type)
     }
 }
+
+struct DynamicGradient_Preview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Rectangle()
+                .frame(width: 100, height: 100)
+                .foregroundStyle(.dynamicGradient(colors: [.blue, .clear], type: .linear(startPoint: .topLeading, endPoint: .bottom)))
+        }
+        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+    }
+}
+
+
