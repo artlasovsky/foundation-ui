@@ -76,11 +76,11 @@ public struct DynamicGradient: ShapeStyle {
 }
 
 public extension ShapeStyle where Self == DynamicGradient {
-    static func dynamicGradient(colors: [FoundationUI.Theme.Color], type: DynamicGradient.GradientType) -> DynamicGradient {
+    static func dynamicGradient(colors: [FoundationUI.Theme.Color], type: DynamicGradient.GradientType = .linear(startPoint: .top, endPoint: .bottom)) -> DynamicGradient {
         .init(colors: colors, type: type)
     }
     
-    static func dynamicGradient(stops: [DynamicGradient.Stop], type: DynamicGradient.GradientType) -> DynamicGradient {
+    static func dynamicGradient(stops: [DynamicGradient.Stop], type: DynamicGradient.GradientType = .linear(startPoint: .top, endPoint: .bottom)) -> DynamicGradient {
         .init(stops: stops, type: type)
     }
 }

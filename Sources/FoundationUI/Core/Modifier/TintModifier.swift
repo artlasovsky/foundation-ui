@@ -23,7 +23,6 @@ public extension FoundationUI.Modifier {
         .init(.init(tint: color))
     }
     
-    @available(macOS 14.0, *)
     static func tintColor(_ color: Color) -> Modifier<Library.TintModifier> {
         .init(.init(tint: .init(.from(color: color))))
     }
