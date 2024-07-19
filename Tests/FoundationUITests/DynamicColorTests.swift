@@ -13,7 +13,7 @@ private let color = FoundationUI.DynamicColor(
     darkAccessible: darkAssessibleColor
 )
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 extension Color {
     func preciseResolve(in env: EnvironmentValues) -> Color.Resolved {
         let resolved = self.resolve(in: env)
@@ -54,7 +54,7 @@ final class DynamicColorTests: XCTestCase {
         
         XCTAssert(adjusted.light == targetLight)
         
-        if #available(macOS 14.0, *) {
+        if #available(macOS 14.0, iOS 17.0, *) {
             // Compare with SwiftUI.Color
             let targetColor = Color(
                 hue: lightColor.hue * hueAdjust,

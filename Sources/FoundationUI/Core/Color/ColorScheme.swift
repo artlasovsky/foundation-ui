@@ -33,6 +33,10 @@ extension FoundationUI {
 }
 
 public extension FoundationUI.ColorScheme {
+    func environmentValues() -> EnvironmentValues {
+        .init(colorScheme: self)
+    }
+    
     #if os(macOS)
     init(appearance: NSAppearance) {
         switch (appearance.name) {
@@ -48,6 +52,19 @@ public extension FoundationUI.ColorScheme {
             self = .light
         }
     }
+    
+    func appearance() -> NSAppearance? {
+        switch self {
+        case .light:
+            .init(named: .aqua)
+        case .dark:
+            .init(named: .darkAqua)
+        case .lightAccessible:
+            .init(named: .accessibilityHighContrastAqua)
+        case .darkAccessible:
+            .init(named: .accessibilityHighContrastDarkAqua)
+        }
+    }
     #elseif os(iOS)
     init(appearance: UITraitCollection) {
         switch (appearance.userInterfaceStyle, appearance.accessibilityContrast) {
@@ -61,6 +78,30 @@ public extension FoundationUI.ColorScheme {
             self = .darkAccessible
         default:
             self = .light
+        }
+    }
+    func appearance() -> UITraitCollection? {
+        switch self {
+        case .light:
+            .init(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .light),
+                UITraitCollection(accessibilityContrast: .normal)
+            ])
+        case .dark:
+            .init(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .dark),
+                UITraitCollection(accessibilityContrast: .normal)
+            ])
+        case .lightAccessible:
+            .init(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .light),
+                UITraitCollection(accessibilityContrast: .high)
+            ])
+        case .darkAccessible:
+            .init(traitsFrom: [
+                UITraitCollection(userInterfaceStyle: .dark),
+                UITraitCollection(accessibilityContrast: .high)
+            ])
         }
     }
     #endif
@@ -92,6 +133,19 @@ internal extension EnvironmentValues {
         env.colorScheme = colorScheme
         env._colorSchemeContrast = colorSchemeContrast
         self = env
+    }
+    
+    init(colorScheme: FoundationUI.ColorScheme) {
+        switch colorScheme {
+        case .light:
+            self.init(colorScheme: .light, colorSchemeContrast: .standard)
+        case .dark:
+            self.init(colorScheme: .dark, colorSchemeContrast: .standard)
+        case .lightAccessible:
+            self.init(colorScheme: .light, colorSchemeContrast: .increased)
+        case .darkAccessible:
+            self.init(colorScheme: .dark, colorSchemeContrast: .increased)
+        }
     }
 }
 

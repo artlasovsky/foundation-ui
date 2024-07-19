@@ -97,9 +97,8 @@ extension FoundationUI.DynamicColor {
         self.init(light: universal, dark: universal)
     }
     
-    @available(macOS 14.0, iOS 17.0, *)
     public static func from(color: Color) -> FoundationUI.DynamicColor {
-        self.init(
+        .init(
             light: .init(color: color, colorScheme: .light),
             dark: .init(color: color, colorScheme: .dark),
             lightAccessible: .init(color: color, colorScheme: .lightAccessible),

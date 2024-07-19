@@ -139,10 +139,33 @@ public extension FoundationUI.ColorComponents {
     }
     
     /// Extracting the components from SwiftUI.Color
-    @available(macOS 14.0, iOS 17.0, *)
     init(color: Color, colorScheme: FoundationUI.ColorScheme) {
-        let components = color.rgbaComponents(in: colorScheme)
-        self.init(red: components.red, green: components.green, blue: components.blue, opacity: components.opacity)
+        if #available(macOS 14.0, iOS 17.0, *) {
+            let components = color.rgbaComponents(in: colorScheme)
+            self.init(red: components.red, green: components.green, blue: components.blue, opacity: components.opacity)
+        } else {
+            var colorComponents = FoundationUI.ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
+            if let appearance = colorScheme.appearance() {
+                #if os(macOS)
+                NSAppearance.performAsCurrentDrawingAppearance(appearance) ({
+                    guard let nsColor = NSColor(color).usingColorSpace(.deviceRGB) else { return }
+                    colorComponents = .init(hue: nsColor.hueComponent, saturation: nsColor.saturationComponent, brightness: nsColor.brightnessComponent, opacity: nsColor.alphaComponent)
+                })
+                #elseif os(iOS)
+                var hue: CGFloat = 0,
+                    saturation: CGFloat = 0,
+                    brightness: CGFloat = 0,
+                    alpha: CGFloat = 0
+                appearance.performAsCurrent {
+                    UIColor(color).getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+                }
+                colorComponents = .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
+                #endif
+            } else {
+                #warning("TODO: Log Error")
+            }
+            self = colorComponents
+        }
     }
 }
 
@@ -193,7 +216,7 @@ public extension FoundationUI.ColorComponents {
         brightness = nsColor.brightnessComponent
         alpha = nsColor.alphaComponent
         #elseif os(iOS)
-        var uiColor = UIColor(
+        let uiColor = UIColor(
             red: red.clamp(0, 1),
             green: green.clamp(0, 1),
             blue: blue.clamp(0, 1),
