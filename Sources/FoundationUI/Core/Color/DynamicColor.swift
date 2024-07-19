@@ -44,39 +44,31 @@ public extension FoundationUI {
     }
 }
 
-//extension FoundationUI.DynamicColor {
-//    static var dynamic: Self {
-//        .primary
-//    }
-//}
+public extension FoundationUI.DynamicColor {
+    func resolveComponents(in colorScheme: FoundationUI.ColorScheme) -> FoundationUI.ColorComponents {
+        switch colorScheme {
+        case .light: light
+        case .dark: dark
+        case .lightAccessible: lightAccessible
+        case .darkAccessible: darkAccessible
+        }
+    }
+}
 
 extension FoundationUI.DynamicColor: ShapeStyle {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         let colorScheme = FoundationUI.ColorScheme(environment)
-        let color = switch colorScheme {
-            case .light: light
-            case .dark: dark
-            case .lightAccessible: lightAccessible
-            case .darkAccessible: darkAccessible
-        }
+        
+        let components = resolveComponents(in: colorScheme)
         
         let blendMode = extendedBlendMode?.resolve(in: colorScheme) ?? blendMode
         
-        return color.resolve(in: environment).blendMode(blendMode)
+        return components.resolve(in: environment).blendMode(blendMode)
     }
     
     public func resolveColor(in environment: EnvironmentValues) -> Color {
         let colorScheme = FoundationUI.ColorScheme(environment)
-        switch colorScheme {
-        case .light:
-            return light.color
-        case .dark:
-            return dark.color
-        case .lightAccessible:
-            return lightAccessible.color
-        case .darkAccessible:
-            return darkAccessible.color
-        }
+        return resolveComponents(in: colorScheme).color
     }
 }
 
@@ -210,7 +202,6 @@ public extension FoundationUI.DynamicColor {
         copy.dark = components
         copy.lightAccessible = components
         copy.darkAccessible = components
-//        copy.colorScheme = colorScheme
         return copy
     }
 }
