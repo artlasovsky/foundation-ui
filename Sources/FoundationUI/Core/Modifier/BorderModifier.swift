@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUI.ModifierLibrary {
-    struct BorderModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
+    struct BorderModifier<Style: ShapeStyle, S: InsettableShape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
         let shape: S
@@ -18,28 +18,19 @@ public extension FoundationUI.ModifierLibrary {
         public func body(content: Content) -> some View {
             content
                 .overlay {
-                    ShapeBuilder.resolveShape(shape, dynamicCornerRadius: cornerRadius)
+                    ShapeBuilder.resolveInsettableShape(shape, inset: padding, dynamicCornerRadius: dynamicCornerRadius)
                         .stroke(lineWidth: width)
                         .foregroundStyle(style)
-                        .padding(padding)
                 }
         }
         
         private var padding: CGFloat {
-            var offset: CGFloat = width / 2
-            if offset < 0.5 {
-                offset = 0
-            }
+            let offset: CGFloat = width / 2
             switch placement {
             case .inside: return offset
             case .outside: return -offset
             case .center: return 0
             }
-        }
-        
-        private var cornerRadius: CGFloat? {
-            guard let dynamicCornerRadius else { return nil }
-            return dynamicCornerRadius - padding
         }
         
     }
@@ -55,7 +46,7 @@ public extension FoundationUI.Modifier {
         _ color: FoundationUI.Theme.Color,
         width: CGFloat = 1,
         placement: Library.BorderPlacement = .inside,
-        in shape: S = .viewShape
+        in shape: S = .dynamicRoundedRectangle()
     ) -> Modifier<Library.BorderModifier<FoundationUI.Theme.Color, S>> {
         .init(.init(style: color, shape: shape, width: width, placement: placement))
     }
@@ -63,7 +54,7 @@ public extension FoundationUI.Modifier {
         _ style: Style,
         width: CGFloat = 1,
         placement: Library.BorderPlacement = .inside,
-        in shape: S = .viewShape
+        in shape: S = .dynamicRoundedRectangle()
     ) -> Modifier<Library.BorderModifier<Style, S>> {
         .init(.init(style: style, shape: shape, width: width, placement: placement))
     }
@@ -84,26 +75,23 @@ struct BorderModifier_Preview: PreviewProvider {
                 Text("")
                     .foundation(.size(.regular))
                     .foundation(
-                        .border(.primary, width: 2, in: .dynamicRoundedRectangle())
+                        .border(.red, width: 2, placement: .inside, in: .dynamicRoundedRectangle())
+                    )
+                    .foundation(.cornerRadius(.regular))
+                    .opacity(0.5)
+                Text("")
+                    .foundation(.size(.regular))
+                    .foundation(
+                        .border(.blue, width: 2, placement: .outside, in: .dynamicRoundedRectangle())
                     )
                     .foundation(.cornerRadius(.regular))
                     .opacity(0.5)
                 Text("Border")
                     .foundation(.size(.regular))
-                    .foundation(.border(.primary, width: 2))
+                    .foundation(.border(.primary, width: 2, placement: .center))
+                    .foundation(.background(.red))
                     .foundation(.cornerRadius(.regular))
                     .opacity(0.5)
-//                Text("")
-//                    .foundation(.size(.regular))
-////                    .foundation(.backgroundTinted(.fillFaded))
-//                    .foundation(
-//                        .borderTinted(.fill)
-//                        .width(2)
-//                        .placement(.outside)
-//                        .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
-//                    )
-//                    .foundation(.cornerRadius(.regular))
-//                    .opacity(0.5)
             }
         }
     }

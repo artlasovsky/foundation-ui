@@ -25,19 +25,6 @@ struct ShapeBuilder {
     }
 }
 
-extension ShapeBuilder {
-    @ShapeBuilder
-    static func resolveShape(_ shape: some Shape, dynamicCornerRadius: CGFloat?) -> some Shape {
-        if let shape = shape as? DynamicRoundedRectangle {
-            shape.setCornerRadius(dynamicCornerRadius)
-        } else if shape is ViewShape {
-            Rectangle()
-        } else {
-            shape
-        }
-    }
-}
-
 struct EmptyShape: Shape {
     func path(in rect: CGRect) -> Path {
         Path()
@@ -57,6 +44,28 @@ enum EitherShape<First: Shape, Second: Shape>: Shape {
         }
     }
 }
+
+extension ShapeBuilder {
+    @ShapeBuilder
+    static func resolveShape(_ shape: some Shape, dynamicCornerRadius: CGFloat?) -> some Shape {
+        if let shape = shape as? DynamicRoundedRectangle {
+            shape.setCornerRadius(dynamicCornerRadius)
+        } else {
+            shape
+        }
+    }
+    
+    @ShapeBuilder
+    static func resolveInsettableShape(_ shape: some InsettableShape, inset: CGFloat, dynamicCornerRadius: CGFloat?) -> some Shape {
+        if let shape = shape as? DynamicRoundedRectangle {
+            shape.inset(by: inset).setCornerRadius(dynamicCornerRadius)
+        } else {
+            shape
+        }
+    }
+}
+
+
 
 // MARK: - ShapeStyleBuilder
 

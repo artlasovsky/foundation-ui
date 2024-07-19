@@ -28,7 +28,7 @@ public extension FoundationUI.ModifierLibrary {
 public extension FoundationUI.Modifier {
     static func background<S: Shape, VM: ViewModifier>(
         _ color: FoundationUI.Theme.Color,
-        in shape: S = .viewShape,
+        in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
     ) -> Modifier<Library.BackgroundModifier<FoundationUI.Theme.Color, S>> {
         .init(.init(style: color, shape: shape))
@@ -36,7 +36,7 @@ public extension FoundationUI.Modifier {
     
     static func backgroundStyle<Style: ShapeStyle, S: Shape, VM: ViewModifier>(
         _ style: Style,
-        in shape: S = .viewShape,
+        in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
     ) -> Modifier<Library.BackgroundModifier<Style, S>> {
         .init(.init(style: style, shape: shape))
@@ -44,7 +44,7 @@ public extension FoundationUI.Modifier {
     
     static func backgroundColor<S: Shape, VM: ViewModifier>(
         _ color: Color,
-        in shape: S = .viewShape,
+        in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
     ) -> Modifier<Library.BackgroundModifier<Color, S>> {
         .init(.init(style: color, shape: shape))

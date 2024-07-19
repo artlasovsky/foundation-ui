@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUI.ModifierLibrary {
-    struct ShadowModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
+    struct ShadowModifier<Style: ShapeStyle, S: InsettableShape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
         let shape: S
@@ -21,38 +21,45 @@ public extension FoundationUI.ModifierLibrary {
         public func body(content: Content) -> some View {
             content
                 .background {
-                    ShapeBuilder.resolveShape(shape, dynamicCornerRadius: cornerRadius)
+                    ShapeBuilder.resolveInsettableShape(shape, inset: inset, dynamicCornerRadius: dynamicCornerRadius)
                         .foregroundStyle(style)
                         .blur(radius: radius)
-                        .padding(spread * -1)
                         .offset(x: x, y: y)
                 }
         }
         
-        private var cornerRadius: CGFloat? {
-            if let dynamicCornerRadius {
-                return dynamicCornerRadius + spread
-            }
-            return nil
+        private var inset: CGFloat {
+            spread * -1
         }
     }
 }
 
 public extension FoundationUI.Modifier {
+    static func shadow<S: Shape>(
+        color: FoundationUI.Theme.Color,
+        radius: CGFloat,
+        spread: CGFloat = 0,
+        x: CGFloat = 0,
+        y: CGFloat = 0,
+        in shape: S = .dynamicRoundedRectangle()
+    ) -> Modifier<Library.ShadowModifier<FoundationUI.Theme.Color, S>> {
+        .init(.init(style: color, shape: shape, radius: radius, spread: spread, x: x, y: y))
+    }
+    
     static func shadow<Style: ShapeStyle, S: Shape>(
         style: Style,
         radius: CGFloat,
         spread: CGFloat = 0,
         x: CGFloat = 0,
         y: CGFloat = 0,
-        in shape: S = .viewShape
+        in shape: S = .dynamicRoundedRectangle()
     ) -> Modifier<Library.ShadowModifier<Style, S>> {
         .init(.init(style: style, shape: shape, radius: radius, spread: spread, x: x, y: y))
     }
     
     static func shadow<S: Shape>(
         _ token: FoundationUI.Theme.Shadow,
-        in shape: S = .viewShape
+        in shape: S = .dynamicRoundedRectangle()
     ) -> Modifier<Library.ShadowModifier<FoundationUI.Theme.Color, S>> {
         let configuration = token.value
         return .init(.init(
@@ -76,5 +83,7 @@ struct ShadowModifierPreview: PreviewProvider {
                 .foundation(.cornerRadius(.regular))
         }
         .foundation(.padding(.regular))
+        .foundation(.background(.dynamic(.background)))
+        ._colorScheme(.light)
     }
 }
