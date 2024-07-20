@@ -79,7 +79,15 @@ struct ShadowModifierPreview: PreviewProvider {
             Text("Shadow")
                 .foundation(.size(.regular))
                 .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))
-                .foundation(.shadow(style: .black.opacity(0.3), radius: 2.5, spread: -1.5, y: 2, in: .dynamicRoundedRectangle()))
+                .foundation(
+                    .shadow(
+                        color: .dynamic(.background).colorScheme(.dark),
+                        radius: 2.5,
+                        spread: -1.5,
+                        y: 2,
+                        in: .dynamicRoundedRectangle()
+                    )
+                )
                 .foundation(.cornerRadius(.regular))
         }
         .foundation(.padding(.regular))

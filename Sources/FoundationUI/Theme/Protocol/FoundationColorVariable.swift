@@ -11,8 +11,8 @@ import SwiftUI
 public protocol FoundationColorVariable: FoundationVariable, ShapeStyle {
     associatedtype Variant
     associatedtype Resolved = ShapeStyle
-    associatedtype Value
-    var color: Value { get }
+    associatedtype ColorValue
+    var color: ColorValue { get }
     
     func variant(_ variant: Variant) -> Self
     static func dynamic(_ variant: Variant) -> Self

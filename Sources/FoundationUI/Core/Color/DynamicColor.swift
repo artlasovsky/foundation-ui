@@ -109,7 +109,7 @@ public extension FoundationUI.DynamicColor {
         )
     }
     
-    func hue(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
+    func hue(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
             light: light.hue(dynamic: value, method: method),
             dark: dark.hue(dynamic: value, method: method),
@@ -127,7 +127,7 @@ public extension FoundationUI.DynamicColor {
         )
     }
     
-    func saturation(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
+    func saturation(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
             light: light.saturation(dynamic: value, method: method),
             dark: dark.saturation(dynamic: value, method: method),
@@ -145,7 +145,7 @@ public extension FoundationUI.DynamicColor {
         )
     }
     
-    func brightness(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
+    func brightness(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
             light: light.brightness(dynamic: value, method: method),
             dark: dark.brightness(dynamic: value, method: method),
@@ -155,7 +155,7 @@ public extension FoundationUI.DynamicColor {
     }
     
     func opacity(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
+        return .init(
             light: light.opacity(value, method: method),
             dark: dark.opacity(value, method: method),
             lightAccessible: lightAccessible.opacity(value, method: method),
@@ -163,7 +163,7 @@ public extension FoundationUI.DynamicColor {
         )
     }
     
-    func opacity(dynamic value: Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
+    func opacity(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
             light: light.opacity(dynamic: value, method: method),
             dark: dark.opacity(dynamic: value, method: method),

@@ -62,7 +62,7 @@ struct CornerRadiusModifiefPreview: PreviewProvider {
                 .foundation(.padding(.small))
         }
         .frame(width: 200, height: 150)
-        .foundation(.background(.dynamic(.backgroundFaded)))
+        .foundation(.background(.dynamic(.backgroundSubtle)))
         .foundation(.cornerRadius(.xLarge))
         .padding()
     }

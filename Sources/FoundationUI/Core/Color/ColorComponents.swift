@@ -34,6 +34,8 @@ public extension FoundationUI {
         public var color: Color {
             .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)
         }
+        
+        var changes = Changes()
     }
 }
 
@@ -50,6 +52,165 @@ public extension FoundationUI.ColorComponents {
     }
 }
 
+extension FoundationUI.ColorComponents {
+    struct Changes {
+        typealias ColorComponents = FoundationUI.ColorComponents
+        struct Components {
+            var hue: CGFloat?
+            var saturation: CGFloat?
+            var brightness: CGFloat?
+            var opacity: CGFloat?
+        }
+        var multiply = Components()
+        var override = Components()
+        
+        func apply(to colorComponents: ColorComponents) -> ColorComponents {
+            var colorComponents = colorComponents
+            if let overrideHue = override.hue {
+                colorComponents = colorComponents.hue(overrideHue, method: .override)
+            }
+            if let multiplyHue = multiply.hue {
+                colorComponents = colorComponents.hue(multiplyHue, method: .multiply)
+            }
+            if let overrideSaturation = override.saturation {
+                colorComponents = colorComponents.saturation(overrideSaturation, method: .override)
+            }
+            if let multiplySaturation = multiply.saturation {
+                colorComponents = colorComponents.saturation(multiplySaturation, method: .multiply)
+            }
+            if let overrideBrightness = override.brightness {
+                colorComponents = colorComponents.brightness(overrideBrightness, method: .override)
+            }
+            if let multiplyBrightness = multiply.brightness {
+                colorComponents = colorComponents.brightness(multiplyBrightness, method: .multiply)
+            }
+            if let overrideOpacity = override.opacity {
+                colorComponents = colorComponents.opacity(overrideOpacity, method: .override)
+            }
+            if let multiplyOpacity = multiply.opacity {
+                colorComponents = colorComponents.opacity(multiplyOpacity, method: .multiply)
+            }
+            return colorComponents
+        }
+    }
+    
+    func multiply(hue: ConditionalValue? = nil, saturation: ConditionalValue? = nil, brightness: ConditionalValue? = nil, opacity: ConditionalValue? = nil) -> Self {
+        var changes = self.changes
+        var hueAdjust = self.hue
+        if let hue {
+            hueAdjust *= hue(self)
+            changes.multiply.hue = (changes.multiply.hue ?? 1) * hueAdjust
+        }
+        var saturationAdjust = self.saturation
+        if let saturation {
+            saturationAdjust *= saturation(self)
+            changes.multiply.saturation = (changes.multiply.saturation ?? 1) * saturationAdjust
+        }
+        var brightnessAdjust = self.brightness
+        if let brightness {
+            brightnessAdjust *= brightness(self)
+            changes.multiply.brightness = (changes.multiply.brightness ?? 1) * brightnessAdjust
+        }
+        var opacityAdjust = self.opacity
+        if let opacity {
+            opacityAdjust *= opacity(self)
+            changes.multiply.opacity = (changes.multiply.opacity ?? 1) * opacityAdjust
+        }
+        var result = Self(
+            hue: hueAdjust,
+            saturation: saturationAdjust,
+            brightness: brightnessAdjust,
+            opacity: opacityAdjust
+        )
+        
+        result.changes = changes
+        
+        return result
+    }
+    
+    func multiply(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, opacity: CGFloat? = nil) -> Self {
+        var hueValue: ConditionalValue? = nil
+        var saturationValue: ConditionalValue? = nil
+        var brightnessValue: ConditionalValue? = nil
+        var opacityValue: ConditionalValue? = nil
+        
+        if let hue {
+            hueValue = { _ in hue }
+        }
+        if let saturation {
+            saturationValue = { _ in saturation }
+        }
+        if let brightness {
+            brightnessValue = { _ in brightness }
+        }
+        if let opacity {
+            opacityValue = { _ in opacity }
+        }
+        
+        return multiply(hue: hueValue, saturation: saturationValue, brightness: brightnessValue, opacity: opacityValue)
+    }
+    
+    func override(hue: ConditionalValue? = nil, saturation: ConditionalValue? = nil, brightness: ConditionalValue? = nil, opacity: ConditionalValue? = nil) -> Self {
+        var changes = self.changes
+        var hueAdjust = self.hue
+        if let hue {
+            hueAdjust = hue(self)
+            changes.multiply.hue = nil
+            changes.override.hue = hueAdjust
+        }
+        var saturationAdjust = self.saturation
+        if let saturation {
+            saturationAdjust = saturation(self)
+            changes.multiply.saturation = nil
+            changes.override.saturation = saturationAdjust
+        }
+        var brightnessAdjust = self.brightness
+        if let brightness {
+            brightnessAdjust = brightness(self)
+            changes.multiply.brightness = nil
+            changes.override.brightness = brightnessAdjust
+        }
+        var opacityAdjust = self.opacity
+        if let opacity {
+            opacityAdjust = opacity(self)
+            changes.multiply.opacity = nil
+            changes.override.opacity = opacityAdjust
+        }
+        var result = Self(
+            hue: hueAdjust,
+            saturation: saturationAdjust,
+            brightness: brightnessAdjust,
+            opacity: opacityAdjust
+        )
+        
+        result.changes = changes
+        
+        return result
+    }
+    
+    func override(hue: CGFloat? = nil, saturation: CGFloat? = nil, brightness: CGFloat? = nil, opacity: CGFloat? = nil) -> Self {
+        var hueValue: ConditionalValue? = nil
+        var saturationValue: ConditionalValue? = nil
+        var brightnessValue: ConditionalValue? = nil
+        var opacityValue: ConditionalValue? = nil
+        
+        if let hue {
+            hueValue = { _ in hue }
+        }
+        if let saturation {
+            saturationValue = { _ in saturation }
+        }
+        if let brightness {
+            brightnessValue = { _ in brightness }
+        }
+        if let opacity {
+            opacityValue = { _ in opacity }
+        }
+        
+        return override(hue: hueValue, saturation: saturationValue, brightness: brightnessValue, opacity: opacityValue)
+    }
+}
+
 public extension FoundationUI.ColorComponents {
     enum AdjustMethod {
         case multiply
@@ -60,73 +221,55 @@ public extension FoundationUI.ColorComponents {
     
     func hue(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue * value, saturation: saturation, brightness: brightness, opacity: opacity)
-        case .override:
-                .init(hue: value, saturation: saturation, brightness: brightness, opacity: opacity)
+        case .multiply: multiply(hue: value)
+        case .override: override(hue: value)
         }
     }
-    
-    func hue(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+    func hue(dynamic value: @escaping ConditionalValue, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue * value(self), saturation: saturation, brightness: brightness, opacity: opacity)
-        case .override:
-                .init(hue: value(self), saturation: saturation, brightness: brightness, opacity: opacity)
+        case .multiply: multiply(hue: value)
+        case .override: override(hue: value)
         }
     }
     
     func saturation(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue, saturation: saturation * value, brightness: brightness, opacity: opacity)
-        case .override:
-                .init(hue: hue, saturation: value, brightness: brightness, opacity: opacity)
+        case .multiply: multiply(saturation: value)
+        case .override: override(saturation: value)
         }
     }
-    
-    func saturation(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+    func saturation(dynamic value: @escaping ConditionalValue, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue, saturation: saturation * value(self), brightness: brightness, opacity: opacity)
-        case .override:
-                .init(hue: hue, saturation: value(self), brightness: brightness, opacity: opacity)
+        case .multiply: multiply(saturation: value)
+        case .override: override(saturation: value)
         }
     }
     
     func brightness(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue, saturation: saturation, brightness: brightness * value, opacity: opacity)
-        case .override:
-                .init(hue: hue, saturation: saturation, brightness: value, opacity: opacity)
+        case .multiply: multiply(brightness: value)
+        case .override: override(brightness: value)
         }
     }
     
-    func brightness(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+    func brightness(dynamic value: @escaping ConditionalValue, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue, saturation: saturation, brightness: brightness * value(self), opacity: opacity)
-        case .override:
-                .init(hue: hue, saturation: saturation, brightness: value(self), opacity: opacity)
+        case .multiply: multiply(brightness: value)
+        case .override: override(brightness: value)
         }
     }
     
     func opacity(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity * value)
-        case .override:
-                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: value)
+        case .multiply: multiply(opacity: value)
+        case .override: override(opacity: value)
         }
     }
     
-    func opacity(dynamic value: ConditionalValue, method: AdjustMethod = .multiply) -> Self {
+    func opacity(dynamic value: @escaping ConditionalValue, method: AdjustMethod = .multiply) -> Self {
         switch method {
-        case .multiply:
-                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity * value(self))
-        case .override:
-                .init(hue: hue, saturation: saturation, brightness: brightness, opacity: value(self))
+        case .multiply: multiply(opacity: value)
+        case .override: override(opacity: value)
         }
     }
 }
@@ -161,8 +304,6 @@ public extension FoundationUI.ColorComponents {
                 }
                 colorComponents = .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
                 #endif
-            } else {
-                #warning("TODO: Log Error")
             }
             self = colorComponents
         }
@@ -289,7 +430,18 @@ public extension FoundationUI.ColorComponents {
 
 // MARK: - Protocols
 
-extension FoundationUI.ColorComponents: Equatable, Sendable, Hashable {}
+extension FoundationUI.ColorComponents: Equatable, Sendable, Hashable {
+    public static func == (lhs: FoundationUI.ColorComponents, rhs: FoundationUI.ColorComponents) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(hue)
+        hasher.combine(saturation)
+        hasher.combine(brightness)
+        hasher.combine(opacity)
+    }
+}
 
 extension FoundationUI.ColorComponents: CustomDebugStringConvertible {
     public var debugDescription: String {

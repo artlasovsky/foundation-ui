@@ -56,10 +56,10 @@ struct BackgroundModifier_Preview: PreviewProvider {
         VStack {
             Text("Basic")
                 .foundation(.padding(.regular))
-                .foundation(.background(.primary.variant(.fillEmphasized)))
+                .foundation(.background(.primary.variant(.fillProminent)))
             Text("Tinted")
                 .foundation(.padding(.regular))
-                .foundation(.background(.dynamic(.fillEmphasized)))
+                .foundation(.background(.dynamic(.fillProminent)))
             Text("Shadow")
                 .foundation(.padding(.regular))
                 .foundation(.background(.primary.variant(.background), in: .roundedRectangle(.regular)))
@@ -68,7 +68,7 @@ struct BackgroundModifier_Preview: PreviewProvider {
             ZStack {
                 Text("Radius")
                     .foundation(.padding(.large))
-                    .foundation(.background(.dynamic(.fillEmphasized), in: .dynamicRoundedRectangle()))
+                    .foundation(.background(.dynamic(.fillProminent), in: .dynamicRoundedRectangle()))
                     .foundation(.padding(.small, adjustNestedCornerRadius: .sharp))
                     .foundation(.background(.primary, in: .dynamicRoundedRectangle()))
             }
@@ -77,7 +77,7 @@ struct BackgroundModifier_Preview: PreviewProvider {
                 .border(.blue.opacity(0.5))
                 .foundation(.padding(.regular))
                 .border(.green.opacity(0.5))
-                .foundation(.background(.dynamic(.fillEmphasized))
+                .foundation(.background(.dynamic(.fillProminent))
 //                    .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
 //                    .shadow(.regular)
 //                    .cornerRadius(.regular)
