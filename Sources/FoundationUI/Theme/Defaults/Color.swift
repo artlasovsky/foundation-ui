@@ -72,6 +72,17 @@ public extension FoundationUI.DefaultTheme.Variable.Color {
     }
 }
 
+extension FoundationUI.DefaultTheme.Variable.Color.Variant: Hashable {
+    public static func == (lhs: FoundationUI.DefaultTheme.Variable.Color.Variant, rhs: FoundationUI.DefaultTheme.Variable.Color.Variant) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(adjust(.from(color: .accentColor)))
+        hasher.combine(adjust(.from(color: .gray)))
+    }
+}
+
 extension FoundationUI.DefaultTheme.Variable.Color.Variant {
     public typealias Variant = FoundationUI.DefaultTheme.Color.Variant
     public enum Modifier {

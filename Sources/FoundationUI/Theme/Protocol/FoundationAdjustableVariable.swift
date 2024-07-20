@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public protocol FoundationAdjustableVariable: FoundationVariableWithValue {
+public protocol FoundationAdjustableVariable: FoundationVariableWithValue, Hashable {
     var adjust: @Sendable (Value) -> Result { get }
     
     init(_ value: Value)
@@ -23,7 +23,17 @@ public extension FoundationAdjustableVariable {
     }
 }
 
-public struct CGFloatWithMultiplier {
+public extension FoundationAdjustableVariable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(value)
+        hasher.combine(adjust(value))
+    }
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
+}
+
+public struct CGFloatWithMultiplier: Hashable {
     public let base: CGFloat
     public let multiplier: CGFloat
 }

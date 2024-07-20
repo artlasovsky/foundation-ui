@@ -10,14 +10,14 @@ import Foundation
 // MARK: - Variable
 #warning("TODO: Tests! To make sure it's working all the time!")
 
-public protocol FoundationVariable {
-    associatedtype Result
+public protocol FoundationVariable: Hashable {
+    associatedtype Result: Hashable
     associatedtype Token
     func callAsFunction(_ token: Token) -> Result
 }
 
 public protocol FoundationVariableWithValue: FoundationVariable {
-    associatedtype Value
+    associatedtype Value: Hashable
     var value: Value { get }
     init(_ value: Value)
 }

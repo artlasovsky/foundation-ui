@@ -12,7 +12,7 @@ extension FoundationUI.DefaultTheme {
 }
 
 public extension FoundationUI.DefaultTheme.Variable {
-    struct Spacing: DefaultFoundationAdjustableVariableWithMultiplier {
+    struct Spacing: DefaultFoundationAdjustableVariableWithMultiplier {        
         public typealias Result = CGFloat
         public let value: CGFloatWithMultiplier
         public let adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat

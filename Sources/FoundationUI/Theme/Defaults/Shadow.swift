@@ -46,7 +46,7 @@ extension FoundationUI.DefaultTheme.Variable {
             self.value = value
         }
         
-        public struct Configuration: Sendable {
+        public struct Configuration: Sendable, Hashable {
             var color: FoundationUI.Theme.Variable.Color
             var radius: CGFloat
             var spread: CGFloat = 0
