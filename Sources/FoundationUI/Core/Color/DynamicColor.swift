@@ -216,8 +216,8 @@ public extension FoundationUI.DynamicColor {
             switch self {
             case .vibrant:
                 var copy = color
-                copy.light = copy.light.opacity(0.65)
-                copy.dark = copy.dark.opacity(0.5)
+                copy.light = copy.light.opacity(0.8)
+                copy.dark = copy.dark.opacity(0.65)
                 return copy
             }
         }
