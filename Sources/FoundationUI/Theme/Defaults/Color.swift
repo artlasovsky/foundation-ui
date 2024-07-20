@@ -109,11 +109,11 @@ extension FoundationUI.DefaultTheme.Variable.Color.Variant {
         )
     }
     
-    public static func color(_ color: FoundationUI.DefaultTheme.Color) -> Variant {
+    public static func modifierColor(_ color: FoundationUI.DefaultTheme.Color) -> Variant {
         .modifier(.color(color))
     }
     
-    public static func color(light: FoundationUI.Theme.Color, dark: FoundationUI.Theme.Color, lightAccessible: FoundationUI.Theme.Color? = nil, darkAccessible: FoundationUI.Theme.Color? = nil) -> Variant {
+    public static func modifierColor(light: FoundationUI.Theme.Color, dark: FoundationUI.Theme.Color, lightAccessible: FoundationUI.Theme.Color? = nil, darkAccessible: FoundationUI.Theme.Color? = nil) -> Variant {
         .modifier(
             light: .color(light),
             dark: .color(dark),
@@ -122,11 +122,11 @@ extension FoundationUI.DefaultTheme.Variable.Color.Variant {
         )
     }
     
-    public static func adjust(_ adjust: @escaping Variant.ComponentAdjust) -> Variant {
+    public static func modifierAdjust(_ adjust: @escaping Variant.ComponentAdjust) -> Variant {
         .modifier(.adjust(adjust))
     }
     
-    public static func adjust(light: @escaping Variant.ComponentAdjust, dark: @escaping Variant.ComponentAdjust, lightAccessible: Variant.ComponentAdjust? = nil, darkAccessible: Variant.ComponentAdjust? = nil) -> Variant {
+    public static func modifierAdjust(light: @escaping Variant.ComponentAdjust, dark: @escaping Variant.ComponentAdjust, lightAccessible: Variant.ComponentAdjust? = nil, darkAccessible: Variant.ComponentAdjust? = nil) -> Variant {
         .modifier(
             light: .adjust(light),
             dark: .adjust(dark),
@@ -153,12 +153,12 @@ extension FoundationUI.DefaultTheme.Variable.Color {
     }
     
     public static func modifierColor(_ universal: FoundationUI.Theme.Color) -> Self {
-        .dynamic(.color(universal))
+        .dynamic(.modifierColor(universal))
     }
     
     public static func modifierColor(light: FoundationUI.Theme.Color, dark: FoundationUI.Theme.Color, lightAccessible: FoundationUI.Theme.Color? = nil, darkAccessible: FoundationUI.Theme.Color? = nil) -> Self {
         .dynamic(
-            .color(
+            .modifierColor(
                 light: light,
                 dark: dark,
                 lightAccessible: lightAccessible,
@@ -168,12 +168,12 @@ extension FoundationUI.DefaultTheme.Variable.Color {
     }
     
     public static func modifierColor(_ universal: @escaping Variant.ComponentAdjust) -> Self {
-        .dynamic(.adjust(universal))
+        .dynamic(.modifierAdjust(universal))
     }
     
     public static func modifierAdjust(light: @escaping Variant.ComponentAdjust, dark: @escaping Variant.ComponentAdjust, lightAccessible: Variant.ComponentAdjust? = nil, darkAccessible: Variant.ComponentAdjust? = nil) -> Self {
         .dynamic(
-            .adjust(
+            .modifierAdjust(
                 light: light,
                 dark: dark,
                 lightAccessible: lightAccessible,
