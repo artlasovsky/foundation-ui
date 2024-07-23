@@ -7,17 +7,14 @@
 
 import Foundation
 
-extension FoundationUI.DefaultTheme {
-    public var size: Variable.Size { .init(base: baseValue * 8, multiplier: 2) }
-}
-
-public extension FoundationUI.DefaultTheme.Variable {
+public extension FoundationUI.Theme {
+    @frozen
     struct Size: DefaultFoundationAdjustableVariableWithMultiplier {
         public typealias Result = CGFloat
         public let value: CGFloatWithMultiplier
         public let adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat
         
-        public init(_ value: Value) {
+        public init(value: CGFloatWithMultiplier) {
             self.value = value
             self.adjust = { _ in value.base }
         }

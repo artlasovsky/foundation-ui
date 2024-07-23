@@ -13,7 +13,7 @@ public extension FoundationUI.ModifierLibrary {
         @TokenValue<FoundationUI.Theme.Font> private var font: Font
         
         init(_ token: FoundationUI.Theme.Font) {
-            self._font = .init(token: token, value: Theme.font)
+            self._font = .init(token: token, value: FoundationUI.theme.font)
         }
         public func body(content: Content) -> some View {
             content

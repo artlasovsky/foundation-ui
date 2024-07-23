@@ -27,12 +27,3 @@ public protocol ThemeConfiguration {
     var font: Font { get }
     var color: Color { get }
 }
-
-public protocol FoundationUITheme {
-    associatedtype Theme = ThemeConfiguration
-    static var theme: Theme { get }
-}
-
-public let Theme = FoundationUI.theme
-
-extension FoundationUI: FoundationUITheme {}

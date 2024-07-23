@@ -8,13 +8,9 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.DefaultTheme {
-    public var shadow: Variable.Shadow { .init() }
-}
-
 public protocol FoundationTokenShadowScale: DefaultFoundationVariableTokenScale {}
 
-extension FoundationTokenShadowScale where Self == FoundationUI.DefaultTheme.Variable.Shadow {
+extension FoundationTokenShadowScale where Self == FoundationUI.Theme.Shadow {
     #warning("Test with dark theme, make it darker if needed")
     private static var color: FoundationUI.Theme.Color { .primary.variant(.background).colorScheme(.dark) }
     public static var xxSmall: Self { .init(color: color.opacity(0.1), radius: 0.5, y: 0.5) }
@@ -26,7 +22,8 @@ extension FoundationTokenShadowScale where Self == FoundationUI.DefaultTheme.Var
     public static var xxLarge: Self { .init(color: color.opacity(0.4), radius: 6, spread: -2.5, y: 1.8) }
 }
 
-extension FoundationUI.DefaultTheme.Variable {
+extension FoundationUI.Theme {
+    @frozen
     public struct Shadow: FoundationVariableWithValue, FoundationTokenShadowScale {
         public func callAsFunction(_ token: Self) -> Configuration {
             token.value
@@ -42,12 +39,12 @@ extension FoundationUI.DefaultTheme.Variable {
             self.value = .init(color: color, radius: radius, spread: spread, x: x, y: y)
         }
         
-        public init(_ value: Configuration) {
+        public init(value: Configuration) {
             self.value = value
         }
         
         public struct Configuration: Sendable, Hashable {
-            var color: FoundationUI.Theme.Variable.Color
+            var color: FoundationUI.Theme.Color
             var radius: CGFloat
             var spread: CGFloat = 0
             var x: CGFloat = 0
@@ -59,7 +56,7 @@ extension FoundationUI.DefaultTheme.Variable {
 struct ShadowPreview: PreviewProvider {
     static var previews: some View {
         VStack(spacing: FoundationUI.theme.spacing(.large)) {
-            ForEach(FoundationUI.DefaultTheme.Variable.Shadow.Token.all) { scale in
+            ForEach(FoundationUI.Theme.Shadow.Token.all) { scale in
                 Text(scale.name)
                     .foundation(.size(.regular))
                     .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))

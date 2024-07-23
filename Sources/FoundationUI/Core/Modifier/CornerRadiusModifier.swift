@@ -13,7 +13,11 @@ public extension FoundationUI.ModifierLibrary {
         @OptionalTokenValue<FoundationUI.Theme.Radius> var cornerRadius: CGFloat?
         
         init(cornerRadius: FoundationUI.Theme.Radius? = nil) {
-            self._cornerRadius = .init(token: cornerRadius, value: Theme.radius, defaultValue: nil)
+            self._cornerRadius = .init(
+                token: cornerRadius,
+                value: FoundationUI.theme.radius,
+                defaultValue: nil
+            )
         }
         
         public func body(content: Content) -> some View {

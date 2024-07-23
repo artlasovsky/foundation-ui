@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 public extension FoundationUI {
+    @frozen
     struct ColorComponents {
         public var hue: CGFloat { CGFloat(_hue) / 360 }
         public var saturation: CGFloat { CGFloat(_saturation) / 100 }
@@ -53,7 +54,7 @@ public extension FoundationUI.ColorComponents {
 }
 
 extension FoundationUI.ColorComponents {
-    struct Changes {
+    public struct Changes {
         typealias ColorComponents = FoundationUI.ColorComponents
         struct Components {
             var hue: CGFloat?
@@ -64,6 +65,8 @@ extension FoundationUI.ColorComponents {
         var multiply = Components()
         var override = Components()
         
+        public init() {}
+
         func apply(to colorComponents: ColorComponents) -> ColorComponents {
             var colorComponents = colorComponents
             if let overrideHue = override.hue {

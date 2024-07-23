@@ -8,13 +8,9 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.DefaultTheme {
-    public var font: Variable.Font { .init() }
-}
-
 public protocol FoundationFontDefaultScale: DefaultFoundationVariableTokenScale {}
 
-extension FoundationFontDefaultScale  where Self == FoundationUI.DefaultTheme.Variable.Font {
+extension FoundationFontDefaultScale where Self == FoundationUI.Theme.Font {
     public static var xxSmall: Self { .init(.footnote) }
     public static var xSmall: Self { .init(.subheadline) }
     public static var small: Self { .init(.callout) }
@@ -24,7 +20,8 @@ extension FoundationFontDefaultScale  where Self == FoundationUI.DefaultTheme.Va
     public static var xxLarge: Self { .init(.title) }
 }
 
-extension FoundationUI.DefaultTheme.Variable {
+extension FoundationUI.Theme {
+    @frozen
     public struct Font: FoundationVariableWithValue, FoundationFontDefaultScale {
         public typealias Result = SwiftUI.Font
         
@@ -36,7 +33,7 @@ extension FoundationUI.DefaultTheme.Variable {
         
         public init() { self = .regular }
         
-        public init(_ value: SwiftUI.Font) {
+        public init(value: SwiftUI.Font) {
             self.value = value
         }
     }
