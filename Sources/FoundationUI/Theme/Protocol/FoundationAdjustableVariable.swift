@@ -64,21 +64,19 @@ public extension DefaultFoundationAdjustableVariableWithMultiplier {
     static var xxLarge: Self { .xLarge.up(.full) }
 }
 
-extension FoundationUI.Theme {
-    public enum Step: CGFloat {
-        case full = 1
-        case half = 0.5
-        case third = 0.33
-        case quarter = 0.25
-    }
+public enum FoundationVariableStep: CGFloat {
+    case full = 1
+    case half = 0.5
+    case third = 0.33
+    case quarter = 0.25
 }
 
 public extension FoundationAdjustableVariable where Value == CGFloatWithMultiplier, Result == CGFloat {
-    func up(_ step: FoundationUI.Theme.Step) -> Self {
+    func up(_ step: FoundationVariableStep) -> Self {
         up(step.rawValue)
     }
     
-    func down(_ step: FoundationUI.Theme.Step) -> Self {
+    func down(_ step: FoundationVariableStep) -> Self {
         down(step.rawValue)
     }
     

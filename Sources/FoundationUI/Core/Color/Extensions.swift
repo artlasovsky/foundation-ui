@@ -29,7 +29,7 @@ internal extension Float {
 
 internal extension Color {
     @available(macOS 14.0, iOS 17.0, *)
-    func rgbaComponents(in scheme: FoundationUI.ColorScheme) -> (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
+    func rgbaComponents(in scheme: FoundationColorScheme) -> (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
         var environment: EnvironmentValues
         switch scheme {
         case .light:

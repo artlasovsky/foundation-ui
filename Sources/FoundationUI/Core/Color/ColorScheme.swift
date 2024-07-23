@@ -8,32 +8,30 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI {
-    @frozen
-    public enum ColorScheme: String, Sendable, Hashable {
-        case light
-        case dark
-        case lightAccessible
-        case darkAccessible
-        
-        public init(_ environment: EnvironmentValues) {
-            switch (environment.colorScheme, environment.colorSchemeContrast) {
-            case (.light, .standard):
-                self = .light
-            case (.dark, .standard):
-                self = .dark
-            case (.light, .increased):
-                self = .lightAccessible
-            case (.dark, .increased):
-                self = .darkAccessible
-            default:
-                self = .light
-            }
+@frozen
+public enum FoundationColorScheme: String, Sendable, Hashable {
+    case light
+    case dark
+    case lightAccessible
+    case darkAccessible
+    
+    public init(_ environment: EnvironmentValues) {
+        switch (environment.colorScheme, environment.colorSchemeContrast) {
+        case (.light, .standard):
+            self = .light
+        case (.dark, .standard):
+            self = .dark
+        case (.light, .increased):
+            self = .lightAccessible
+        case (.dark, .increased):
+            self = .darkAccessible
+        default:
+            self = .light
         }
     }
 }
 
-public extension FoundationUI.ColorScheme {
+public extension FoundationColorScheme {
     func environmentValues() -> EnvironmentValues {
         .init(colorScheme: self)
     }
@@ -108,7 +106,7 @@ public extension FoundationUI.ColorScheme {
     #endif
 }
 
-internal extension FoundationUI.ColorScheme {
+internal extension FoundationColorScheme {
     var colorScheme: SwiftUI.ColorScheme {
         switch self {
         case .light, .lightAccessible:
@@ -136,7 +134,7 @@ internal extension EnvironmentValues {
         self = env
     }
     
-    init(colorScheme: FoundationUI.ColorScheme) {
+    init(colorScheme: FoundationColorScheme) {
         switch colorScheme {
         case .light:
             self.init(colorScheme: .light, colorSchemeContrast: .standard)
@@ -151,7 +149,7 @@ internal extension EnvironmentValues {
 }
 
 internal extension View {
-    func _colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> some View {
+    func _colorScheme(_ colorScheme: FoundationColorScheme) -> some View {
         self
             .environment(\.colorScheme, colorScheme.colorScheme)
             .environment(\._colorSchemeContrast, colorScheme.colorSchemeContrast)

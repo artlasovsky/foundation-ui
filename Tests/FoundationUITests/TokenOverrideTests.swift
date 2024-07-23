@@ -10,14 +10,14 @@ import XCTest
 @testable import FoundationUI
 
 // Token Scale Override
-private extension FoundationUI.Theme.Padding {
-    static var regular: FoundationUI.Theme.Padding = .init(value: 10)
+private extension Theme.Padding {
+    static var regular: Theme.Padding = .init(value: 10)
 }
 
 final class ThemeOverrideTests: XCTestCase {
     func testTokenScaleOverride() throws {
-        XCTAssert(FoundationUI.theme.padding(.small) == 8 / 2)
-        XCTAssert(FoundationUI.theme.padding(.regular) == 10)
+        XCTAssert(Theme.default.padding(.small) == 8 / 2)
+        XCTAssert(Theme.default.padding(.regular) == 10)
     }
 }
 
@@ -35,14 +35,14 @@ struct SizeToken: FoundationVariable {
     }
 }
 
-private extension FoundationUI.DefaultTheme {
+private extension Theme {
     var size: SizeToken { .init() }
 }
 
 extension ThemeOverrideTests {
     func testTokenOverride() throws {
-        XCTAssert(FoundationUI.theme.size(.regular) == 24)
-        XCTAssert(FoundationUI.theme.size(.small) == 18)
-        XCTAssert(FoundationUI.theme.size(.large) == 32)
+        XCTAssert(Theme.default.size(.regular) == 24)
+        XCTAssert(Theme.default.size(.small) == 18)
+        XCTAssert(Theme.default.size(.large) == 32)
     }
 }

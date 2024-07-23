@@ -44,7 +44,7 @@ struct BasicAdjustableToken: FoundationAdjustableVariable {
         self.adjust = adjust
     }
     
-    init(_ value: Value) {
+    init(value: Value) {
         self.value = value
         self.adjust = { _ in value }
     }
@@ -73,7 +73,7 @@ struct TokenWithMultiplier: DefaultFoundationAdjustableVariableWithMultiplier {
     public let value: CGFloatWithMultiplier
     public let adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat
     
-    public init(_ value: Value) {
+    public init(value: CGFloatWithMultiplier) {
         self.value = value
         self.adjust = { _ in value.base }
     }

@@ -8,15 +8,15 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI.ModifierLibrary {
+public extension FoundationModifierLibrary {
     struct SizeModifier: ViewModifier {
-        @OptionalTokenValue<FoundationUI.Theme.Size> private var width: CGFloat?
-        @OptionalTokenValue<FoundationUI.Theme.Size> private var height: CGFloat?
+        @OptionalTokenValue<Theme.Size> private var width: CGFloat?
+        @OptionalTokenValue<Theme.Size> private var height: CGFloat?
         private let alignment: Alignment
         
-        init(width: FoundationUI.Theme.Size?, height: FoundationUI.Theme.Size?, alignment: Alignment) {
-            self._width = .init(token: width, value: FoundationUI.theme.size, defaultValue: nil)
-            self._height = .init(token: height, value: FoundationUI.theme.size, defaultValue: nil)
+        init(width: Theme.Size?, height: Theme.Size?, alignment: Alignment) {
+            self._width = .init(token: width, value: Theme.default.size, defaultValue: nil)
+            self._height = .init(token: height, value: Theme.default.size, defaultValue: nil)
             self.alignment = alignment
         }
         
@@ -30,19 +30,19 @@ public extension FoundationUI.ModifierLibrary {
     }
 }
 
-public extension FoundationUI.Modifier {
+public extension FoundationModifier {
     static func size(
-        width: FoundationUI.Theme.Size? = nil,
-        height: FoundationUI.Theme.Size? = nil,
+        width: Theme.Size? = nil,
+        height: Theme.Size? = nil,
         alignment: Alignment = .center
-    ) -> Modifier<Library.SizeModifier> {
+    ) -> FoundationModifier<Library.SizeModifier> {
         .init(.init(width: width, height: height, alignment: alignment))
     }
     
     static func size(
-        _ square: FoundationUI.Theme.Size,
+        _ square: Theme.Size,
         alignment: Alignment = .center
-    ) -> Modifier<Library.SizeModifier> {
+    ) -> FoundationModifier<Library.SizeModifier> {
         .init(.init(width: square, height: square, alignment: alignment))
     }
 }

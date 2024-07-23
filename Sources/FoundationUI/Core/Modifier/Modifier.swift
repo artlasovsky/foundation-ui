@@ -8,28 +8,26 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI {
-    @frozen
-    public struct Modifier<M: ViewModifier> {
-        public typealias Modifier = FoundationUI.Modifier
-        public typealias Library = FoundationUI.ModifierLibrary
-        
-        let value: M
-        
-        init(_ value: M) {
-            self.value = value
-        }
+@frozen
+public struct FoundationModifier<M: ViewModifier> {
+    public typealias Library = FoundationModifierLibrary
+    
+    let value: M
+    
+    init(_ value: M) {
+        self.value = value
     }
 }
 
-extension FoundationUI {
-    public struct ModifierLibrary {}
-}
+public struct FoundationModifierLibrary {}
 
 // MARK: - View extension
 public extension View {
     @ViewBuilder
-    func foundation<M: ViewModifier>(_ modifier: FoundationUI.Modifier<M>, bypass: Bool = false) -> some View {
+    func foundation<M: ViewModifier>(
+        _ modifier: FoundationModifier<M>,
+        bypass: Bool = false
+    ) -> some View {
         if bypass {
             self
         } else {

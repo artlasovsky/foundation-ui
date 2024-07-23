@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI.ModifierLibrary {
+public extension FoundationModifierLibrary {
     struct PaddingModifier: ViewModifier {
         let padding: CGFloat
         let edges: Edge.Set
@@ -40,12 +40,12 @@ public extension FoundationUI.ModifierLibrary {
     }
 }
 
-public extension FoundationUI.Modifier {
+public extension FoundationModifier {
     static func padding(
-        _ token: FoundationUI.Theme.Padding = .regular,
+        _ token: Theme.Padding = .regular,
         _ edges: Edge.Set = .all,
         adjustNestedCornerRadius: Library.PaddingModifier.AdjustNestedCornerRadius? = .none
-    ) -> Modifier<Library.PaddingModifier> {
+    ) -> FoundationModifier<Library.PaddingModifier> {
         .init(
             .init(
                 padding: .foundation(.padding(token)),
@@ -59,22 +59,22 @@ public extension FoundationUI.Modifier {
 struct PaddingModifierPreview: PreviewProvider {
     static var previews: some View {
         VStack {
-            Text(FoundationUI.theme.padding(.large).description)
-            Text(FoundationUI.theme.padding(.regular.up(.half)).description)
-            Text(FoundationUI.theme.padding(.regular).description)
-            Text(FoundationUI.theme.padding(.regular.down(.half)).description)
-            Text(FoundationUI.theme.padding(.small).description)
+            Text(Theme.default.padding(.large).description)
+            Text(Theme.default.padding(.regular.up(.half)).description)
+            Text(Theme.default.padding(.regular).description)
+            Text(Theme.default.padding(.regular.down(.half)).description)
+            Text(Theme.default.padding(.small).description)
 
-            FoundationUI.Shape.roundedRectangle(.regular)
+            RoundedRectangle(cornerRadius: .foundation(.radius(.small)))
                 .foundation(.size(.regular))
                 .overlay {
-                    FoundationUI.Shape.roundedRectangle(.regular)
-                        .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular)), .horizontal))
+                    RoundedRectangle(cornerRadius: .foundation(.radius(.regular)))
+                        .foundation(.padding(.init(value: Theme.default.padding(.regular)), .horizontal))
                         .foundation(.padding(.regular, .vertical))
                         .foundation(.size(.regular))
                         .foundation(.foreground(.white))
-                    FoundationUI.Shape.roundedRectangle(.regular)
-                        .foundation(.padding(.init(value: FoundationUI.theme.padding(.regular.up(.half))), .horizontal))
+                    RoundedRectangle(cornerRadius: .foundation(.radius(.regular)))
+                        .foundation(.padding(.init(value: .foundation(.padding(.regular.up(.half)))), .horizontal))
                         .foundation(.padding(.regular, .vertical))
                         .foundation(.size(.regular))
                         .foundation(.foreground(.gray.variant(.fill)))

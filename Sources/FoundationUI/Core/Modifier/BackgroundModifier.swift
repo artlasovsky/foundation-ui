@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI.ModifierLibrary {
+public extension FoundationModifierLibrary {
     struct BackgroundModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
@@ -25,12 +25,12 @@ public extension FoundationUI.ModifierLibrary {
 }
 
 
-public extension FoundationUI.Modifier {
+public extension FoundationModifier {
     static func background<S: Shape, VM: ViewModifier>(
-        _ color: FoundationUI.Theme.Color,
+        _ color: Theme.Color,
         in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
-    ) -> Modifier<Library.BackgroundModifier<FoundationUI.Theme.Color, S>> {
+    ) -> FoundationModifier<Library.BackgroundModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape))
     }
     
@@ -38,7 +38,7 @@ public extension FoundationUI.Modifier {
         _ style: Style,
         in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
-    ) -> Modifier<Library.BackgroundModifier<Style, S>> {
+    ) -> FoundationModifier<Library.BackgroundModifier<Style, S>> {
         .init(.init(style: style, shape: shape))
     }
     
@@ -46,7 +46,7 @@ public extension FoundationUI.Modifier {
         _ color: Color,
         in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
-    ) -> Modifier<Library.BackgroundModifier<Color, S>> {
+    ) -> FoundationModifier<Library.BackgroundModifier<Color, S>> {
         .init(.init(style: color, shape: shape))
     }
 }

@@ -8,14 +8,14 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.Theme {
+extension Theme {
     @frozen
     public struct Color: FoundationColorVariable {
-        public var color: FoundationUI.DynamicColor
+        public var color: DynamicColor
         private var variant: Variant?
-        private var colorScheme: FoundationUI.ColorScheme?
+        private var colorScheme: FoundationColorScheme?
         
-        public init(_ color: FoundationUI.DynamicColor) {
+        public init(_ color: DynamicColor) {
             self.color = color
         }
         
@@ -25,9 +25,9 @@ extension FoundationUI.Theme {
     }
 }
 
-public extension FoundationUI.Theme.Color {
+public extension Theme.Color {
     struct Variant: Sendable {
-        public typealias ColorValue = FoundationUI.DynamicColor
+        public typealias ColorValue = DynamicColor
         public typealias ComponentAdjust = (ColorValue.Components) -> ColorValue.Components
         
         var adjust: @Sendable (ColorValue) -> ColorValue
@@ -65,7 +65,7 @@ public extension FoundationUI.Theme.Color {
     }
 }
 
-extension FoundationUI.Theme.Color.Variant: Hashable {
+extension Theme.Color.Variant: Hashable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
@@ -76,14 +76,13 @@ extension FoundationUI.Theme.Color.Variant: Hashable {
     }
 }
 
-extension FoundationUI.Theme.Color.Variant {
-    public typealias Variant = FoundationUI.Theme.Color.Variant
+extension Theme.Color.Variant {
+    public typealias Variant = Theme.Color.Variant
     public enum Modifier {
-        typealias ColorComponents = FoundationUI.ColorComponents
         case adjust(ComponentAdjust)
-        case color(FoundationUI.Theme.Color)
+        case color(Theme.Color)
         
-        func resolve(_ source: ColorComponents, in colorScheme: FoundationUI.ColorScheme) -> ColorComponents {
+        func resolve(_ source: ColorComponents, in colorScheme: FoundationColorScheme) -> ColorComponents {
             switch self {
             case .adjust(let adjust):
                 return adjust(source)
@@ -92,7 +91,6 @@ extension FoundationUI.Theme.Color.Variant {
                 environment.dynamicTint = .init(source)
                 let components = color.resolveColorValue(in: environment).resolveComponents(in: colorScheme)
                 return source.changes.apply(to: components)
-//                return components
             }
         }
     }
@@ -102,7 +100,7 @@ extension FoundationUI.Theme.Color.Variant {
         dark: Modifier,
         lightAccessible: Modifier? = nil,
         darkAccessible: Modifier? = nil
-    ) -> FoundationUI.Theme.Color.Variant {
+    ) -> Theme.Color.Variant {
         self.init(
             light: { light.resolve($0, in: .light) },
             dark: { dark.resolve($0, in: .dark) },
@@ -118,15 +116,15 @@ extension FoundationUI.Theme.Color.Variant {
         )
     }
     
-    public static func modifierColor(_ color: FoundationUI.Theme.Color) -> Variant {
+    public static func modifierColor(_ color: Theme.Color) -> Variant {
         .modifier(.color(color))
     }
     
     public static func modifierColor(
-        light: FoundationUI.Theme.Color,
-        dark: FoundationUI.Theme.Color,
-        lightAccessible: FoundationUI.Theme.Color? = nil,
-        darkAccessible: FoundationUI.Theme.Color? = nil
+        light: Theme.Color,
+        dark: Theme.Color,
+        lightAccessible: Theme.Color? = nil,
+        darkAccessible: Theme.Color? = nil
     ) -> Variant {
         .modifier(
             light: .color(light),
@@ -155,7 +153,7 @@ extension FoundationUI.Theme.Color.Variant {
     }
 }
 
-extension FoundationUI.Theme.Color {
+extension Theme.Color {
     public static func modifier(_ universal: Variant.Modifier) -> Self {
         .dynamic(.modifier(universal))
     }
@@ -176,15 +174,15 @@ extension FoundationUI.Theme.Color {
         )
     }
     
-    public static func modifierColor(_ universal: FoundationUI.Theme.Color) -> Self {
+    public static func modifierColor(_ universal: Theme.Color) -> Self {
         .dynamic(.modifierColor(universal))
     }
     
     public static func modifierColor(
-        light: FoundationUI.Theme.Color,
-        dark: FoundationUI.Theme.Color,
-        lightAccessible: FoundationUI.Theme.Color? = nil,
-        darkAccessible: FoundationUI.Theme.Color? = nil
+        light: Theme.Color,
+        dark: Theme.Color,
+        lightAccessible: Theme.Color? = nil,
+        darkAccessible: Theme.Color? = nil
     ) -> Self {
         .dynamic(
             .modifierColor(
@@ -217,8 +215,8 @@ extension FoundationUI.Theme.Color {
     }
 }
 
-extension FoundationUI.Theme.Color: Equatable {
-    public static func == (lhs: FoundationUI.Theme.Color, rhs: FoundationUI.Theme.Color) -> Bool {
+extension Theme.Color: Equatable {
+    public static func == (lhs: Theme.Color, rhs: Theme.Color) -> Bool {
         if let lhsVariant = lhs.variant, let rhsVariant = rhs.variant {
             lhsVariant.adjust(lhs.color) == rhsVariant.adjust(rhs.color)
         } else {
@@ -227,8 +225,8 @@ extension FoundationUI.Theme.Color: Equatable {
     }
 }
 
-public extension FoundationUI.Theme.Color {
-    private func updateValue(_ value: FoundationUI.DynamicColor) -> Self {
+public extension Theme.Color {
+    private func updateValue(_ value: DynamicColor) -> Self {
         var copy = self
         copy.color = value
         return copy
@@ -250,7 +248,7 @@ public extension FoundationUI.Theme.Color {
         updateValue(color.opacity(value))
     }
     
-    func colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> Self {
+    func colorScheme(_ colorScheme: FoundationColorScheme) -> Self {
         var copy = updateValue(color.colorScheme(colorScheme))
         copy.colorScheme = colorScheme
         return copy
@@ -260,17 +258,17 @@ public extension FoundationUI.Theme.Color {
         updateValue(color.blendMode(mode))
     }
     
-    func blendMode(_ mode: FoundationUI.DynamicColor.ExtendedBlendMode) -> Self {
+    func blendMode(_ mode: DynamicColor.ExtendedBlendMode) -> Self {
         updateValue(color.blendMode(mode))
     }
 }
 
-public extension FoundationUI.Theme.Color {
-    init(_ universal: FoundationUI.ColorComponents) {
+public extension Theme.Color {
+    init(_ universal: ColorComponents) {
         color = .init(universal)
     }
     
-    init(light: FoundationUI.ColorComponents, dark: FoundationUI.ColorComponents, lightAccessible: FoundationUI.ColorComponents? = nil, darkAccessible: FoundationUI.ColorComponents? = nil) {
+    init(light: ColorComponents, dark: ColorComponents, lightAccessible: ColorComponents? = nil, darkAccessible: ColorComponents? = nil) {
         color = .init(
             light: light,
             dark: dark,
@@ -281,7 +279,7 @@ public extension FoundationUI.Theme.Color {
 }
 
 // MARK: - Conform to ShapeStyle
-extension FoundationUI.Theme.Color {
+extension Theme.Color {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         resolveColorValue(in: environment)
     }
@@ -325,7 +323,7 @@ public protocol FoundationColorDefaultValues {
     static var primary: Self { get }
 }
 
-public extension FoundationColorDefaultValues where Self == FoundationUI.Theme.Color {
+public extension FoundationColorDefaultValues where Self == Theme.Color {
     static var primary: Self {
         .init(
             light: .init(grayscale: 0.5),
@@ -334,7 +332,7 @@ public extension FoundationColorDefaultValues where Self == FoundationUI.Theme.C
     }
 }
 
-extension FoundationUI.Theme.Color: FoundationColorDefaultValues {
+extension Theme.Color: FoundationColorDefaultValues {
     public static var clear: Self {
         .init(.init(grayscale: 0, opacity: 0))
     }
@@ -352,7 +350,7 @@ extension FoundationUI.Theme.Color: FoundationColorDefaultValues {
     }
 }
 
-internal extension FoundationUI.Theme.Color {
+internal extension Theme.Color {
     static var blue: Self {
         .init(
             light: .init(red8bit: 0, green: 122, blue: 255),
@@ -393,9 +391,9 @@ public protocol FoundationColorDefaultVariant {
     static var textProminent: Self { get }
 }
 
-extension FoundationUI.Theme.Color.Variant: FoundationColorDefaultVariant {}
+extension Theme.Color.Variant: FoundationColorDefaultVariant {}
 
-public extension FoundationColorDefaultVariant where Self == FoundationUI.Theme.Color.Variant {
+public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant {
     static var backgroundSubtle: Self {
         .init(
             light: { $0
@@ -547,16 +545,16 @@ public extension FoundationColorDefaultVariant where Self == FoundationUI.Theme.
 
 struct ColorScalePreview: PreviewProvider {
     struct ColorPatch: View {
-        let color: FoundationUI.Theme.Color
+        let color: Theme.Color
         var body: some View {
-            FoundationUI.Shape.roundedRectangle(.regular)
+            RoundedRectangle.foundation(.regular)
                 .foundation(.foreground(color))
                 .foundation(.size(.small))
         }
     }
     struct Scale: View {
         @Environment(\.dynamicTint) private var tint
-        private let defaultScale: [FoundationUI.Theme.Color.Variant] = [
+        private let defaultScale: [Theme.Color.Variant] = [
             .backgroundSubtle, .background, .backgroundProminent,
             .fillSubtle, .fill, .fillProminent,
             .borderSubtle, .border, .borderProminent,
@@ -565,9 +563,9 @@ struct ColorScalePreview: PreviewProvider {
         ]
         struct ScaleSwatch: View {
             @Environment(\.dynamicTint) private var tint
-            let variant: FoundationUI.Theme.Color.Variant
+            let variant: Theme.Color.Variant
             
-            init(_ variant: FoundationUI.Theme.Color.Variant) {
+            init(_ variant: Theme.Color.Variant) {
                 self.variant = variant
             }
 
@@ -596,7 +594,7 @@ struct ColorScalePreview: PreviewProvider {
             }
             
             private var isSolid: Bool {
-                let color = FoundationUI.theme.color(.primary)
+                let color = Theme.default.color(.primary)
                 
                 return color.variant(.solid) == color.variant(variant)
             }
@@ -685,7 +683,7 @@ struct ColorScalePreview: PreviewProvider {
     }
 }
 
-extension FoundationUI.Theme.Color.Variant {
+extension Theme.Color.Variant {
     static let bg = Self.modifier(
         light: .adjust({ $0.brightness(1.2).saturation(0.8) }),
         dark: .adjust({ $0.brightness(0.2) })
@@ -698,7 +696,7 @@ extension FoundationUI.Theme.Color.Variant {
 }
 
 struct ThemeColorPreview: PreviewProvider {
-    private static func test(_ value: FoundationUI.Theme.Color) -> FoundationUI.Theme.Color {
+    private static func test(_ value: Theme.Color) -> Theme.Color {
         value
     }
     static var previews: some View {

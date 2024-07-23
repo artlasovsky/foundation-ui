@@ -7,7 +7,7 @@
 
 import Foundation
 
-public extension FoundationUI.Theme {
+public extension Theme {
     @frozen
     struct Padding: DefaultFoundationAdjustableVariableWithMultiplier {
         public typealias Result = CGFloat

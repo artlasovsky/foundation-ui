@@ -2,11 +2,11 @@ import XCTest
 import SwiftUI
 @testable import FoundationUI
 
-private let lightColor = FoundationUI.ColorComponents(hue: 0.1, saturation: 0.8, brightness: 1)
+private let lightColor = ColorComponents(hue: 0.1, saturation: 0.8, brightness: 1)
 private let lightAccessibleColor = lightColor.saturation(1.2)
-private let darkColor = FoundationUI.ColorComponents(hue: 0.1, saturation: 0.7, brightness: 1)
+private let darkColor = ColorComponents(hue: 0.1, saturation: 0.7, brightness: 1)
 private let darkAssessibleColor = darkColor.saturation(1.2)
-private let color = FoundationUI.DynamicColor(
+private let color = DynamicColor(
     light: lightColor,
     dark: darkColor,
     lightAccessible: lightAccessibleColor,
@@ -39,13 +39,13 @@ final class DynamicColorTests: XCTestCase {
         let brightnessAdjust: CGFloat = 2
         let opacityAdjust: CGFloat = 0.5
         
-        let adjusted: FoundationUI.DynamicColor = color
+        let adjusted: DynamicColor = color
             .hue(hueAdjust)
             .saturation(saturationAdjust)
             .brightness(brightnessAdjust)
             .opacity(opacityAdjust)
         
-        let targetLight = FoundationUI.ColorComponents(
+        let targetLight = ColorComponents(
             hue: lightColor.hue * hueAdjust,
             saturation: lightColor.saturation * saturationAdjust,
             brightness: lightColor.brightness * brightnessAdjust,
@@ -76,10 +76,10 @@ final class DynamicColorTests: XCTestCase {
     func testConditionalAdjust() throws {
         let env = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
         
-        let saturated = FoundationUI.DynamicColor(.init(hue: 0, saturation: 0.4, brightness: 1))
-        let grayscale = FoundationUI.DynamicColor(.init(hue: 0, saturation: 0.0, brightness: 1))
+        let saturated = DynamicColor(.init(hue: 0, saturation: 0.4, brightness: 1))
+        let grayscale = DynamicColor(.init(hue: 0, saturation: 0.0, brightness: 1))
         
-        func conditionalBrightness(_ components: FoundationUI.ColorComponents) -> CGFloat {
+        func conditionalBrightness(_ components: ColorComponents) -> CGFloat {
             components.isSaturated ? 0.9 : 0.8
         }
         
@@ -93,7 +93,7 @@ final class DynamicColorTests: XCTestCase {
     }
     
     func testColorSchemeOverride() throws {
-        let color = Theme.color(.primary).color
+        let color = Theme.default.color(.primary).color
         
         XCTAssert(color.light == color.colorScheme(.light).dark)
         XCTAssert(color.light == color.colorScheme(.light).light)

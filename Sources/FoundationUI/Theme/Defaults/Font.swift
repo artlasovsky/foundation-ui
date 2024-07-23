@@ -10,7 +10,7 @@ import SwiftUI
 
 public protocol FoundationFontDefaultScale: DefaultFoundationVariableTokenScale {}
 
-extension FoundationFontDefaultScale where Self == FoundationUI.Theme.Font {
+extension FoundationFontDefaultScale where Self == Theme.Font {
     public static var xxSmall: Self { .init(.footnote) }
     public static var xSmall: Self { .init(.subheadline) }
     public static var small: Self { .init(.callout) }
@@ -20,7 +20,7 @@ extension FoundationFontDefaultScale where Self == FoundationUI.Theme.Font {
     public static var xxLarge: Self { .init(.title) }
 }
 
-extension FoundationUI.Theme {
+extension Theme {
     @frozen
     public struct Font: FoundationVariableWithValue, FoundationFontDefaultScale {
         public typealias Result = SwiftUI.Font

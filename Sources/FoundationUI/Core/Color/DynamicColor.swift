@@ -23,30 +23,28 @@ import SwiftUI
 /// /// Declare in view with property wrapper `@DynamicColorTint`
 /// `@DynamicColorTint private var tint`
 
-public extension FoundationUI {
-    @frozen
-    struct DynamicColor {
-        public typealias Components = FoundationUI.ColorComponents
-        
-        public private(set) var light: Components
-        public private(set) var dark: Components
-        public private(set) var lightAccessible: Components
-        public private(set) var darkAccessible: Components
-        
-        private var blendMode: BlendMode = .normal
-        private var extendedBlendMode: ExtendedBlendMode? = nil
-        
-        internal func copyBlendMode(from source: Self) -> Self {
-            var copy = self
-            copy.blendMode = source.blendMode
-            copy.extendedBlendMode = source.extendedBlendMode
-            return copy
-        }
+@frozen
+public struct DynamicColor {
+    public typealias Components = ColorComponents
+    
+    public private(set) var light: Components
+    public private(set) var dark: Components
+    public private(set) var lightAccessible: Components
+    public private(set) var darkAccessible: Components
+    
+    private var blendMode: BlendMode = .normal
+    private var extendedBlendMode: ExtendedBlendMode? = nil
+    
+    internal func copyBlendMode(from source: Self) -> Self {
+        var copy = self
+        copy.blendMode = source.blendMode
+        copy.extendedBlendMode = source.extendedBlendMode
+        return copy
     }
 }
 
-public extension FoundationUI.DynamicColor {
-    func resolveComponents(in colorScheme: FoundationUI.ColorScheme) -> FoundationUI.ColorComponents {
+public extension DynamicColor {
+    func resolveComponents(in colorScheme: FoundationColorScheme) -> ColorComponents {
         switch colorScheme {
         case .light: light
         case .dark: dark
@@ -56,9 +54,9 @@ public extension FoundationUI.DynamicColor {
     }
 }
 
-extension FoundationUI.DynamicColor: ShapeStyle {
+extension DynamicColor: ShapeStyle {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-        let colorScheme = FoundationUI.ColorScheme(environment)
+        let colorScheme = FoundationColorScheme(environment)
         
         let components = resolveComponents(in: colorScheme)
         
@@ -68,12 +66,12 @@ extension FoundationUI.DynamicColor: ShapeStyle {
     }
     
     public func resolveColor(in environment: EnvironmentValues) -> Color {
-        let colorScheme = FoundationUI.ColorScheme(environment)
+        let colorScheme = FoundationColorScheme(environment)
         return resolveComponents(in: colorScheme).color
     }
 }
 
-extension FoundationUI.DynamicColor {
+extension DynamicColor {
     public init(
         light: Components,
         dark: Components,
@@ -90,7 +88,7 @@ extension FoundationUI.DynamicColor {
         self.init(light: universal, dark: universal)
     }
     
-    public static func from(color: Color) -> FoundationUI.DynamicColor {
+    public static func from(color: Color) -> DynamicColor {
         .init(
             light: .init(color: color, colorScheme: .light),
             dark: .init(color: color, colorScheme: .dark),
@@ -100,7 +98,7 @@ extension FoundationUI.DynamicColor {
     }
 }
 
-public extension FoundationUI.DynamicColor {
+public extension DynamicColor {
     func hue(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
         .init(
             light: light.hue(value, method: method),
@@ -174,7 +172,7 @@ public extension FoundationUI.DynamicColor {
     }
 }
 
-public extension FoundationUI.DynamicColor {
+public extension DynamicColor {
     func blendMode(_ blendMode: BlendMode) -> Self {
         var copy = self
         copy.blendMode = blendMode
@@ -186,7 +184,7 @@ public extension FoundationUI.DynamicColor {
         return copy
     }
     
-    func colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> Self {
+    func colorScheme(_ colorScheme: FoundationColorScheme) -> Self {
         var copy = self
         let components: Components
         switch colorScheme {
@@ -209,11 +207,11 @@ public extension FoundationUI.DynamicColor {
 
 // MARK: - Types
 
-public extension FoundationUI.DynamicColor {
+public extension DynamicColor {
     enum ExtendedBlendMode: Sendable, Hashable {
         case vibrant
         
-        func adjustColor(_ color: FoundationUI.DynamicColor) -> FoundationUI.DynamicColor {
+        func adjustColor(_ color: DynamicColor) -> DynamicColor {
             switch self {
             case .vibrant:
                 var copy = color
@@ -223,7 +221,7 @@ public extension FoundationUI.DynamicColor {
             }
         }
         
-        func resolve(in colorScheme: FoundationUI.ColorScheme) -> BlendMode? {
+        func resolve(in colorScheme: FoundationColorScheme) -> BlendMode? {
             switch self {
             case .vibrant:
                 switch colorScheme {
@@ -241,9 +239,9 @@ public extension FoundationUI.DynamicColor {
 
 // MARK: - Protocols
 
-extension FoundationUI.DynamicColor: Hashable {}
+extension DynamicColor: Hashable {}
 
-extension FoundationUI.DynamicColor: Equatable {
+extension DynamicColor: Equatable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.light == rhs.light
         && lhs.dark == rhs.dark
@@ -254,7 +252,7 @@ extension FoundationUI.DynamicColor: Equatable {
     }
 }
 
-extension FoundationUI.DynamicColor: CustomDebugStringConvertible {
+extension DynamicColor: CustomDebugStringConvertible {
     public var debugDescription: String {
         """
         \(String(describing: Self.self).components(separatedBy: "_")[0])

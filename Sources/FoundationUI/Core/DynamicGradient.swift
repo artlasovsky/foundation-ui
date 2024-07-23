@@ -10,10 +10,10 @@ import SwiftUI
 
 public struct DynamicGradient: ShapeStyle {
     public struct Stop: Sendable {
-        let color: FoundationUI.Theme.Color
+        let color: Theme.Color
         let location: CGFloat
         
-        public init(color: FoundationUI.Theme.Color, location: CGFloat) {
+        public init(color: Theme.Color, location: CGFloat) {
             self.color = color
             self.location = location
         }
@@ -33,7 +33,7 @@ public struct DynamicGradient: ShapeStyle {
         self.type = type
     }
     
-    public init(colors: [FoundationUI.Theme.Color], type: GradientType) {
+    public init(colors: [Theme.Color], type: GradientType) {
         self.stops = colors.enumerated().map({ item in
             var location: CGFloat
             if item.offset == 0 {
@@ -65,7 +65,7 @@ public struct DynamicGradient: ShapeStyle {
         }
     }
     
-    func resolve(_ colorScheme: FoundationUI.ColorScheme) -> Gradient {
+    func resolve(_ colorScheme: FoundationColorScheme) -> Gradient {
         Gradient(stops: stops.map({
             .init(
                 color: $0.color.resolveColor(in: .init(colorScheme: colorScheme.colorScheme, colorSchemeContrast: colorScheme.colorSchemeContrast)),
@@ -76,7 +76,7 @@ public struct DynamicGradient: ShapeStyle {
 }
 
 public extension ShapeStyle where Self == DynamicGradient {
-    static func dynamicGradient(colors: [FoundationUI.Theme.Color], type: DynamicGradient.GradientType = .linear(startPoint: .top, endPoint: .bottom)) -> DynamicGradient {
+    static func dynamicGradient(colors: [Theme.Color], type: DynamicGradient.GradientType = .linear(startPoint: .top, endPoint: .bottom)) -> DynamicGradient {
         .init(colors: colors, type: type)
     }
     

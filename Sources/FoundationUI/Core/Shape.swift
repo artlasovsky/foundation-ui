@@ -45,7 +45,13 @@ public extension Shape where Self == DynamicRoundedRectangle {
 }
 
 public extension Shape where Self == RoundedRectangle {
-    static func roundedRectangle(_ cornerRadius: FoundationUI.Theme.Radius.Token) -> Self {
-        .init(cornerRadius: FoundationUI.theme.radius(cornerRadius))
+    static func roundedRectangle(_ cornerRadius: Theme.Radius.Token) -> Self {
+        .init(cornerRadius: Theme.default.radius(cornerRadius))
+    }
+}
+
+public extension RoundedRectangle {
+    static func foundation(_ radius: Theme.Radius, style: RoundedCornerStyle = .continuous) -> Self {
+        .init(cornerRadius: .foundation(.radius(radius)), style: style)
     }
 }

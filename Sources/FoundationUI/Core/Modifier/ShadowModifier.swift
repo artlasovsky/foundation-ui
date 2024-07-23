@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI.ModifierLibrary {
+public extension FoundationModifierLibrary {
     struct ShadowModifier<Style: ShapeStyle, S: InsettableShape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
@@ -34,15 +34,15 @@ public extension FoundationUI.ModifierLibrary {
     }
 }
 
-public extension FoundationUI.Modifier {
+public extension FoundationModifier {
     static func shadow<S: Shape>(
-        color: FoundationUI.Theme.Color,
+        color: Theme.Color,
         radius: CGFloat,
         spread: CGFloat = 0,
         x: CGFloat = 0,
         y: CGFloat = 0,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> Modifier<Library.ShadowModifier<FoundationUI.Theme.Color, S>> {
+    ) -> FoundationModifier<Library.ShadowModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape, radius: radius, spread: spread, x: x, y: y))
     }
     
@@ -53,14 +53,14 @@ public extension FoundationUI.Modifier {
         x: CGFloat = 0,
         y: CGFloat = 0,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> Modifier<Library.ShadowModifier<Style, S>> {
+    ) -> FoundationModifier<Library.ShadowModifier<Style, S>> {
         .init(.init(style: style, shape: shape, radius: radius, spread: spread, x: x, y: y))
     }
     
     static func shadow<S: Shape>(
-        _ token: FoundationUI.Theme.Shadow,
+        _ token: Theme.Shadow,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> Modifier<Library.ShadowModifier<FoundationUI.Theme.Color, S>> {
+    ) -> FoundationModifier<Library.ShadowModifier<Theme.Color, S>> {
         let configuration = token.value
         return .init(.init(
             style: configuration.color,

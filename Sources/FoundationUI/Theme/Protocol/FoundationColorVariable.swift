@@ -22,7 +22,7 @@ public protocol FoundationColorVariable: FoundationVariable, ShapeStyle {
     func brightness(_ brightness: CGFloat) -> Self
     func opacity(_ opacity: CGFloat) -> Self
     
-    func colorScheme(_ colorScheme: FoundationUI.ColorScheme) -> Self
+    func colorScheme(_ colorScheme: FoundationColorScheme) -> Self
     func blendMode(_ blendMode: BlendMode) -> Self
     
     func resolve(in: EnvironmentValues) -> Resolved

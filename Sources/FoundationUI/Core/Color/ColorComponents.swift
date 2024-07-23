@@ -8,54 +8,51 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI {
-    @frozen
-    struct ColorComponents {
-        public var hue: CGFloat { CGFloat(_hue) / 360 }
-        public var saturation: CGFloat { CGFloat(_saturation) / 100 }
-        public var brightness: CGFloat { CGFloat(_brightness) / 100 }
-        public var opacity: CGFloat { CGFloat(_opacity) / 100 }
-        
-        private let _hue: Int
-        private let _saturation: Int
-        private let _brightness: Int
-        private let _opacity: Int
-        
-        public init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat, opacity: CGFloat = 1) {
-            self.init(hue360: .init(hue * 360), saturation: .init(saturation * 100), brightness: .init(brightness * 100), opacity: .init(opacity * 100))
-        }
-        /// `FoundationUI.ColorComponents(hue360: 3, saturation: 81, brightness: 100)`
-        public init(hue360 hue: Int, saturation: Int, brightness: Int, opacity: Int = 100) {
-            self._hue = hue
-            self._saturation = saturation
-            self._brightness = brightness
-            self._opacity = opacity
-        }
-        
-        public var color: Color {
-            .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)
-        }
-        
-        var changes = Changes()
+@frozen
+public struct ColorComponents {
+    public var hue: CGFloat { CGFloat(_hue) / 360 }
+    public var saturation: CGFloat { CGFloat(_saturation) / 100 }
+    public var brightness: CGFloat { CGFloat(_brightness) / 100 }
+    public var opacity: CGFloat { CGFloat(_opacity) / 100 }
+    
+    private let _hue: Int
+    private let _saturation: Int
+    private let _brightness: Int
+    private let _opacity: Int
+    
+    public init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat, opacity: CGFloat = 1) {
+        self.init(hue360: .init(hue * 360), saturation: .init(saturation * 100), brightness: .init(brightness * 100), opacity: .init(opacity * 100))
     }
+    /// `ColorComponents(hue360: 3, saturation: 81, brightness: 100)`
+    public init(hue360 hue: Int, saturation: Int, brightness: Int, opacity: Int = 100) {
+        self._hue = hue
+        self._saturation = saturation
+        self._brightness = brightness
+        self._opacity = opacity
+    }
+    
+    public var color: Color {
+        .init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)
+    }
+    
+    private(set) var changes = Changes()
 }
 
 
-extension FoundationUI.ColorComponents: ShapeStyle {
+extension ColorComponents: ShapeStyle {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         Color(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)
     }
 }
 
-public extension FoundationUI.ColorComponents {
+public extension ColorComponents {
     var isSaturated: Bool {
         saturation > 0
     }
 }
 
-extension FoundationUI.ColorComponents {
-    public struct Changes {
-        typealias ColorComponents = FoundationUI.ColorComponents
+extension ColorComponents {
+    public struct Changes: Sendable {
         struct Components {
             var hue: CGFloat?
             var saturation: CGFloat?
@@ -214,13 +211,13 @@ extension FoundationUI.ColorComponents {
     }
 }
 
-public extension FoundationUI.ColorComponents {
+public extension ColorComponents {
     enum AdjustMethod {
         case multiply
         case override
     }
     
-    typealias ConditionalValue = (FoundationUI.ColorComponents) -> CGFloat
+    typealias ConditionalValue = (ColorComponents) -> CGFloat
     
     func hue(_ value: CGFloat, method: AdjustMethod = .multiply) -> Self {
         switch method {
@@ -279,18 +276,18 @@ public extension FoundationUI.ColorComponents {
 
 // MARK: - Initializers
 
-public extension FoundationUI.ColorComponents {
+public extension ColorComponents {
     init(grayscale brightness: CGFloat, opacity: CGFloat = 1) {
         self.init(hue: 0, saturation: 0, brightness: brightness, opacity: opacity)
     }
     
     /// Extracting the components from SwiftUI.Color
-    init(color: Color, colorScheme: FoundationUI.ColorScheme) {
+    init(color: Color, colorScheme: FoundationColorScheme) {
         if #available(macOS 14.0, iOS 17.0, *) {
             let components = color.rgbaComponents(in: colorScheme)
             self.init(red: components.red, green: components.green, blue: components.blue, opacity: components.opacity)
         } else {
-            var colorComponents = FoundationUI.ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
+            var colorComponents = ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
             if let appearance = colorScheme.appearance() {
                 #if os(macOS)
                 NSAppearance.performAsCurrentDrawingAppearance(appearance) ({
@@ -315,7 +312,7 @@ public extension FoundationUI.ColorComponents {
 
 // MARK: - HEX
 
-public extension FoundationUI.ColorComponents {
+public extension ColorComponents {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int = UInt64()
@@ -339,7 +336,7 @@ public extension FoundationUI.ColorComponents {
 
 // MARK: - RGB
 
-public extension FoundationUI.ColorComponents {
+public extension ColorComponents {
     init(red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat = 1) {
         var hue: CGFloat = 0,
             saturation: CGFloat = 0,
@@ -414,7 +411,7 @@ private extension CGFloat {
 
 // MARK: - NS/UIColor, CGColor
 
-public extension FoundationUI.ColorComponents {
+public extension ColorComponents {
     #if os(macOS)
     func nsColor() -> NSColor {
         .init(colorSpace: .deviceRGB, hue: hue, saturation: saturation, brightness: brightness, alpha: opacity)
@@ -433,8 +430,8 @@ public extension FoundationUI.ColorComponents {
 
 // MARK: - Protocols
 
-extension FoundationUI.ColorComponents: Equatable, Sendable, Hashable {
-    public static func == (lhs: FoundationUI.ColorComponents, rhs: FoundationUI.ColorComponents) -> Bool {
+extension ColorComponents: Equatable, Sendable, Hashable {
+    public static func == (lhs: ColorComponents, rhs: ColorComponents) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
     
@@ -446,7 +443,7 @@ extension FoundationUI.ColorComponents: Equatable, Sendable, Hashable {
     }
 }
 
-extension FoundationUI.ColorComponents: CustomDebugStringConvertible {
+extension ColorComponents: CustomDebugStringConvertible {
     public var debugDescription: String {
         """
         

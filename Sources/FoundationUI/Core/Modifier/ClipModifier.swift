@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI.ModifierLibrary {
+public extension FoundationModifierLibrary {
     struct ClipModifier<S: Shape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let shape: S
@@ -19,8 +19,8 @@ public extension FoundationUI.ModifierLibrary {
     }
 }
 
-public extension FoundationUI.Modifier {
-    static func clip<S: Shape>(_ shape: S = .dynamicRoundedRectangle()) -> Modifier<Library.ClipModifier<S>> {
+public extension FoundationModifier {
+    static func clip<S: Shape>(_ shape: S = .dynamicRoundedRectangle()) -> FoundationModifier<Library.ClipModifier<S>> {
         .init(.init(shape: shape))
     }
 }

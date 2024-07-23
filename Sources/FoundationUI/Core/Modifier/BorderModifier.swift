@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI.ModifierLibrary {
+public extension FoundationModifierLibrary {
     struct BorderModifier<Style: ShapeStyle, S: InsettableShape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         let style: Style
@@ -41,13 +41,13 @@ public extension FoundationUI.ModifierLibrary {
     }
 }
 
-public extension FoundationUI.Modifier {
+public extension FoundationModifier {
     static func border<S: Shape>(
-        _ color: FoundationUI.Theme.Color,
+        _ color: Theme.Color,
         width: CGFloat = 1,
         placement: Library.BorderPlacement = .inside,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> Modifier<Library.BorderModifier<FoundationUI.Theme.Color, S>> {
+    ) -> FoundationModifier<Library.BorderModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape, width: width, placement: placement))
     }
     static func borderStyle<Style: ShapeStyle, S: Shape>(
@@ -55,7 +55,7 @@ public extension FoundationUI.Modifier {
         width: CGFloat = 1,
         placement: Library.BorderPlacement = .inside,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> Modifier<Library.BorderModifier<Style, S>> {
+    ) -> FoundationModifier<Library.BorderModifier<Style, S>> {
         .init(.init(style: style, shape: shape, width: width, placement: placement))
     }
 }
@@ -64,9 +64,9 @@ public extension FoundationUI.Modifier {
 struct BorderModifier_Preview: PreviewProvider {
     struct Test: View {
         @Environment(\.self) private var env
-        let tint: FoundationUI.DynamicColor? = nil
+        let tint: DynamicColor? = nil
         
-        var color: FoundationUI.DynamicColor {
+        var color: DynamicColor {
             tint ?? env.dynamicTint.color
         }
         

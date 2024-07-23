@@ -18,11 +18,11 @@ final class ColorComponentsInitializers: XCTestCase {
     }
     
     func testIdenticalInitialization() throws {
-        let hsb = FoundationUI.ColorComponents(hue: 3 / 360, saturation: 0.81, brightness: 1)
-        let hsb360 = FoundationUI.ColorComponents(hue360: 3, saturation: 81, brightness: 100)
-        let hex = FoundationUI.ColorComponents(hex: "#FF3B30")
-        let rgb = FoundationUI.ColorComponents(red: 1, green: 59 / 255, blue: 48 / 255)
-        let rgb8 = FoundationUI.ColorComponents(red8bit: 255, green: 59, blue: 48)
+        let hsb = ColorComponents(hue: 3 / 360, saturation: 0.81, brightness: 1)
+        let hsb360 = ColorComponents(hue360: 3, saturation: 81, brightness: 100)
+        let hex = ColorComponents(hex: "#FF3B30")
+        let rgb = ColorComponents(red: 1, green: 59 / 255, blue: 48 / 255)
+        let rgb8 = ColorComponents(red8bit: 255, green: 59, blue: 48)
         let color = Color(hue: 3 / 360, saturation: 0.81, brightness: 1)
         
         XCTAssertEqualColors(hsb, rgb)
@@ -33,7 +33,7 @@ final class ColorComponentsInitializers: XCTestCase {
     }
     
     func testMultiply() throws {
-        let color = FoundationUI.ColorComponents(
+        let color = ColorComponents(
             hue: 0.01,
             saturation: 0.81,
             brightness: 1,
@@ -50,7 +50,7 @@ final class ColorComponentsInitializers: XCTestCase {
             .saturation(saturationAdjust)
             .brightness(brightnessAdjust)
             .opacity(opacityAdjust)
-        let targetColor = FoundationUI.ColorComponents(
+        let targetColor = ColorComponents(
             hue: color.hue * hueAdjust,
             saturation: color.saturation * saturationAdjust,
             brightness: color.brightness * brightnessAdjust,
@@ -61,7 +61,7 @@ final class ColorComponentsInitializers: XCTestCase {
     }
     
     func testOverride() throws {
-        let color = FoundationUI.ColorComponents(
+        let color = ColorComponents(
             hue: 0.01,
             saturation: 0.81,
             brightness: 1,
@@ -78,7 +78,7 @@ final class ColorComponentsInitializers: XCTestCase {
             .saturation(saturationAdjust, method: .override)
 //            .brightness(brightnessAdjust, method: .override)
             .opacity(opacityAdjust, method: .override)
-        let targetColor = FoundationUI.ColorComponents(
+        let targetColor = ColorComponents(
             hue: hueAdjust,
             saturation: saturationAdjust,
             brightness: color.brightness,
@@ -92,8 +92,8 @@ final class ColorComponentsInitializers: XCTestCase {
 }
 
 private func XCTAssertEqualColors(
-    _ first: FoundationUI.ColorComponents,
-    _ second: FoundationUI.ColorComponents,
+    _ first: ColorComponents,
+    _ second: ColorComponents,
     file: StaticString = #filePath,
     line: UInt = #line
 ) {
@@ -116,5 +116,5 @@ private func checkHex(
     file: StaticString = #filePath,
     line: UInt = #line
 ) {
-    XCTAssertEqual(FoundationUI.ColorComponents(hex: hex), .init(red8bit: target.r, green: target.g, blue: target.b, opacity: target.a))
+    XCTAssertEqual(ColorComponents(hex: hex), .init(red8bit: target.r, green: target.g, blue: target.b, opacity: target.a))
 }

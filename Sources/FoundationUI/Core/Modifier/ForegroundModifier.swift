@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public extension FoundationUI.ModifierLibrary {
+public extension FoundationModifierLibrary {
     struct ForegroundModifier<S: ShapeStyle>: ViewModifier {
         let style: S
         
@@ -19,9 +19,9 @@ public extension FoundationUI.ModifierLibrary {
     }
 }
 
-public extension FoundationUI.Modifier {
-    typealias Foreground<Style: ShapeStyle> = Modifier<Library.ForegroundModifier<Style>>
-    typealias ThemeColor = FoundationUI.Theme.Color
+public extension FoundationModifier {
+    typealias Foreground<Style: ShapeStyle> = FoundationModifier<Library.ForegroundModifier<Style>>
+    typealias ThemeColor = Theme.Color
     
     static func foreground(_ color: ThemeColor) -> Foreground<ThemeColor> {
         .init(.init(style: color))

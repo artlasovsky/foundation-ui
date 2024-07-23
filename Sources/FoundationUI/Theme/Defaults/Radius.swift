@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.Theme {
+extension Theme {
     @frozen
     public struct Radius: DefaultFoundationAdjustableVariableWithMultiplier {
         public var value: CGFloatWithMultiplier
@@ -29,14 +29,14 @@ extension FoundationUI.Theme {
     }
 }
 
-extension FoundationUI.Theme.Radius {
+extension Theme.Radius {
     static let zero = Self(value: 0)
 }
 
 struct RadiusPreview: PreviewProvider {
     static var previews: some View {
         VStack {
-            ForEach(FoundationUI.Theme.Radius.Token.all) { token in
+            ForEach(Theme.Radius.Token.all) { token in
                 RoundedRectangle(cornerRadius: .foundation(.radius(token.value)))
                     .foundation(.size(.large))
                     .foundation(.foreground(.dynamic(.solid)))
