@@ -83,6 +83,9 @@ public extension ShapeStyle where Self == DynamicGradient {
     static func dynamicGradient(stops: [DynamicGradient.Stop], type: DynamicGradient.GradientType = .linear(startPoint: .top, endPoint: .bottom)) -> DynamicGradient {
         .init(stops: stops, type: type)
     }
+    static func dynamicGradient(_ gradient: DynamicGradient) -> DynamicGradient {
+        gradient
+    }
 }
 
 struct DynamicGradient_Preview: PreviewProvider {
