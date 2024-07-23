@@ -11,7 +11,7 @@ import SwiftUI
 public protocol FoundationAdjustableVariable: FoundationVariableWithValue, Hashable {
     var adjust: @Sendable (Value) -> Result { get }
     
-    init(_ value: Value)
+    init(value: Value)
     init(adjust: @Sendable @escaping (Value) -> Result)
     
     func callAsFunction(_ token: Self) -> Result
@@ -51,6 +51,10 @@ public extension DefaultFoundationAdjustableVariableWithMultiplier {
         self.init(.init(base: value, multiplier: 1))
     }
     
+    static func value(_ base: CGFloat) -> Self {
+        .init(value: base)
+    }
+    
     static var xxSmall: Self { .xSmall.down(.full) }
     static var xSmall: Self { .small.down(.full) }
     static var small: Self { .regular.down(.full) }
@@ -60,7 +64,7 @@ public extension DefaultFoundationAdjustableVariableWithMultiplier {
     static var xxLarge: Self { .xLarge.up(.full) }
 }
 
-extension FoundationUI.DefaultTheme.Variable {
+extension FoundationUI.Theme {
     public enum Step: CGFloat {
         case full = 1
         case half = 0.5
@@ -70,11 +74,11 @@ extension FoundationUI.DefaultTheme.Variable {
 }
 
 public extension FoundationAdjustableVariable where Value == CGFloatWithMultiplier, Result == CGFloat {
-    func up(_ step: FoundationUI.DefaultTheme.Variable.Step) -> Self {
+    func up(_ step: FoundationUI.Theme.Step) -> Self {
         up(step.rawValue)
     }
     
-    func down(_ step: FoundationUI.DefaultTheme.Variable.Step) -> Self {
+    func down(_ step: FoundationUI.Theme.Step) -> Self {
         down(step.rawValue)
     }
     

@@ -8,16 +8,13 @@
 import Foundation
 import SwiftUI
 
-extension FoundationUI.DefaultTheme {
-    public var radius: Variable.Radius { .init(base: baseValue, multiplier: 1.5) }
-}
-
-extension FoundationUI.DefaultTheme.Variable {
+extension FoundationUI.Theme {
+    @frozen
     public struct Radius: DefaultFoundationAdjustableVariableWithMultiplier {
         public var value: CGFloatWithMultiplier
         public var adjust: @Sendable (CGFloatWithMultiplier) -> CGFloat
         
-        public init(_ configuration: CGFloatWithMultiplier) {
+        public init(value configuration: CGFloatWithMultiplier) {
             value = configuration
             adjust = { _ in configuration.base }
         }
@@ -32,15 +29,15 @@ extension FoundationUI.DefaultTheme.Variable {
     }
 }
 
-extension FoundationUI.DefaultTheme.Variable.Radius {
+extension FoundationUI.Theme.Radius {
     static let zero = Self(value: 0)
 }
 
 struct RadiusPreview: PreviewProvider {
     static var previews: some View {
         VStack {
-            ForEach(FoundationUI.DefaultTheme.Variable.Radius.Token.all) { token in
-                RoundedRectangle(cornerRadius: Theme.radius(token.value))
+            ForEach(FoundationUI.Theme.Radius.Token.all) { token in
+                RoundedRectangle(cornerRadius: .foundation(.radius(token.value)))
                     .foundation(.size(.large))
                     .foundation(.foreground(.dynamic(.solid)))
                     .overlay {

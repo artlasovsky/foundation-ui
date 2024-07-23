@@ -19,7 +19,13 @@ public protocol FoundationVariable: Hashable {
 public protocol FoundationVariableWithValue: FoundationVariable {
     associatedtype Value: Hashable
     var value: Value { get }
-    init(_ value: Value)
+    init(value: Value)
+}
+
+public extension FoundationVariableWithValue {
+    public init(_ value: Value) {
+        self.init(value: value)
+    }
 }
 
 // MARK: - Default Token Scale

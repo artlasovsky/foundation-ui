@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 extension FoundationUI {
+    @frozen
     public enum ColorScheme: String, Sendable, Hashable {
         case light
         case dark

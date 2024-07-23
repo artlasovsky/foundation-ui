@@ -24,6 +24,7 @@ import SwiftUI
 /// `@DynamicColorTint private var tint`
 
 public extension FoundationUI {
+    @frozen
     struct DynamicColor {
         public typealias Components = FoundationUI.ColorComponents
         

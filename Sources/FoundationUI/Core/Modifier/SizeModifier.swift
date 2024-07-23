@@ -15,8 +15,8 @@ public extension FoundationUI.ModifierLibrary {
         private let alignment: Alignment
         
         init(width: FoundationUI.Theme.Size?, height: FoundationUI.Theme.Size?, alignment: Alignment) {
-            self._width = .init(token: width, value: Theme.size, defaultValue: nil)
-            self._height = .init(token: height, value: Theme.size, defaultValue: nil)
+            self._width = .init(token: width, value: FoundationUI.theme.size, defaultValue: nil)
+            self._height = .init(token: height, value: FoundationUI.theme.size, defaultValue: nil)
             self.alignment = alignment
         }
         
