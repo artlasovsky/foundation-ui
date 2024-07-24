@@ -25,6 +25,174 @@ extension Theme {
     }
 }
 
+// MARK: Initializers
+public extension Theme.Color {
+    init(_ universal: ColorComponents) {
+        color = .init(universal)
+    }
+    
+    init(light: ColorComponents, dark: ColorComponents, lightAccessible: ColorComponents? = nil, darkAccessible: ColorComponents? = nil) {
+        color = .init(
+            light: light,
+            dark: dark,
+            lightAccessible: lightAccessible,
+            darkAccessible: darkAccessible
+        )
+    }
+}
+
+// MARK: Adjust Components
+public extension Theme.Color {
+    private func updateValue(_ value: DynamicColor) -> Self {
+        var copy = self
+        copy.color = value
+        return copy
+    }
+    
+    func hue(_ value: CGFloat) -> Self {
+        updateValue(color.hue(value))
+    }
+    
+    func brightness(_ value: CGFloat) -> Self {
+        updateValue(color.brightness(value))
+    }
+    
+    func saturation(_ value: CGFloat) -> Self {
+        updateValue(color.saturation(value))
+    }
+    
+    func opacity(_ value: CGFloat) -> Self {
+        updateValue(color.opacity(value))
+    }
+    
+    func colorScheme(_ colorScheme: FoundationColorScheme) -> Self {
+        var copy = updateValue(color.colorScheme(colorScheme))
+        copy.colorScheme = colorScheme
+        return copy
+    }
+    
+    func blendMode(_ mode: BlendMode) -> Self {
+        updateValue(color.blendMode(mode))
+    }
+    
+    func blendMode(_ mode: DynamicColor.ExtendedBlendMode) -> Self {
+        updateValue(color.blendMode(mode))
+    }
+}
+
+// MARK: Conform to ShapeStyle
+extension Theme.Color {
+    public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
+        resolveColorValue(in: environment)
+    }
+    
+    public func resolveColor(in environment: EnvironmentValues) -> SwiftUI.Color {
+        resolveColorValue(in: environment).resolveColor(in: environment)
+    }
+    
+    private func resolveColorValue(in environment: EnvironmentValues) -> ColorValue {
+        if let variant {
+            var tint = environment.dynamicTint.color
+            var adjusted = variant.adjust(tint)
+            var components = color.resolveComponents(in: .init(environment))
+            if components.hue != 1 {
+                adjusted = adjusted.hue(components.hue)
+            }
+            if components.saturation != 1 {
+                adjusted = adjusted.saturation(components.saturation)
+            }
+            if components.brightness != 1 {
+                adjusted = adjusted.brightness(components.brightness)
+            }
+            if components.opacity != 1 {
+                adjusted = adjusted.opacity(components.opacity)
+            }
+            if let colorScheme {
+                adjusted = adjusted.colorScheme(colorScheme)
+            }
+            return adjusted.copyBlendMode(from: color)
+        } else {
+            return color
+        }
+    }
+}
+
+// MARK: Modifiers
+extension Theme.Color {
+    public static func modifier(_ universal: Variant.Modifier) -> Self {
+        .dynamic(.modifier(universal))
+    }
+    
+    public static func modifier(
+        light: Variant.Modifier,
+        dark: Variant.Modifier,
+        lightAccessible: Variant.Modifier? = nil,
+        darkAccessible: Variant.Modifier? = nil
+    ) -> Self {
+        .dynamic(
+            .modifier(
+                light: light,
+                dark: dark,
+                lightAccessible: lightAccessible,
+                darkAccessible: darkAccessible
+            )
+        )
+    }
+    
+    public static func modifierColor(_ universal: Theme.Color) -> Self {
+        .dynamic(.modifierColor(universal))
+    }
+    
+    public static func modifierColor(
+        light: Theme.Color,
+        dark: Theme.Color,
+        lightAccessible: Theme.Color? = nil,
+        darkAccessible: Theme.Color? = nil
+    ) -> Self {
+        .dynamic(
+            .modifierColor(
+                light: light,
+                dark: dark,
+                lightAccessible: lightAccessible,
+                darkAccessible: darkAccessible
+            )
+        )
+    }
+    
+    public static func modifierColor(_ universal: @escaping Variant.ComponentAdjust) -> Self {
+        .dynamic(.modifierAdjust(universal))
+    }
+    
+    public static func modifierAdjust(
+        light: @escaping Variant.ComponentAdjust,
+        dark: @escaping Variant.ComponentAdjust,
+        lightAccessible: Variant.ComponentAdjust? = nil,
+        darkAccessible: Variant.ComponentAdjust? = nil
+    ) -> Self {
+        .dynamic(
+            .modifierAdjust(
+                light: light,
+                dark: dark,
+                lightAccessible: lightAccessible,
+                darkAccessible: darkAccessible
+            )
+        )
+    }
+}
+
+// MARK: Equatable
+extension Theme.Color: Equatable {
+    public static func == (lhs: Theme.Color, rhs: Theme.Color) -> Bool {
+        if let lhsVariant = lhs.variant, let rhsVariant = rhs.variant {
+            lhsVariant.adjust(lhs.color) == rhsVariant.adjust(rhs.color)
+        } else {
+            lhs.color == rhs.color
+        }
+    }
+}
+
+// MARK: - Variant
+
 public extension Theme.Color {
     struct Variant: Sendable {
         public typealias ColorValue = DynamicColor
@@ -150,170 +318,6 @@ extension Theme.Color.Variant {
             lightAccessible: .adjust(lightAccessible ?? light),
             darkAccessible: .adjust(darkAccessible ?? dark)
         )
-    }
-}
-
-extension Theme.Color {
-    public static func modifier(_ universal: Variant.Modifier) -> Self {
-        .dynamic(.modifier(universal))
-    }
-    
-    public static func modifier(
-        light: Variant.Modifier,
-        dark: Variant.Modifier,
-        lightAccessible: Variant.Modifier? = nil,
-        darkAccessible: Variant.Modifier? = nil
-    ) -> Self {
-        .dynamic(
-            .modifier(
-                light: light,
-                dark: dark,
-                lightAccessible: lightAccessible,
-                darkAccessible: darkAccessible
-            )
-        )
-    }
-    
-    public static func modifierColor(_ universal: Theme.Color) -> Self {
-        .dynamic(.modifierColor(universal))
-    }
-    
-    public static func modifierColor(
-        light: Theme.Color,
-        dark: Theme.Color,
-        lightAccessible: Theme.Color? = nil,
-        darkAccessible: Theme.Color? = nil
-    ) -> Self {
-        .dynamic(
-            .modifierColor(
-                light: light,
-                dark: dark,
-                lightAccessible: lightAccessible,
-                darkAccessible: darkAccessible
-            )
-        )
-    }
-    
-    public static func modifierColor(_ universal: @escaping Variant.ComponentAdjust) -> Self {
-        .dynamic(.modifierAdjust(universal))
-    }
-    
-    public static func modifierAdjust(
-        light: @escaping Variant.ComponentAdjust,
-        dark: @escaping Variant.ComponentAdjust,
-        lightAccessible: Variant.ComponentAdjust? = nil,
-        darkAccessible: Variant.ComponentAdjust? = nil
-    ) -> Self {
-        .dynamic(
-            .modifierAdjust(
-                light: light,
-                dark: dark,
-                lightAccessible: lightAccessible,
-                darkAccessible: darkAccessible
-            )
-        )
-    }
-}
-
-extension Theme.Color: Equatable {
-    public static func == (lhs: Theme.Color, rhs: Theme.Color) -> Bool {
-        if let lhsVariant = lhs.variant, let rhsVariant = rhs.variant {
-            lhsVariant.adjust(lhs.color) == rhsVariant.adjust(rhs.color)
-        } else {
-            lhs.color == rhs.color
-        }
-    }
-}
-
-public extension Theme.Color {
-    private func updateValue(_ value: DynamicColor) -> Self {
-        var copy = self
-        copy.color = value
-        return copy
-    }
-    
-    func hue(_ value: CGFloat) -> Self {
-        updateValue(color.hue(value))
-    }
-    
-    func brightness(_ value: CGFloat) -> Self {
-        updateValue(color.brightness(value))
-    }
-    
-    func saturation(_ value: CGFloat) -> Self {
-        updateValue(color.saturation(value))
-    }
-    
-    func opacity(_ value: CGFloat) -> Self {
-        updateValue(color.opacity(value))
-    }
-    
-    func colorScheme(_ colorScheme: FoundationColorScheme) -> Self {
-        var copy = updateValue(color.colorScheme(colorScheme))
-        copy.colorScheme = colorScheme
-        return copy
-    }
-    
-    func blendMode(_ mode: BlendMode) -> Self {
-        updateValue(color.blendMode(mode))
-    }
-    
-    func blendMode(_ mode: DynamicColor.ExtendedBlendMode) -> Self {
-        updateValue(color.blendMode(mode))
-    }
-}
-
-public extension Theme.Color {
-    init(_ universal: ColorComponents) {
-        color = .init(universal)
-    }
-    
-    init(light: ColorComponents, dark: ColorComponents, lightAccessible: ColorComponents? = nil, darkAccessible: ColorComponents? = nil) {
-        color = .init(
-            light: light,
-            dark: dark,
-            lightAccessible: lightAccessible,
-            darkAccessible: darkAccessible
-        )
-    }
-}
-
-// MARK: - Conform to ShapeStyle
-extension Theme.Color {
-    public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-        resolveColorValue(in: environment)
-    }
-    
-    public func resolveColor(in environment: EnvironmentValues) -> SwiftUI.Color {
-        resolveColorValue(in: environment).resolveColor(in: environment)
-    }
-    
-    private func resolveColorValue(in environment: EnvironmentValues) -> ColorValue {
-        if let variant {
-            var tint = environment.dynamicTint.color
-            if color.light.hue != 1 {
-                tint = tint.hue(color.light.hue)
-            }
-            if color.light.saturation != 1 {
-                tint = tint.saturation(color.light.saturation)
-            }
-            if color.light.brightness != 1 {
-                tint = tint.brightness(color.light.brightness)
-            }
-            if color.light.opacity != 1 {
-                tint = tint.opacity(color.light.opacity, method: .multiply)
-            }
-            if color.light.opacity != 1 {
-                tint = tint.opacity(color.light.opacity)
-            }
-            var adjusted = variant.adjust(tint).copyBlendMode(from: color)
-            if let colorScheme {
-                adjusted = adjusted.colorScheme(colorScheme)
-            }
-            return adjusted
-        } else {
-            return color
-        }
     }
 }
 
