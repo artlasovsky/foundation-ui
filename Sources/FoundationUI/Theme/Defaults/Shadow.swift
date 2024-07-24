@@ -56,7 +56,7 @@ extension Theme {
 struct ShadowPreview: PreviewProvider {
     static var previews: some View {
         VStack(spacing: .foundation(.spacing(.large))) {
-            ForEach(Theme.Shadow.Token.all) { scale in
+            ForEach(Theme.Shadow.all) { scale in
                 Text(scale.name)
                     .foundation(.size(.regular))
                     .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))

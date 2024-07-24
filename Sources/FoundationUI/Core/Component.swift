@@ -28,10 +28,10 @@ public extension Shape {
     
     @available(macOS 13.0, iOS 16.0, *)
     static func roundedRectangle(
-        topLeadingRadius: Theme.Radius.Token,
-        bottomLeadingRadius: Theme.Radius.Token,
-        bottomTrailingRadius: Theme.Radius.Token,
-        topTrailingRadius: Theme.Radius.Token,
+        topLeadingRadius: Theme.Radius,
+        bottomLeadingRadius: Theme.Radius,
+        bottomTrailingRadius: Theme.Radius,
+        topTrailingRadius: Theme.Radius,
         style: RoundedCornerStyle = .continuous
     ) -> UnevenRoundedRectangle {
         let radius = Theme.default.radius
@@ -47,10 +47,10 @@ public extension Shape {
     static func roundedRectangle(radius: CGFloat, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
         return RoundedRectangle(cornerRadius: radius, style: style)
     }
-    static func roundedRectangle(_ token: Theme.Radius.Token, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
+    static func roundedRectangle(_ token: Theme.Radius, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
         self.roundedRectangle(radius: Theme.default.radius(token), style: style)
     }
-    static func roundedSquare(_ token: Theme.Radius.Token, size sizeToken: Theme.Size.Token) -> some View {
+    static func roundedSquare(_ token: Theme.Radius, size sizeToken: Theme.Size) -> some View {
         self.roundedRectangle(token)
             .foundation(.size(sizeToken))
     }

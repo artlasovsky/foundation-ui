@@ -94,7 +94,12 @@ extension ColorComponents {
         }
     }
     
-    func multiply(hue: ConditionalValue? = nil, saturation: ConditionalValue? = nil, brightness: ConditionalValue? = nil, opacity: ConditionalValue? = nil) -> Self {
+    func multiply(
+        hue: ConditionalValue? = nil,
+        saturation: ConditionalValue? = nil,
+        brightness: ConditionalValue? = nil,
+        opacity: ConditionalValue? = nil
+    ) -> Self {
         var changes = self.changes
         var hueAdjust = self.hue
         if let hue {

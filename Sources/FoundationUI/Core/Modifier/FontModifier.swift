@@ -23,7 +23,7 @@ public extension FoundationModifierLibrary {
 }
 
 public extension FoundationModifier {
-    static func font(_ token: Theme.Font) -> FoundationModifier<Library.FontModifier> {
+    static func font(_ token: Theme.Font) -> FoundationModifier<FoundationModifierLibrary.FontModifier> {
         .init(.init(token))
     }
 }

@@ -28,7 +28,7 @@ public extension FoundationModifierLibrary {
 }
 
 public extension FoundationModifier {
-    static func cornerRadius(_ cornerRadius: Theme.Radius?) -> FoundationModifier<Library.CornerRadiusModifier> {
+    static func cornerRadius(_ cornerRadius: Theme.Radius?) -> FoundationModifier<FoundationModifierLibrary.CornerRadiusModifier> {
         .init(.init(cornerRadius: cornerRadius))
     }
 }

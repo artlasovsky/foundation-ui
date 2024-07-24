@@ -45,17 +45,17 @@ public extension FoundationModifier {
     static func border<S: Shape>(
         _ color: Theme.Color,
         width: CGFloat = 1,
-        placement: Library.BorderPlacement = .inside,
+        placement: FoundationModifierLibrary.BorderPlacement = .inside,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> FoundationModifier<Library.BorderModifier<Theme.Color, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape, width: width, placement: placement))
     }
     static func borderStyle<Style: ShapeStyle, S: Shape>(
         _ style: Style,
         width: CGFloat = 1,
-        placement: Library.BorderPlacement = .inside,
+        placement: FoundationModifierLibrary.BorderPlacement = .inside,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> FoundationModifier<Library.BorderModifier<Style, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Style, S>> {
         .init(.init(style: style, shape: shape, width: width, placement: placement))
     }
 }

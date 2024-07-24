@@ -20,18 +20,15 @@ public extension FoundationModifierLibrary {
 }
 
 public extension FoundationModifier {
-    typealias Foreground<Style: ShapeStyle> = FoundationModifier<Library.ForegroundModifier<Style>>
-    typealias ThemeColor = Theme.Color
-    
-    static func foreground(_ color: ThemeColor) -> Foreground<ThemeColor> {
+    static func foreground(_ color: Theme.Color) -> FoundationModifier<FoundationModifierLibrary.ForegroundModifier<Theme.Color>> {
         .init(.init(style: color))
     }
     
-    static func foregroundStyle<S: ShapeStyle>(_ style: S) -> Foreground<S> {
+    static func foregroundStyle<S: ShapeStyle>(_ style: S) -> FoundationModifier<FoundationModifierLibrary.ForegroundModifier<S>> {
         .init(.init(style: style))
     }
     
-    static func foregroundColor(_ color: Color) -> Foreground<Color> {
+    static func foregroundColor(_ color: Color) -> FoundationModifier<FoundationModifierLibrary.ForegroundModifier<Color>> {
         .init(.init(style: color))
     }
 }

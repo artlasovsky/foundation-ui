@@ -30,7 +30,7 @@ public extension FoundationModifier {
         _ color: Theme.Color,
         in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
-    ) -> FoundationModifier<Library.BackgroundModifier<Theme.Color, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape))
     }
     
@@ -38,7 +38,7 @@ public extension FoundationModifier {
         _ style: Style,
         in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
-    ) -> FoundationModifier<Library.BackgroundModifier<Style, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Style, S>> {
         .init(.init(style: style, shape: shape))
     }
     
@@ -46,7 +46,7 @@ public extension FoundationModifier {
         _ color: Color,
         in shape: S = .dynamicRoundedRectangle(),
         modifier: VM = EmptyModifier()
-    ) -> FoundationModifier<Library.BackgroundModifier<Color, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Color, S>> {
         .init(.init(style: color, shape: shape))
     }
 }

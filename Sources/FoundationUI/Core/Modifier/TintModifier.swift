@@ -19,11 +19,11 @@ public extension FoundationModifierLibrary {
 }
 
 public extension FoundationModifier {
-    static func tint(_ color: Theme.Color) -> FoundationModifier<Library.TintModifier> {
+    static func tint(_ color: Theme.Color) -> FoundationModifier<FoundationModifierLibrary.TintModifier> {
         .init(.init(tint: color))
     }
     
-    static func tintColor(_ color: Color) -> FoundationModifier<Library.TintModifier> {
+    static func tintColor(_ color: Color) -> FoundationModifier<FoundationModifierLibrary.TintModifier> {
         .init(.init(tint: .init(.from(color: color))))
     }
 }

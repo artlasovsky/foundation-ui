@@ -36,7 +36,7 @@ extension Theme.Radius {
 struct RadiusPreview: PreviewProvider {
     static var previews: some View {
         VStack {
-            ForEach(Theme.Radius.Token.all) { token in
+            ForEach(Theme.Radius.all) { token in
                 RoundedRectangle(cornerRadius: .foundation(.radius(token.value)))
                     .foundation(.size(.large))
                     .foundation(.foreground(.dynamic(.solid)))

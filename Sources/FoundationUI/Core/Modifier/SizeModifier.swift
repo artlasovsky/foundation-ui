@@ -35,14 +35,14 @@ public extension FoundationModifier {
         width: Theme.Size? = nil,
         height: Theme.Size? = nil,
         alignment: Alignment = .center
-    ) -> FoundationModifier<Library.SizeModifier> {
+    ) -> FoundationModifier<FoundationModifierLibrary.SizeModifier> {
         .init(.init(width: width, height: height, alignment: alignment))
     }
     
     static func size(
         _ square: Theme.Size,
         alignment: Alignment = .center
-    ) -> FoundationModifier<Library.SizeModifier> {
+    ) -> FoundationModifier<FoundationModifierLibrary.SizeModifier> {
         .init(.init(width: square, height: square, alignment: alignment))
     }
 }

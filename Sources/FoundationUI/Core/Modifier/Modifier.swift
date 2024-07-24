@@ -9,9 +9,7 @@ import Foundation
 import SwiftUI
 
 @frozen
-public struct FoundationModifier<M: ViewModifier> {
-    public typealias Library = FoundationModifierLibrary
-    
+public struct FoundationModifier<M: ViewModifier> {    
     let value: M
     
     init(_ value: M) {

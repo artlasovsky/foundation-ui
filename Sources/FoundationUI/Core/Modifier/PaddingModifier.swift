@@ -44,8 +44,8 @@ public extension FoundationModifier {
     static func padding(
         _ token: Theme.Padding = .regular,
         _ edges: Edge.Set = .all,
-        adjustNestedCornerRadius: Library.PaddingModifier.AdjustNestedCornerRadius? = .none
-    ) -> FoundationModifier<Library.PaddingModifier> {
+        adjustNestedCornerRadius: FoundationModifierLibrary.PaddingModifier.AdjustNestedCornerRadius? = .none
+    ) -> FoundationModifier<FoundationModifierLibrary.PaddingModifier> {
         .init(
             .init(
                 padding: .foundation(.padding(token)),

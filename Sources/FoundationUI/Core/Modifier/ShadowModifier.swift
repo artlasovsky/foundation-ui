@@ -42,7 +42,7 @@ public extension FoundationModifier {
         x: CGFloat = 0,
         y: CGFloat = 0,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> FoundationModifier<Library.ShadowModifier<Theme.Color, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape, radius: radius, spread: spread, x: x, y: y))
     }
     
@@ -53,14 +53,14 @@ public extension FoundationModifier {
         x: CGFloat = 0,
         y: CGFloat = 0,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> FoundationModifier<Library.ShadowModifier<Style, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Style, S>> {
         .init(.init(style: style, shape: shape, radius: radius, spread: spread, x: x, y: y))
     }
     
     static func shadow<S: Shape>(
         _ token: Theme.Shadow,
         in shape: S = .dynamicRoundedRectangle()
-    ) -> FoundationModifier<Library.ShadowModifier<Theme.Color, S>> {
+    ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
         let configuration = token.value
         return .init(.init(
             style: configuration.color,
