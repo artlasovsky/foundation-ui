@@ -11,6 +11,7 @@ import SwiftUI
 public extension FoundationModifierLibrary {
     struct ShadowModifier<Style: ShapeStyle, S: InsettableShape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
+        @Environment(\.dynamicCornerRadiusStyle) private var dynamicCornerRadiusStyle
         let style: Style
         let shape: S
         let radius: CGFloat
@@ -19,13 +20,22 @@ public extension FoundationModifierLibrary {
         let y: CGFloat
         
         public func body(content: Content) -> some View {
-            content
-                .background {
-                    ShapeBuilder.resolveInsettableShape(shape, inset: inset, dynamicCornerRadius: dynamicCornerRadius)
-                        .foregroundStyle(style)
-                        .blur(radius: radius)
-                        .offset(x: x, y: y)
-                }
+            content.background {
+                shapeView
+                    .foregroundStyle(style)
+                    .blur(radius: radius)
+                    .offset(x: x, y: y)
+            }
+        }
+        
+        private var shapeView: some View {
+            ShapeBuilder.resolveInsettableShape(
+                shape,
+                inset: inset,
+                strokeWidth: nil,
+                dynamicCornerRadius: dynamicCornerRadius,
+                dynamicCornerRadiusStyle: dynamicCornerRadiusStyle
+            )
         }
         
         private var inset: CGFloat {

@@ -11,10 +11,17 @@ import SwiftUI
 public extension FoundationModifierLibrary {
     struct ClipModifier<S: Shape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
+        @Environment(\.dynamicCornerRadiusStyle) private var dynamicCornerRadiusStyle
         let shape: S
         public func body(content: Content) -> some View {
             content
-                .clipShape(ShapeBuilder.resolveShape(shape, dynamicCornerRadius: dynamicCornerRadius))
+                .clipShape(
+                    ShapeBuilder.resolveShape(
+                        shape,
+                        dynamicCornerRadius: dynamicCornerRadius,
+                        dynamicCornerRadiusStyle: dynamicCornerRadiusStyle
+                    )
+                )
         }
     }
 }

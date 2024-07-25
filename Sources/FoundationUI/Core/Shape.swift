@@ -19,10 +19,11 @@ public struct DynamicRoundedRectangle: InsettableShape {
     public var padding: CGFloat = 0
     public var style: RoundedCornerStyle = .continuous
 
-    public func setCornerRadius(_ cornerRadius: CGFloat?) -> some InsettableShape {
+    public func setCornerRadius(_ cornerRadius: CGFloat?, style: RoundedCornerStyle = .continuous) -> some InsettableShape {
         guard let cornerRadius else { return self }
         var copy = self
         copy.cornerRadius = cornerRadius
+        copy.style = style
         return copy
     }
 

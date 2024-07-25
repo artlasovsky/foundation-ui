@@ -11,25 +11,28 @@ import SwiftUI
 public extension FoundationModifierLibrary {
     struct CornerRadiusModifier: ViewModifier {
         @OptionalTokenValue<Theme.Radius> var cornerRadius: CGFloat?
+        var style: RoundedCornerStyle
         
-        init(cornerRadius: Theme.Radius? = nil) {
+        init(cornerRadius: Theme.Radius? = nil, style: RoundedCornerStyle) {
             self._cornerRadius = .init(
                 token: cornerRadius,
                 value: Theme.default.radius,
                 defaultValue: nil
             )
+            self.style = style
         }
         
         public func body(content: Content) -> some View {
             content
                 .environment(\.dynamicCornerRadius, cornerRadius)
+                .environment(\.dynamicCornerRadiusStyle, style)
         }
     }
 }
 
 public extension FoundationModifier {
-    static func cornerRadius(_ cornerRadius: Theme.Radius?) -> FoundationModifier<FoundationModifierLibrary.CornerRadiusModifier> {
-        .init(.init(cornerRadius: cornerRadius))
+    static func cornerRadius(_ cornerRadius: Theme.Radius?, style: RoundedCornerStyle = .continuous) -> FoundationModifier<FoundationModifierLibrary.CornerRadiusModifier> {
+        .init(.init(cornerRadius: cornerRadius, style: style))
     }
 }
 
@@ -37,11 +40,18 @@ public extension FoundationModifier {
 private struct FoundationUICornerRadiusKey: EnvironmentKey {
     static let defaultValue: CGFloat? = nil
 }
+private struct FoundationUICornerRadiusStyleKey: EnvironmentKey {
+    static let defaultValue: RoundedCornerStyle = .continuous
+}
 
 internal extension EnvironmentValues {
     var dynamicCornerRadius: CGFloat? {
         get { self[FoundationUICornerRadiusKey.self] }
         set { self[FoundationUICornerRadiusKey.self] = newValue }
+    }
+    var dynamicCornerRadiusStyle: RoundedCornerStyle {
+        get { self[FoundationUICornerRadiusStyleKey.self] }
+        set { self[FoundationUICornerRadiusStyleKey.self] = newValue }
     }
 }
 

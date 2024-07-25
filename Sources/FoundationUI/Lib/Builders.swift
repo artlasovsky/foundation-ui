@@ -47,24 +47,48 @@ enum EitherShape<First: Shape, Second: Shape>: Shape {
 
 extension ShapeBuilder {
     @ShapeBuilder
-    static func resolveShape(_ shape: some Shape, dynamicCornerRadius: CGFloat?) -> some Shape {
+    static func resolveShape(_ shape: some Shape, dynamicCornerRadius: CGFloat?, dynamicCornerRadiusStyle: RoundedCornerStyle) -> some Shape {
         if let shape = shape as? DynamicRoundedRectangle {
-            shape.setCornerRadius(dynamicCornerRadius)
+            shape.setCornerRadius(dynamicCornerRadius, style: dynamicCornerRadiusStyle)
         } else {
             shape
         }
     }
     
-    @ShapeBuilder
-    static func resolveInsettableShape(_ shape: some InsettableShape, inset: CGFloat, dynamicCornerRadius: CGFloat?) -> some Shape {
+    @ViewBuilder
+    static func resolveInsettableShape(
+        _ shape: some InsettableShape,
+        inset: CGFloat,
+        strokeWidth: CGFloat?,
+        dynamicCornerRadius: CGFloat?,
+        dynamicCornerRadiusStyle: RoundedCornerStyle
+    ) -> some View {
         if let shape = shape as? DynamicRoundedRectangle {
-            shape.inset(by: inset).setCornerRadius(dynamicCornerRadius)
-        } else {
             shape
+                .setCornerRadius(dynamicCornerRadius, style: dynamicCornerRadiusStyle)
+                .adjusted(inset: inset, strokeWidth: strokeWidth)
+        } else {
+            shape.adjusted(inset: inset, strokeWidth: strokeWidth)
         }
     }
 }
 
+extension InsettableShape {
+    @ViewBuilder
+    func adjusted(inset: CGFloat, strokeWidth: CGFloat?) -> some View {
+        if let strokeWidth {
+            if strokeWidth - inset == strokeWidth / 2 {
+                self.inset(by: inset)
+                    .strokeBorder(style: .init(lineWidth: strokeWidth), antialiased: true)
+            } else {
+                self.inset(by: inset)
+                    .stroke(lineWidth: strokeWidth)
+            }
+        } else {
+            self.inset(by: inset)
+        }
+    }
+}
 
 
 // MARK: - ShapeStyleBuilder
