@@ -100,75 +100,91 @@ extension DynamicColor {
 
 public extension DynamicColor {
     func hue(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
-            light: light.hue(value, method: method),
-            dark: dark.hue(value, method: method),
-            lightAccessible: lightAccessible.hue(value, method: method),
-            darkAccessible: darkAccessible.hue(value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.hue(value, method: method)
+        copy.dark = dark.hue(value, method: method)
+        copy.lightAccessible = lightAccessible.hue(value, method: method)
+        copy.darkAccessible = darkAccessible.hue(value, method: method)
+        
+        return copy
     }
     
     func hue(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
-            light: light.hue(dynamic: value, method: method),
-            dark: dark.hue(dynamic: value, method: method),
-            lightAccessible: lightAccessible.hue(dynamic: value, method: method),
-            darkAccessible: darkAccessible.hue(dynamic: value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.hue(dynamic: value, method: method)
+        copy.dark = dark.hue(dynamic: value, method: method)
+        copy.lightAccessible = lightAccessible.hue(dynamic: value, method: method)
+        copy.darkAccessible = darkAccessible.hue(dynamic: value, method: method)
+        
+        return copy
     }
     
     func saturation(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
-            light: light.saturation(value, method: method),
-            dark: dark.saturation(value, method: method),
-            lightAccessible: lightAccessible.saturation(value, method: method),
-            darkAccessible: darkAccessible.saturation(value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.saturation(value, method: method)
+        copy.dark = dark.saturation(value, method: method)
+        copy.lightAccessible = lightAccessible.saturation(value, method: method)
+        copy.darkAccessible = darkAccessible.saturation(value, method: method)
+        
+        return copy
     }
     
     func saturation(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
-            light: light.saturation(dynamic: value, method: method),
-            dark: dark.saturation(dynamic: value, method: method),
-            lightAccessible: lightAccessible.saturation(dynamic: value, method: method),
-            darkAccessible: darkAccessible.saturation(dynamic: value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.saturation(dynamic: value, method: method)
+        copy.dark = dark.saturation(dynamic: value, method: method)
+        copy.lightAccessible = lightAccessible.saturation(dynamic: value, method: method)
+        copy.darkAccessible = darkAccessible.saturation(dynamic: value, method: method)
+        
+        return copy
     }
     
     func brightness(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
-            light: light.brightness(value, method: method),
-            dark: dark.brightness(value, method: method),
-            lightAccessible: lightAccessible.brightness(value, method: method),
-            darkAccessible: darkAccessible.brightness(value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.brightness(value, method: method)
+        copy.dark = dark.brightness(value, method: method)
+        copy.lightAccessible = lightAccessible.brightness(value, method: method)
+        copy.darkAccessible = darkAccessible.brightness(value, method: method)
+        
+        return copy
     }
     
     func brightness(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
-            light: light.brightness(dynamic: value, method: method),
-            dark: dark.brightness(dynamic: value, method: method),
-            lightAccessible: lightAccessible.brightness(dynamic: value, method: method),
-            darkAccessible: darkAccessible.brightness(dynamic: value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.brightness(dynamic: value, method: method)
+        copy.dark = dark.brightness(dynamic: value, method: method)
+        copy.lightAccessible = lightAccessible.brightness(dynamic: value, method: method)
+        copy.darkAccessible = darkAccessible.brightness(dynamic: value, method: method)
+        
+        return copy
     }
     
     func opacity(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {
-        return .init(
-            light: light.opacity(value, method: method),
-            dark: dark.opacity(value, method: method),
-            lightAccessible: lightAccessible.opacity(value, method: method),
-            darkAccessible: darkAccessible.opacity(value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.opacity(value, method: method)
+        copy.dark = dark.opacity(value, method: method)
+        copy.lightAccessible = lightAccessible.opacity(value, method: method)
+        copy.darkAccessible = darkAccessible.opacity(value, method: method)
+        
+        return copy
     }
     
     func opacity(dynamic value: @escaping Components.ConditionalValue, method: Components.AdjustMethod = .multiply) -> Self {
-        .init(
-            light: light.opacity(dynamic: value, method: method),
-            dark: dark.opacity(dynamic: value, method: method),
-            lightAccessible: lightAccessible.opacity(dynamic: value, method: method),
-            darkAccessible: darkAccessible.opacity(dynamic: value, method: method)
-        )
+        var copy = self
+        
+        copy.light = light.opacity(dynamic: value, method: method)
+        copy.dark = dark.opacity(dynamic: value, method: method)
+        copy.lightAccessible = lightAccessible.opacity(dynamic: value, method: method)
+        copy.darkAccessible = darkAccessible.opacity(dynamic: value, method: method)
+        
+        return copy
     }
 }
 
