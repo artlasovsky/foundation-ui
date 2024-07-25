@@ -92,9 +92,9 @@ extension Theme.Color {
     
     private func resolveColorValue(in environment: EnvironmentValues) -> ColorValue {
         if let variant {
-            var tint = environment.dynamicTint.color
+            let tint = environment.dynamicTint.color
             var adjusted = variant.adjust(tint)
-            var components = color.resolveComponents(in: .init(environment))
+            let components = color.resolveComponents(in: .init(environment))
             if components.hue != 1 {
                 adjusted = adjusted.hue(components.hue)
             }
@@ -119,18 +119,18 @@ extension Theme.Color {
 
 // MARK: Modifiers
 extension Theme.Color {
-    public static func modifier(_ universal: Variant.Modifier) -> Self {
-        .dynamic(.modifier(universal))
+    public static func modified(_ universal: Variant.Modifier) -> Self {
+        .dynamic(.modified(universal))
     }
     
-    public static func modifier(
+    public static func modified(
         light: Variant.Modifier,
         dark: Variant.Modifier,
         lightAccessible: Variant.Modifier? = nil,
         darkAccessible: Variant.Modifier? = nil
     ) -> Self {
         .dynamic(
-            .modifier(
+            .modified(
                 light: light,
                 dark: dark,
                 lightAccessible: lightAccessible,
@@ -139,18 +139,18 @@ extension Theme.Color {
         )
     }
     
-    public static func modifierColor(_ universal: Theme.Color) -> Self {
-        .dynamic(.modifierColor(universal))
+    public static func modifiedColor(_ universal: Theme.Color) -> Self {
+        .dynamic(.modifiedColor(universal))
     }
     
-    public static func modifierColor(
+    public static func modifiedColor(
         light: Theme.Color,
         dark: Theme.Color,
         lightAccessible: Theme.Color? = nil,
         darkAccessible: Theme.Color? = nil
     ) -> Self {
         .dynamic(
-            .modifierColor(
+            .modifiedColor(
                 light: light,
                 dark: dark,
                 lightAccessible: lightAccessible,
@@ -159,18 +159,18 @@ extension Theme.Color {
         )
     }
     
-    public static func modifierColor(_ universal: @escaping Variant.ComponentAdjust) -> Self {
-        .dynamic(.modifierAdjust(universal))
+    public static func modifiedSource(_ universal: @escaping Variant.ComponentAdjust) -> Self {
+        .dynamic(.modifiedSource(universal))
     }
     
-    public static func modifierAdjust(
+    public static func modifiedSource(
         light: @escaping Variant.ComponentAdjust,
         dark: @escaping Variant.ComponentAdjust,
         lightAccessible: Variant.ComponentAdjust? = nil,
         darkAccessible: Variant.ComponentAdjust? = nil
     ) -> Self {
         .dynamic(
-            .modifierAdjust(
+            .modifiedSource(
                 light: light,
                 dark: dark,
                 lightAccessible: lightAccessible,
@@ -200,11 +200,11 @@ public extension Theme.Color {
         
         var adjust: @Sendable (ColorValue) -> ColorValue
         
-        public init(adjust: @escaping @Sendable (ColorValue) -> ColorValue) {
+        private init(adjust: @escaping @Sendable (ColorValue) -> ColorValue) {
             self.adjust = adjust
         }
         
-        public init(
+        private init(
             light: @escaping ComponentAdjust,
             dark: @escaping ComponentAdjust,
             lightAccessible: ComponentAdjust? = nil,
@@ -247,12 +247,12 @@ extension Theme.Color.Variant: Hashable {
 extension Theme.Color.Variant {
     public typealias Variant = Theme.Color.Variant
     public enum Modifier {
-        case adjust(ComponentAdjust)
+        case source(ComponentAdjust)
         case color(Theme.Color)
         
         func resolve(_ source: ColorComponents, in colorScheme: FoundationColorScheme) -> ColorComponents {
             switch self {
-            case .adjust(let adjust):
+            case .source(let adjust):
                 return adjust(source)
             case .color(let color):
                 var environment: EnvironmentValues = .init(colorScheme: colorScheme.colorScheme, colorSchemeContrast: colorScheme.colorSchemeContrast)
@@ -263,7 +263,7 @@ extension Theme.Color.Variant {
         }
     }
     
-    public static func modifier(
+    public static func modified(
         light: Modifier,
         dark: Modifier,
         lightAccessible: Modifier? = nil,
@@ -277,24 +277,24 @@ extension Theme.Color.Variant {
         )
     }
     
-    public static func modifier(_ modifier: Modifier) -> Variant {
-        .modifier(
+    public static func modified(_ modifier: Modifier) -> Variant {
+        .modified(
             light: modifier,
             dark: modifier
         )
     }
     
-    public static func modifierColor(_ color: Theme.Color) -> Variant {
-        .modifier(.color(color))
+    public static func modifiedColor(_ color: Theme.Color) -> Variant {
+        .modified(.color(color))
     }
     
-    public static func modifierColor(
+    public static func modifiedColor(
         light: Theme.Color,
         dark: Theme.Color,
         lightAccessible: Theme.Color? = nil,
         darkAccessible: Theme.Color? = nil
     ) -> Variant {
-        .modifier(
+        .modified(
             light: .color(light),
             dark: .color(dark),
             lightAccessible: .color(lightAccessible ?? light),
@@ -302,21 +302,21 @@ extension Theme.Color.Variant {
         )
     }
     
-    public static func modifierAdjust(_ adjust: @escaping Variant.ComponentAdjust) -> Variant {
-        .modifier(.adjust(adjust))
+    public static func modifiedSource(_ adjust: @escaping Variant.ComponentAdjust) -> Variant {
+        .modified(.source(adjust))
     }
     
-    public static func modifierAdjust(
+    public static func modifiedSource(
         light: @escaping Variant.ComponentAdjust,
         dark: @escaping Variant.ComponentAdjust,
         lightAccessible: Variant.ComponentAdjust? = nil,
         darkAccessible: Variant.ComponentAdjust? = nil
     ) -> Variant {
-        .modifier(
-            light: .adjust(light),
-            dark: .adjust(dark),
-            lightAccessible: .adjust(lightAccessible ?? light),
-            darkAccessible: .adjust(darkAccessible ?? dark)
+        .modified(
+            light: .source(light),
+            dark: .source(dark),
+            lightAccessible: .source(lightAccessible ?? light),
+            darkAccessible: .source(darkAccessible ?? dark)
         )
     }
 }
@@ -399,7 +399,7 @@ extension Theme.Color.Variant: FoundationColorDefaultVariant {}
 
 public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant {
     static var backgroundSubtle: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.98 : 0.97 }, method: .override)
                 .saturation(0.02)
@@ -411,7 +411,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var background: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.975 : 0.95 }, method: .override)
                 .saturation(0.06)
@@ -422,7 +422,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var backgroundProminent: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.96 : 0.92 }, method: .override)
                 .saturation(0.1)
@@ -433,7 +433,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var fillSubtle: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.9 }, method: .override)
                 .saturation(0.18)
@@ -444,7 +444,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var fill: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.94 : 0.87 }, method: .override)
                 .saturation(0.35)
@@ -456,7 +456,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var fillProminent: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.92 : 0.83 }, method: .override)
                 .saturation(0.5)
@@ -468,7 +468,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var borderSubtle: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.82 : 0.77 }, method: .override)
                 .saturation(0.58)
@@ -480,7 +480,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var border: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.78 : 0.7 }, method: .override)
                 .saturation(0.8)
@@ -492,7 +492,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
         )
     }
     static var borderProminent: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.7 : 0.6 }, method: .override)
                 .saturation(0.9)
@@ -503,10 +503,10 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
             }
         )
     }
-    static var solid: Self { .init { $0 } }
+    static var solid: Self { .modifiedSource { $0 } }
     
     static var textSubtle: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.6 : 0.35 }, method: .override)
                 .saturation(1)
@@ -519,7 +519,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
     }
     
     static var text: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.38 : 0.24 }, method: .override)
                 .saturation(0.95)
@@ -532,7 +532,7 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
     }
     
     static var textProminent: Self {
-        .init(
+        .modifiedSource(
             light: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.24 : 0.12 }, method: .override)
                 .saturation(0.8)
