@@ -55,7 +55,9 @@ extension ShapeStyle where Self == Theme.Color {
 }
 
 extension Color {
-    public static let foundation = Theme.default.color
+    public static func foundation(_ color: Theme.Color, in colorScheme: FoundationColorScheme) -> Self {
+        Theme.default.color(color).resolveColor(in: .init(colorScheme: colorScheme))
+    }
 }
 
 extension Font {
