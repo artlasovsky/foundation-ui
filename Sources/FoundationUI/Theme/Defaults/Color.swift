@@ -200,7 +200,7 @@ public extension Theme.Color {
         
         var adjust: @Sendable (ColorValue) -> ColorValue
         
-        private init(adjust: @escaping @Sendable (ColorValue) -> ColorValue) {
+        public init(adjust: @escaping @Sendable (ColorValue) -> ColorValue) {
             self.adjust = adjust
         }
         
@@ -388,7 +388,9 @@ public protocol FoundationColorDefaultVariant {
     static var border: Self { get }
     static var borderProminent: Self { get }
     
+    static var solidSubtle: Self { get }
     static var solid: Self { get }
+    static var solidProminent: Self { get }
     
     static var textSubtle: Self { get }
     static var text: Self { get }
@@ -401,119 +403,111 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
     static var backgroundSubtle: Self {
         .modifiedSource(
             light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.98 : 0.97 }, method: .override)
-                .saturation(0.02)
+                .brightness(dynamic: { $0.isSaturated ? 0.99 : 0.99 }, method: .override)
+                .saturation(0.01)
             },
             dark: { $0
                 .brightness(dynamic: { $0.isSaturated ? 0.07 : 0.05 }, method: .override)
-                .saturation(0.5)
+                .saturation(0.4)
             }
         )
     }
     static var background: Self {
         .modifiedSource(
             light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.975 : 0.95 }, method: .override)
-                .saturation(0.06)
+                .brightness(dynamic: { $0.isSaturated ? 0.99 : 0.98 }, method: .override)
+                .saturation(0.02)
             },
             dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.18 : 0.12 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.11 : 0.08 }, method: .override)
+                .saturation(0.4)
             }
         )
     }
     static var backgroundProminent: Self {
         .modifiedSource(
             light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.96 : 0.92 }, method: .override)
-                .saturation(0.1)
+                .brightness(dynamic: { $0.isSaturated ? 0.99 : 0.97 }, method: .override)
+                .saturation(0.04)
             },
             dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.32 : 0.18 }, method: .override)
-            }
-        )
-    }
-    static var fillSubtle: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.9 }, method: .override)
-                .saturation(0.18)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.44 : 0.22 }, method: .override)
-            }
-        )
-    }
-    static var fill: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.94 : 0.87 }, method: .override)
-                .saturation(0.35)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.49 : 0.27 }, method: .override)
-                .saturation(1)
-            }
-        )
-    }
-    static var fillProminent: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.92 : 0.83 }, method: .override)
-                .saturation(0.5)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.54 : 0.32 }, method: .override)
-                .saturation(1)
+                .brightness(dynamic: { $0.isSaturated ? 0.14 : 0.11 }, method: .override)
+                .saturation(0.4)
             }
         )
     }
     static var borderSubtle: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.82 : 0.77 }, method: .override)
-                .saturation(0.58)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.62 : 0.4 }, method: .override)
-                .saturation(1)
-            }
+        .modifiedColor(
+            light: .dynamic(.border).brightness(1.07).saturation(0.5),
+            dark: .dynamic(.border).brightness(0.82).saturation(0.9)
         )
     }
     static var border: Self {
         .modifiedSource(
             light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.78 : 0.7 }, method: .override)
-                .saturation(0.8)
+                .brightness(dynamic: { $0.isSaturated ? 0.9 : 0.86 }, method: .override)
+                .saturation(0.1)
             },
             dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.7 : 0.45 }, method: .override)
-                .saturation(0.99)
+                .brightness(dynamic: { $0.isSaturated ? 0.22 : 0.2 }, method: .override)
+                .saturation(0.2)
             }
         )
     }
     static var borderProminent: Self {
+        .modifiedColor(
+            light: .dynamic(.border).brightness(0.9).saturation(1.2),
+            dark: .dynamic(.border).brightness(1.5)
+        )
+    }
+    static var fillSubtle: Self {
+        .modifiedColor(
+            light: .dynamic(.fill).brightness(1.05).saturation(0.7),
+            dark: .dynamic(.fill).brightness(0.75).saturation(0.8)
+        )
+    }
+    static var fill: Self {
         .modifiedSource(
             light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.7 : 0.6 }, method: .override)
-                .saturation(0.9)
+                .brightness(dynamic: { $0.isSaturated ? 0.94 : 0.8 }, method: .override)
+                .saturation(0.35)
             },
             dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.76 : 0.49 }, method: .override)
-                .saturation(1)
+                .brightness(dynamic: { $0.isSaturated ? 0.49 : 0.38 }, method: .override)
+                .saturation(0.6)
             }
         )
     }
-    static var solid: Self { .modifiedSource { $0 } }
+    static var fillProminent: Self {
+        .modifiedColor(
+            light: .dynamic(.fill).brightness(0.92).saturation(1.25),
+            dark: .dynamic(.fill).brightness(1.3).saturation(1.2)
+        )
+    }
+    
+    static var solidSubtle: Self {
+        .modifiedColor(
+            light: .dynamic(.solid).brightness(1.14).saturation(0.9),
+            dark: .dynamic(.solid).brightness(0.8).saturation(1.05)
+        )
+    }
+    static var solid: Self { .init { $0 } }
+    static var solidProminent: Self {
+        .modifiedColor(
+            light: .dynamic(.solid).brightness(0.86).saturation(0.98),
+            dark: .dynamic(.solid).brightness(1.2).saturation(0.94)
+        )
+    }
     
     static var textSubtle: Self {
         .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.6 : 0.35 }, method: .override)
-                .saturation(1)
+            light: {
+                $0.brightness(dynamic: { $0.isSaturated ? 0.65 : 0.6 }, method: .override)
+                .saturation(0.3)
             },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.95 : 0.85 }, method: .override)
-                .saturation(0.25)
+            dark: {
+                $0.brightness(dynamic: { $0.isSaturated ? 0.6 : 0.6 }, method: .override)
+                .saturation(0.35)
             }
         )
     }
@@ -521,31 +515,210 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
     static var text: Self {
         .modifiedSource(
             light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.38 : 0.24 }, method: .override)
+                .brightness(dynamic: { $0.isSaturated ? 0.5 : 0.24 }, method: .override)
                 .saturation(0.95)
             },
             dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.96 : 0.95 }, method: .override)
-                .saturation(0.15)
+                .brightness(dynamic: { $0.isSaturated ? 0.97 : 0.95 }, method: .override)
+                .saturation(0.2)
             }
         )
     }
     
     static var textProminent: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.24 : 0.12 }, method: .override)
-                .saturation(0.8)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.97 : 0.99 }, method: .override)
-                .saturation(0.05)
-            }
+        // TODO: with ModifierAdjust
+        .modifiedColor(
+            light: .dynamic(.text).brightness(0.5),
+            dark: .dynamic(.text).brightness(1.2)
         )
     }
 }
 
 // MARK: - Previews
+
+struct Sample_Preview: PreviewProvider {
+    struct PushButton: View {
+        enum Variant {
+            case primary
+            case secondary
+            case tinted
+        }
+        
+        var variant: Variant = .secondary
+        
+        var body: some View {
+            Text("Label")
+                .foundation(.padding(.regular, .horizontal))
+                .foundation(.padding(.small, .vertical))
+                .foundation(.foreground(foreground))
+                .foundation(.background(background))
+                .foundation(.shadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
+                .foundation(.border(border, width: 0.75, placement: .outside))
+                .foundation(.cornerRadius(.small))
+        }
+        
+        private var border: Theme.Color {
+            switch variant {
+            case .primary:
+                .clear
+            case .secondary, .tinted:
+                .primary.variant(.border)
+            }
+        }
+        
+        private var foreground: Theme.Color {
+            switch variant {
+            case .primary: .primary.variant(.text).colorScheme(.dark)
+            case .secondary: .primary.variant(.text)
+            case .tinted: .modifiedColor(
+                light: .dynamic(.solid),
+                dark: .dynamic(.solid).saturation(0.8)
+            )
+            }
+        }
+        
+        private var background: Theme.Color {
+            switch variant {
+            case .primary: .dynamic(.solid)
+            case .secondary, .tinted: .modifiedColor(
+                light: .primary.variant(.background),
+                dark: .primary.variant(.fillSubtle)
+            )
+            }
+        }
+    }
+    
+    struct PopUpButton: View {
+        var body: some View {
+            VStack(alignment: .leading, spacing: .foundation(.spacing(.small))) {
+                PushButton()
+                VStack(alignment: .leading, spacing: 0) {
+                    ListItem(label: "Item One")
+                    ListItem(label: "Item Two")
+                    ListItem(label: "Item Three", isSelected: true)
+                }
+                .foundation(.size(width: .regular.up(.half), alignment: .leading))
+                .foundation(.padding(.small.up(.half), adjustNestedCornerRadius: .soft))
+                .foundation(.background(.primary.variant(.background)))
+                .foundation(.border(.primary.variant(.border), width: 0.75, placement: .outside))
+                .foundation(.shadow(.xLarge))
+                .foundation(.cornerRadius(.regular.up(.half)))
+            }
+        }
+        
+        struct ListItem: View {
+            let label: String
+            var isSelected: Bool = false
+            var body: some View {
+                Text(label)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foundation(.padding(.small, .vertical))
+                    .foundation(.padding(.regular, .horizontal))
+                    .foundation(.background(background))
+                    .foundation(.foreground(foreground))
+            }
+            
+            private var background: Theme.Color {
+                if isSelected {
+                    return .dynamic(.solid)
+                } else {
+                    return .clear
+                }
+            }
+            
+            private var foreground: Theme.Color {
+                if isSelected {
+                    return .primary.variant(.text).colorScheme(.dark)
+                } else {
+                    return .primary.variant(.text)
+                }
+            }
+        }
+    }
+    
+    struct TextField: View {
+        var body: some View {
+            Text("Placeholder")
+                .foundation(.background(.dynamic(.fill), in: .rect))
+                .foundation(.size(width: .large, alignment: .leading))
+                .foundation(.padding(.regular, .horizontal))
+                .foundation(.padding(.small, .vertical))
+                .foundation(.background(.primary.variant(.background)))
+                .foundation(.border(.primary.variant(.borderProminent), width: 1))
+                .foundation(.shadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
+                .foundation(.border(.dynamic(.fillProminent), width: 3, placement: .outside, level: .below))
+                .foundation(.cornerRadius(.regular))
+                .overlay(alignment: .trailing) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foundation(.padding(.small, .trailing))
+                        .foundation(.foreground(.primary.variant(.fill)))
+                }
+        }
+    }
+    
+//    struct Card: View {
+//        var body: some View {
+//            VStack {
+//                Text("Title")
+//                    .foundation(.font(.xLarge))
+//                Text("Subtitle")
+//                    .foundation(.font(.large))
+//                Text("Heading")
+//                    .foundation(.foreground(.dynamic(.textSubtle)))
+//            }
+//        }
+//    }
+    
+    
+    struct Grouped: View {
+        var body: some View {
+            HStack(spacing: .foundation(.spacing(.large))) {
+                VStack {
+                    VStack {
+                        Text("Title").foundation(.foreground(.dynamic(.textProminent)))
+                        Text("Subtitle").foundation(.foreground(.dynamic(.text)))
+                        Text("Heading").foundation(.foreground(.dynamic(.textSubtle)))
+                    }
+                    .foundation(.tint(.primary))
+                    PushButton(variant: .primary)
+                    PushButton(variant: .secondary)
+                    PushButton(variant: .tinted)
+                    TextField()
+                    // Push Button
+                    // Pop-Up Button
+                    // Text Field
+                    // Segmented Control
+                }
+                VStack {
+                    Text("Title").foundation(.foreground(.dynamic(.textProminent)))
+                    Text("Subtitle").foundation(.foreground(.dynamic(.text)))
+                    Text("Heading").foundation(.foreground(.dynamic(.textSubtle)))
+                    Divider()
+                        .frame(width: 100)
+                    Rectangle()
+                        .frame(width: 100, height: 1)
+                        .foundation(.foreground(.primary.variant(.border)))
+                    Rectangle()
+                        .frame(width: 100, height: 1)
+                        .foundation(.foreground(.dynamic(.border)))
+                    PopUpButton()
+                }
+            }
+            .foundation(.tintColor(.accentColor))
+            .foundation(.padding())
+            .foundation(.backgroundStyle(.background))
+        }
+    }
+    
+    static var previews: some View {
+        HStack(spacing: 0) {
+            Grouped()._colorScheme(.light)
+            Grouped()._colorScheme(.dark)
+        }
+        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+    }
+}
+
 
 struct ColorScalePreview: PreviewProvider {
     struct ColorPatch: View {
@@ -558,49 +731,47 @@ struct ColorScalePreview: PreviewProvider {
     }
     struct Scale: View {
         @Environment(\.dynamicTint) private var tint
-        private let defaultScale: [Theme.Color.Variant] = [
-            .backgroundSubtle, .background, .backgroundProminent,
-            .fillSubtle, .fill, .fillProminent,
-            .borderSubtle, .border, .borderProminent,
-            .solid,
-            .textSubtle, .text, .textProminent
-        ]
         struct ScaleSwatch: View {
             @Environment(\.dynamicTint) private var tint
             let variant: Theme.Color.Variant
+            var mark: Bool = false
             
-            init(_ variant: Theme.Color.Variant) {
+            init(_ variant: Theme.Color.Variant, mark: Bool = false) {
                 self.variant = variant
+                self.mark = mark
             }
 
-            var body: some View {
-                ZStack {
-                    Rectangle()
-                        .foundation(.foreground(.dynamic(variant)))
-                        .foundation(.size(isSolid ? .small.up(.quarter) : .small))
-                    if isSolid {
-                        VStack {
-                            let tint = tint.variant(variant)
-                            let color = tint.color
-                            let h = String(format: "%.2f", color.light.saturation)
-                            let s = String(format: "%.2f", color.light.saturation)
-                            let b = String(format: "%.2f", color.light.brightness)
-                            let o = String(format: "%.2f", color.light.opacity)
-                            Text(h).fixedSize()
-                            Text(s).fixedSize()
-                            Text(b).fixedSize()
-                            Text(o).fixedSize()
-                        }
-                        .foundation(.font(.init(.system(size: 7))))
-                        .foundation(.foreground(.dynamic(.backgroundSubtle)))
-                    }
-                }
-            }
             
-            private var isSolid: Bool {
-                let color = Theme.default.color(.primary)
-                
-                return color.variant(.solid) == color.variant(variant)
+            var body: some View {
+                Rectangle()
+                    .foundation(.foreground(.dynamic(variant)))
+                    .foundation(.size(.small))
+                    .overlay(alignment: .topTrailing) {
+                        if mark {
+                            Circle()
+                                .foundation(.size(.xxSmall))
+                                .foundation(.padding(.small))
+                                .foundation(.foreground(tint.blendMode(.vibrant).opacity(0.2)))
+                        }
+                    }
+//                    .overlay {
+//                        if isSolid {
+//                            VStack {
+//                                let components = tint.variant(variant).color.resolveComponents(in: .init(env))
+//                                let h = String(format: "%.2f", components.hue)
+//                                let s = String(format: "%.2f", components.saturation)
+//                                let b = String(format: "%.2f", components.brightness)
+//                                let o = String(format: "%.2f", components.opacity)
+//                                Text(h).fixedSize()
+//                                Text(s).fixedSize()
+//                                Text(b).fixedSize()
+//                                Text(o).fixedSize()
+//                            }
+//                            .foundation(.font(.init(.system(size: 5))))
+//                            .foundation(.foreground(.dynamic(.text)))
+//                            .offset(x: 22)
+//                        }
+//                    }
             }
         }
         var body: some View {
@@ -610,17 +781,19 @@ struct ColorScalePreview: PreviewProvider {
                     .foundation(.size(width: .small))
                     .foundation(.foreground(.dynamic(.borderSubtle)))
                 ScaleSwatch(.backgroundSubtle)
-                ScaleSwatch(.background)
+                ScaleSwatch(.background, mark: true)
                 ScaleSwatch(.backgroundProminent)
-                ScaleSwatch(.fillSubtle)
-                ScaleSwatch(.fill)
-                ScaleSwatch(.fillProminent)
                 ScaleSwatch(.borderSubtle)
-                ScaleSwatch(.border)
+                ScaleSwatch(.border, mark: true)
                 ScaleSwatch(.borderProminent)
-                ScaleSwatch(.solid)
+                ScaleSwatch(.fillSubtle)
+                ScaleSwatch(.fill, mark: true)
+                ScaleSwatch(.fillProminent)
+                ScaleSwatch(.solidSubtle)
+                ScaleSwatch(.solid, mark: true)
+                ScaleSwatch(.solidProminent)
                 ScaleSwatch(.textSubtle)
-                ScaleSwatch(.text)
+                ScaleSwatch(.text, mark: true)
                 ScaleSwatch(.textProminent)
                 
             }
@@ -642,47 +815,33 @@ struct ColorScalePreview: PreviewProvider {
     struct ScaleSet: View {
         var body: some View {
             HStack(spacing: 0) {
-                Scale()._colorScheme(.light)
-//                Scale()._colorScheme(.lightAccessible)
-                Scale()._colorScheme(.dark)
-//                Scale()._colorScheme(.darkAccessible)
+                Scale().foundation(.tintColor(.accentColor))
+//                Scale().foundation(.tint(.red))
+//                Scale().foundation(.tintColor(.orange))
+//                Scale().foundation(.tintColor(.brown))
+//                Scale().foundation(.tintColor(.indigo))
+//                Scale().foundation(.tintColor(.purple))
+//                Scale().foundation(.tintColor(.pink))
+//                Scale().foundation(.tintColor(.yellow))
+//                Scale().foundation(.tintColor(.cyan))
+//                Scale().foundation(.tintColor(.mint))
+//                Scale().foundation(.tintColor(.teal))
+//                Scale().foundation(.tint(.init(.init(hue: 0.4, saturation: 0.5, brightness: 0.75))))
+                Scale().foundation(.tint(.primary))
             }
         }
     }
     
     static var previews: some View {
-        HStack(spacing: 0) {
-            ScaleSet()
-                .foundation(.tint(.red))
-            if #available(macOS 14.0, *) {
-                ScaleSet()
-                    .foundation(.tintColor(.accentColor))
-                ScaleSet()
-                    .foundation(.tintColor(.orange))
-                ScaleSet()
-                    .foundation(.tintColor(.brown))
-                ScaleSet()
-                    .foundation(.tintColor(.indigo))
-                ScaleSet()
-                    .foundation(.tintColor(.purple))
-                ScaleSet()
-                    .foundation(.tintColor(.pink))
-                ScaleSet()
-                    .foundation(.tintColor(.yellow))
-                ScaleSet()
-                    .foundation(.tintColor(.cyan))
-                ScaleSet()
-                    .foundation(.tintColor(.mint))
-                ScaleSet()
-                    .foundation(.tintColor(.teal))
-                ScaleSet()
-                    .foundation(.tint(.init(.init(hue: 0.4, saturation: 0.5, brightness: 0.75))))
-            }
-            ScaleSet()
-                .foundation(.tint(.primary))
-        }
-        .foundation(.clip(.rect(cornerRadius: 8)))
-        .scenePadding()
-        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+        ScaleSet()
+            .foundation(.clip(.rect(cornerRadius: 8)))
+            .scenePadding()
+            ._colorScheme(.light)
+            .previewDisplayName("Scale Light")
+        ScaleSet()
+            .foundation(.clip(.rect(cornerRadius: 8)))
+            ._colorScheme(.dark)
+            .scenePadding()
+            .previewDisplayName("Scale Dark")
     }
 }
