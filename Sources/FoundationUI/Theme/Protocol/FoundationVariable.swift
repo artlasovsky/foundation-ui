@@ -23,7 +23,7 @@ public protocol FoundationVariableWithValue: FoundationVariable {
 }
 
 public extension FoundationVariableWithValue {
-    public init(_ value: Value) {
+    init(_ value: Value) {
         self.init(value: value)
     }
 }

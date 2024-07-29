@@ -55,15 +55,20 @@ extension Theme {
 
 struct ShadowPreview: PreviewProvider {
     static var previews: some View {
-        VStack(spacing: .foundation(.spacing(.large))) {
-            ForEach(Theme.Shadow.all) { scale in
-                Text(scale.name)
-                    .foundation(.size(.regular))
-                    .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))
-                    .foundation(.shadow(scale.value, in: .dynamicRoundedRectangle()))
-                    .foundation(.cornerRadius(.regular))
-            }
-        }
+        Theme.default.shadow.swatch()
         .foundation(.padding(.large))
+    }
+}
+
+public extension Theme.Shadow {
+    func swatch() -> some View {
+        Swatch("Shadow", value: Theme.default.shadow) { title, value in
+            Text(title)
+                .foundation(.size(.small.up(.half)))
+                .foundation(.background(.white))
+                .foundation(.shadow(.init(value: value)))
+                .foundation(.cornerRadius(.regular))
+                .foundation(.font(.xxSmall))
+        }
     }
 }
