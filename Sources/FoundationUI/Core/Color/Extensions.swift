@@ -26,22 +26,3 @@ internal extension Float {
         NSString(format: "%.\(digits)f" as NSString, self).floatValue
     }
 }
-
-internal extension Color {
-    @available(macOS 14.0, iOS 17.0, *)
-    func rgbaComponents(in scheme: FoundationColorScheme) -> (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
-        var environment: EnvironmentValues
-        switch scheme {
-        case .light:
-            environment = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
-        case .dark:
-            environment = EnvironmentValues(colorScheme: .dark, colorSchemeContrast: .standard)
-        case .lightAccessible:
-            environment = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .increased)
-        case .darkAccessible:
-            environment = EnvironmentValues(colorScheme: .dark, colorSchemeContrast: .increased)
-        }
-        let resolved = self.resolve(in: environment)
-        return (CGFloat(resolved.red), CGFloat(resolved.green), CGFloat(resolved.blue), CGFloat(resolved.opacity))
-    }
-}

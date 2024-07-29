@@ -289,33 +289,74 @@ public extension ColorComponents {
     /// Extracting the components from SwiftUI.Color
     init(color: Color, colorScheme: FoundationColorScheme) {
         if #available(macOS 14.0, iOS 17.0, *) {
-            let components = color.rgbaComponents(in: colorScheme)
-            self.init(red: components.red, green: components.green, blue: components.blue, opacity: components.opacity)
-        } else {
-            var colorComponents = ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
-            if let appearance = colorScheme.appearance() {
-                #if os(macOS)
-                NSAppearance.performAsCurrentDrawingAppearance(appearance) ({
-                    guard let nsColor = NSColor(color).usingColorSpace(.deviceRGB) else { return }
-                    colorComponents = .init(hue: nsColor.hueComponent, saturation: nsColor.saturationComponent, brightness: nsColor.brightnessComponent, opacity: nsColor.alphaComponent)
-                })
-                #elseif os(iOS)
-                var hue: CGFloat = 0,
-                    saturation: CGFloat = 0,
-                    brightness: CGFloat = 0,
-                    alpha: CGFloat = 0
-                appearance.performAsCurrent {
-                    UIColor(color).getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-                }
-                colorComponents = .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
-                #endif
+            var environment: EnvironmentValues
+            switch colorScheme {
+            case .light:
+                environment = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
+            case .dark:
+                environment = EnvironmentValues(colorScheme: .dark, colorSchemeContrast: .standard)
+            case .lightAccessible:
+                environment = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .increased)
+            case .darkAccessible:
+                environment = EnvironmentValues(colorScheme: .dark, colorSchemeContrast: .increased)
             }
-            self = colorComponents
+            let resolved = color.resolve(in: environment)
+            self.init(
+                red: CGFloat(resolved.red),
+                green: CGFloat(resolved.green),
+                blue: CGFloat(resolved.blue),
+                opacity: CGFloat(resolved.opacity)
+            )
+        } else {
+            #if os(macOS)
+            self = .init(nsColor: NSColor(color), colorScheme: colorScheme)
+            #elseif os(iOS)
+            self = .init(uiColor: UIColor(color), colorScheme: colorScheme)
+            #endif
         }
     }
+    
+    #if os(macOS)
+    init(nsColor color: NSColor, colorScheme: FoundationColorScheme) {
+        var colorComponents = ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
+        var hue: CGFloat = 0,
+            saturation: CGFloat = 0,
+            brightness: CGFloat = 0,
+            alpha: CGFloat = 0
+        let appearance = colorScheme.appearance()
+        if let nsColor = color.usingColorSpace(.deviceRGB) {
+            // TODO: Log error if color wasn't unwrapped
+            colorComponents = .init(
+                hue: nsColor.hueComponent,
+                saturation: nsColor.saturationComponent,
+                brightness: nsColor.brightnessComponent,
+                opacity: nsColor.alphaComponent
+            )
+        }
+        self = colorComponents
+    }
+    #elseif os(iOS)
+    init(uiColor color: UIColor, colorScheme: FoundationColorScheme) {
+        var colorComponents = ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
+        var hue: CGFloat = 0,
+            saturation: CGFloat = 0,
+            brightness: CGFloat = 0,
+            alpha: CGFloat = 0
+        let appearance = colorScheme.appearance()
+        appearance.performAsCurrent {
+            color.getHue(
+                &hue,
+                saturation: &saturation,
+                brightness: &brightness,
+                alpha: &alpha
+            )
+        }
+        self = .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
+    }
+    #endif
 }
 
-// MARK: - HEX
+// MARK: HEX
 
 public extension ColorComponents {
     init(hex: String) {
@@ -339,7 +380,7 @@ public extension ColorComponents {
     }
 }
 
-// MARK: - RGB
+// MARK: RGB
 
 public extension ColorComponents {
     init(red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat = 1) {
@@ -349,18 +390,18 @@ public extension ColorComponents {
             alpha: CGFloat = 0
         
         #if os(macOS)
-        
         let nsColor = NSColor(
             calibratedRed: red.clamp(0, 1),
             green: green.clamp(0, 1),
             blue: blue.clamp(0, 1),
             alpha: opacity.clamp(0, 1)
         )
-//        nsColor = nsColor.usingColorSpace(.genericRGB) ?? nsColor
+        
         hue = nsColor.hueComponent
         saturation = nsColor.saturationComponent
         brightness = nsColor.brightnessComponent
         alpha = nsColor.alphaComponent
+        
         #elseif os(iOS)
         let uiColor = UIColor(
             red: red.clamp(0, 1),

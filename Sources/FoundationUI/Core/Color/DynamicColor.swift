@@ -8,21 +8,6 @@
 import Foundation
 import SwiftUI
 
-
-#warning("Update this")
-/// Permanent color
-/// `color: red.background`
-///
-/// Use environment tint
-/// `@Environment(\.tint) var tint`
-/// `color: tint.background`
-///
-/// Shortcut for environment tint (available in .foundation() modifiers)
-/// `color: \.background`
-///
-/// /// Declare in view with property wrapper `@DynamicColorTint`
-/// `@DynamicColorTint private var tint`
-
 @frozen
 public struct DynamicColor {
     public typealias Components = ColorComponents
@@ -43,6 +28,8 @@ public struct DynamicColor {
     }
 }
 
+// MARK: Resolve Components
+
 public extension DynamicColor {
     func resolveComponents(in colorScheme: FoundationColorScheme) -> ColorComponents {
         switch colorScheme {
@@ -53,6 +40,8 @@ public extension DynamicColor {
         }
     }
 }
+
+// MARK: Resolve ShapeStyle
 
 extension DynamicColor: ShapeStyle {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
@@ -65,14 +54,66 @@ extension DynamicColor: ShapeStyle {
         return components.resolve(in: environment).blendMode(blendMode)
     }
     
-    public func resolveColor(in environment: EnvironmentValues) -> Color {
+}
+
+// MARK: Resolve Color
+
+public extension DynamicColor {
+    func resolveColor(in environment: EnvironmentValues) -> Color {
         let colorScheme = FoundationColorScheme(environment)
         return resolveComponents(in: colorScheme).color
     }
+    
+    func resolveCGColor(in environment: EnvironmentValues) -> CGColor {
+        let colorScheme = FoundationColorScheme(environment)
+        return resolveComponents(in: colorScheme).cgColor()
+    }
+    
+    #if os(macOS)
+    func resolveNSColor() -> NSColor {
+        .init(name: nil) { appearance in
+            let components: ColorComponents
+            switch appearance.name {
+            case .aqua, .vibrantLight:
+                components = light
+            case .darkAqua, .vibrantDark:
+                components = dark
+            case .accessibilityHighContrastAqua, .accessibilityHighContrastVibrantLight:
+                components = lightAccessible
+            case .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark:
+                components = darkAccessible
+            default:
+                components = light
+            }
+            return components.nsColor()
+        }
+    }
+    #elseif os(iOS)
+    func resolveUIColor() -> UIColor {
+        .init { uiTrait in
+            let components: ColorComponents
+            switch (uiTrait.userInterfaceStyle, uiTrait.accessibilityContrast) {
+            case (.light, .normal), (.light, .unspecified):
+                components = light
+            case (.dark, .normal), (.light, .unspecified):
+                components = dark
+            case (.light, .high):
+                components = lightAccessible
+            case (.dark, .high):
+                components = darkAccessible
+            default:
+                components = light
+            }
+            return components.uiColor()
+        }
+    }
+    #endif
 }
 
-extension DynamicColor {
-    public init(
+// MARK: - Initializers
+
+public extension DynamicColor {
+    init(
         light: Components,
         dark: Components,
         lightAccessible: Components? = nil,
@@ -84,11 +125,11 @@ extension DynamicColor {
         self.darkAccessible = darkAccessible ?? dark
     }
     
-    public init(_ universal: Components) {
+    init(_ universal: Components) {
         self.init(light: universal, dark: universal)
     }
     
-    public static func from(color: Color) -> DynamicColor {
+    static func from(color: Color) -> DynamicColor {
         .init(
             light: .init(color: color, colorScheme: .light),
             dark: .init(color: color, colorScheme: .dark),
@@ -97,6 +138,8 @@ extension DynamicColor {
         )
     }
 }
+
+// MARK: - Modifiers
 
 public extension DynamicColor {
     func hue(_ value: CGFloat, method: Components.AdjustMethod = .multiply) -> Self {

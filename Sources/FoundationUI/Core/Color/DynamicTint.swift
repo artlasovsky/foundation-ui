@@ -8,8 +8,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: Environment
-
 private struct DynamicTintKey: EnvironmentKey {
     static let defaultValue: Theme.Color = .primary
 }

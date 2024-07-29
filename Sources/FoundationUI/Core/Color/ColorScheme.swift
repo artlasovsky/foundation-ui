@@ -52,17 +52,19 @@ public extension FoundationColorScheme {
         }
     }
     
-    func appearance() -> NSAppearance? {
+    func appearance() -> NSAppearance {
+        let appearance: NSAppearance?
         switch self {
         case .light:
-            .init(named: .aqua)
+            appearance = .init(named: .aqua)
         case .dark:
-            .init(named: .darkAqua)
+            appearance = .init(named: .darkAqua)
         case .lightAccessible:
-            .init(named: .accessibilityHighContrastAqua)
+            appearance = .init(named: .accessibilityHighContrastAqua)
         case .darkAccessible:
-            .init(named: .accessibilityHighContrastDarkAqua)
+            appearance = .init(named: .accessibilityHighContrastDarkAqua)
         }
+        return appearance ?? .init()
     }
     #elseif os(iOS)
     init(appearance: UITraitCollection) {
@@ -79,7 +81,7 @@ public extension FoundationColorScheme {
             self = .light
         }
     }
-    func appearance() -> UITraitCollection? {
+    func appearance() -> UITraitCollection {
         switch self {
         case .light:
             .init(traitsFrom: [

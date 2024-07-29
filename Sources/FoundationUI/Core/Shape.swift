@@ -56,3 +56,51 @@ public extension RoundedRectangle {
         .init(cornerRadius: .foundation(.radius(radius)), style: style)
     }
 }
+
+public extension Shape {
+    @available(macOS 13.0, iOS 16.0, *)
+    static func roundedRectangle(
+        topLeadingRadius: CGFloat,
+        bottomLeadingRadius: CGFloat,
+        bottomTrailingRadius: CGFloat,
+        topTrailingRadius: CGFloat,
+        style: RoundedCornerStyle = .continuous
+    ) -> UnevenRoundedRectangle {
+        UnevenRoundedRectangle(
+            topLeadingRadius: topLeadingRadius,
+            bottomLeadingRadius: bottomLeadingRadius,
+            bottomTrailingRadius: bottomTrailingRadius,
+            topTrailingRadius: topTrailingRadius,
+            style: style
+        )
+    }
+    
+    @available(macOS 13.0, iOS 16.0, *)
+    static func roundedRectangle(
+        topLeadingRadius: Theme.Radius,
+        bottomLeadingRadius: Theme.Radius,
+        bottomTrailingRadius: Theme.Radius,
+        topTrailingRadius: Theme.Radius,
+        style: RoundedCornerStyle = .continuous
+    ) -> UnevenRoundedRectangle {
+        let radius = Theme.default.radius
+        return UnevenRoundedRectangle(
+            topLeadingRadius: radius(topLeadingRadius),
+            bottomLeadingRadius: radius(bottomLeadingRadius),
+            bottomTrailingRadius: radius(bottomTrailingRadius),
+            topTrailingRadius: radius(topTrailingRadius),
+            style: style
+        )
+    }
+    
+    static func roundedRectangle(radius: CGFloat, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
+        return RoundedRectangle(cornerRadius: radius, style: style)
+    }
+    static func roundedRectangle(_ token: Theme.Radius, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
+        self.roundedRectangle(radius: Theme.default.radius(token), style: style)
+    }
+    static func roundedSquare(_ token: Theme.Radius, size sizeToken: Theme.Size) -> some View {
+        self.roundedRectangle(token)
+            .foundation(.size(sizeToken))
+    }
+}
