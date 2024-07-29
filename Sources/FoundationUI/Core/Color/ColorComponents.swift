@@ -359,6 +359,14 @@ public extension ColorComponents {
 // MARK: HEX
 
 public extension ColorComponents {
+    /// Initializing color components using HEX value
+    ///
+    /// Supported HEX formats:
+    /// - `#D70` – short
+    /// - `#D70015` – full
+    /// - `#D70015FF` – with alpha value
+    /// - `#d70015` – it could be in uppercase or lowercase
+    /// - `D70015` – and with or without hash symbol
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int = UInt64()
