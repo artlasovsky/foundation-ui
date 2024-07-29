@@ -15,13 +15,23 @@ extension Theme {
         private var variant: Variant?
         private var colorScheme: FoundationColorScheme?
         
-        public init(_ color: DynamicColor) {
+        public init(color: DynamicColor) {
             self.color = color
         }
         
         public static func from(color: SwiftUI.Color) -> Self {
-            self.init(.from(color: color))
+            self.init(color: .from(color: color))
         }
+        
+        #if os(macOS)
+        public static func from(nsColor: NSColor) -> Self {
+            .from(nsColor: nsColor)
+        }
+        #elseif os(iOS)
+        public static func from(uiColor: UIColor) -> Self {
+            .from(uiColor: uiColor)
+        }
+        #endif
     }
 }
 
@@ -221,7 +231,7 @@ public extension Theme.Color {
         }
     }
     func variant(_ variant: Variant) -> Self {
-        .init(variant.adjust(color).copyBlendMode(from: color))
+        .init(color: variant.adjust(color).copyBlendMode(from: color))
     }
     
     static func dynamic(_ variant: Variant) -> Self {

@@ -24,6 +24,6 @@ public extension FoundationModifier {
     }
     
     static func tintColor(_ color: Color) -> FoundationModifier<FoundationModifierLibrary.TintModifier> {
-        .init(.init(tint: .init(.from(color: color))))
+        .init(.init(tint: .from(color: color)))
     }
 }

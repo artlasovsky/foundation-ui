@@ -137,6 +137,27 @@ public extension DynamicColor {
             darkAccessible: .init(color: color, colorScheme: .darkAccessible)
         )
     }
+    
+    #if os(macOS)
+    static func from(nsColor: NSColor) -> DynamicColor {
+        .init(
+            light: .init(nsColor: nsColor, colorScheme: .light),
+            dark: .init(nsColor: nsColor, colorScheme: .dark),
+            lightAccessible: .init(nsColor: nsColor, colorScheme: .lightAccessible),
+            darkAccessible: .init(nsColor: nsColor, colorScheme: .darkAccessible)
+        )
+    }
+    #elseif os(iOS)
+    static func from(uiColor: UIColor) -> DynamicColor {
+        .init(
+            light: .init(uiColor: uiColor, colorScheme: .light),
+            dark: .init(uiColor: uiColor, colorScheme: .dark),
+            lightAccessible: .init(uiColor: uiColor, colorScheme: .lightAccessible),
+            darkAccessible: .init(uiColor: uiColor, colorScheme: .darkAccessible)
+        )
+    }
+    
+    #endif
 }
 
 // MARK: - Modifiers
