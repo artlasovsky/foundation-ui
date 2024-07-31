@@ -65,18 +65,121 @@ public struct Theme: ThemeConfiguration {
     private static let baseValue: CGFloat = 8
     private init() {}
     
+    /// # Color
+    /// Values used to define UI element padding
+    ///
+    /// ## Example
+    /// ```swift
+    /// let foreground = Theme.default.color(.primary)
+    /// let background = Theme.default.color(.primary.variant(.background))
+    /// ```
+    ///
+    /// ## Default values:
+    /// ```
+    /// .primary    // Slightly adjusted (can be overriden)
+    /// .black      // 100% black
+    /// .white      // 100% white
+    /// .gray       // 50% black
+    /// .clear      // 100% transparent
+    /// ```
+    ///
+    /// # Override or Extend Color or Color Variant
+    /// You can read how to override or extend colors at ``Theme/Color-swift.struct`` documentation page
     public let color = Color.primary
     
+    /// # Padding
+    /// Padding values
+    ///
+    /// ## Example
+    /// ```swift
+    /// View.foundation(.padding(.regular))
+    ///
+    /// let value = Theme.default.padding(.regular)
+    /// ```
+    ///
+    /// ## Default values:
+    /// ```
+    /// xxSmall = 1
+    /// xSmall  = 2
+    /// small   = 4
+    /// regular = 8
+    /// large   = 16
+    /// xLarge  = 32
+    /// xxLarge = 64
+    /// ```
     public let padding = Padding(base: baseValue, multiplier: 2)
+    
+    /// # Radius
+    /// Radius values
+    ///
+    /// ## Example
+    /// ```swift
+    /// View.foundation(.cornerRadius(.regular))
+    ///
+    /// let value = Theme.default.radius(.regular)
+    /// ```
+    ///
+    /// ## Default values:
+    /// ```
+    /// xxSmall = 2
+    /// xSmall  = 4
+    /// small   = 5
+    /// regular = 8
+    /// large   = 12
+    /// xLarge  = 18
+    /// xxLarge = 27
+    /// ```
     public let radius = Radius(base: baseValue, multiplier: 1.5)
+    
+    /// # Size
+    /// Size values
+    ///
+    /// ## Example
+    /// ```swift
+    /// View.foundation(.size(width: .regular, height: .large))
+    ///
+    /// let value = Theme.default.size(.regular)
+    /// ```
+    ///
+    /// ## Default values:
+    /// ```
+    /// xxSmall = 8
+    /// xSmall  = 16
+    /// small   = 32
+    /// regular = 64
+    /// large   = 128
+    /// xLarge  = 256
+    /// xxLarge = 512
+    /// ```
     public let size = Size(base: baseValue * 8, multiplier: 2)
+    
+    /// # Spacing
+    /// Spacing values
+    ///
+    /// ## Example
+    /// ```swift
+    /// HStack(spacing: .foundation(.spacing(.regular))) { ... }
+    ///
+    /// let value = Theme.default.spacing(.regular)
+    /// ```
+    ///
+    /// ## Default values:
+    /// ```
+    /// xxSmall = 1
+    /// xSmall  = 2
+    /// small   = 4
+    /// regular = 8
+    /// large   = 16
+    /// xLarge  = 32
+    /// xxLarge = 64
+    /// ```
     public let spacing = Spacing(base: baseValue, multiplier: 2)
     
     public let font = Font()
     public let shadow = Shadow()
     
+    /// Default FoundationUI theme
     public static let `default` = Theme()
-    
 }
 
 public enum FoundationCGFloatVariables {
