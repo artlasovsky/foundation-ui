@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public extension Theme {
     @frozen
@@ -25,3 +26,21 @@ public extension Theme {
         }
     }
 }
+
+public extension Theme.Padding {
+    static func swatch() -> some View {
+        Swatch("Padding", value: Theme.default.padding) {
+            CGFloatSwatchLayout($0, $1)
+        }
+    }
+}
+
+struct Padding_Preview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Theme.Padding.swatch()
+        }
+        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+    }
+}
+

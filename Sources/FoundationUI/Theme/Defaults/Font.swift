@@ -44,3 +44,22 @@ extension Theme {
 //public static var xxSmall = Self { .system(size: ($0 / 1.25).precise(1)) } // 8
 //public static var xSmall = Self { .system(size: ($0 / 1.125).precise(1)) } // 10
 //public static var small = Self { .system(size: ($0 / 1.05).precise(1)) } // 12
+
+
+public extension Theme.Font {
+    static func swatch() -> some View {
+        Swatch("Font", value: Theme.default.font) { title, value in
+            Text(title)
+                .font(value)
+        }
+    }
+}
+
+struct Font_Preview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Theme.Font.swatch()
+        }
+        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+    }
+}

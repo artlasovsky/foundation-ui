@@ -11,7 +11,8 @@ import SwiftUI
 public protocol FoundationTokenShadowScale: DefaultFoundationVariableTokenScale {}
 
 extension FoundationTokenShadowScale where Self == Theme.Shadow {
-    #warning("Test with dark theme, make it darker if needed")
+    #warning("TODO: Test with dark theme, make it darker if needed")
+    #warning("TODO: Better shadows")
     private static var color: Theme.Color { .primary.variant(.background).colorScheme(.dark) }
     public static var xxSmall: Self { .init(color: color.opacity(0.1), radius: 0.5, y: 0.5) }
     public static var xSmall: Self { .init(color: color.opacity(0.15), radius: 1, spread: -1, y: 1) }
@@ -53,15 +54,8 @@ extension Theme {
     }
 }
 
-struct ShadowPreview: PreviewProvider {
-    static var previews: some View {
-        Theme.default.shadow.swatch()
-        .foundation(.padding(.large))
-    }
-}
-
 public extension Theme.Shadow {
-    func swatch() -> some View {
+    static func swatch() -> some View {
         Swatch("Shadow", value: Theme.default.shadow) { title, value in
             Text(title)
                 .foundation(.size(.small.up(.half)))
@@ -70,5 +64,12 @@ public extension Theme.Shadow {
                 .foundation(.cornerRadius(.regular))
                 .foundation(.font(.xxSmall))
         }
+    }
+}
+
+struct ShadowPreview: PreviewProvider {
+    static var previews: some View {
+        Theme.Shadow.swatch()
+            .foundation(.padding(.large))
     }
 }

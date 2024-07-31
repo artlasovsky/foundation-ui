@@ -79,8 +79,6 @@ public struct Theme: ThemeConfiguration {
     
 }
 
-#warning("Swatch (views and? values) to use as preview")
-
 public enum FoundationCGFloatVariables {
     case padding(Theme.Padding)
     case spacing(Theme.Spacing)

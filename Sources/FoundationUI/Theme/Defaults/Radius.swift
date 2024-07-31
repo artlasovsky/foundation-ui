@@ -29,24 +29,30 @@ extension Theme {
     }
 }
 
-extension Theme.Radius {
+public extension Theme.Radius {
     static let zero = Self(value: 0)
 }
 
-struct RadiusPreview: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            ForEach(Theme.Radius.all) { token in
-                RoundedRectangle(cornerRadius: .foundation(.radius(token.value)))
-                    .foundation(.size(.large))
-                    .foundation(.foreground(.dynamic(.solid)))
-                    .overlay {
-                        Text(token.name)
-                            .foundation(.foreground(.dynamic(.background)))
-                            .foundation(.font(.xSmall))
-                    }
+public extension Theme.Radius {
+    static func swatch() -> some View {
+        Swatch("Radius", value: Theme.default.radius) { title, value in
+            VStack {
+                Text(title)
+                    .foundation(.foreground(.dynamic(.solidSubtle)))
+                Text(String(format: "%.2f", value))
+                    .foundation(.foreground(.dynamic(.text)))
             }
+            .foundation(.font(.xSmall))
+            .foundation(.size(width: .large, height: .regular))
+            .foundation(.background(.dynamic(.background)))
+            .foundation(.border(.dynamic(.borderSubtle)))
+            .foundation(.cornerRadius(.init(value: value)))
         }
-        .foundation(.padding(.regular))
+    }
+}
+
+struct Radius_Preview: PreviewProvider {
+    static var previews: some View {
+        Theme.Radius.swatch().foundation(.padding(.regular))
     }
 }

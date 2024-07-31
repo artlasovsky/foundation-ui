@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public extension Theme {
     @frozen
@@ -23,5 +24,22 @@ public extension Theme {
             self.adjust = adjust
             self.value = .init(base: 0, multiplier: 0)
         }
+    }
+}
+
+public extension Theme.Spacing {
+    static func swatch() -> some View {
+        Swatch("Spacing", value: Theme.default.spacing) {
+            CGFloatSwatchLayout($0, $1)
+        }
+    }
+}
+
+struct Spacing_Preview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Theme.Spacing.swatch()
+        }
+        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
     }
 }

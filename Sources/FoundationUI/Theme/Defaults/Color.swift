@@ -544,7 +544,106 @@ public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant
     }
 }
 
+public extension Theme.Color {
+    static func swatch() -> some View {
+        Scale()
+    }
+}
+
 // MARK: - Previews
+
+
+struct Scale: View {
+    @Environment(\.dynamicTint) private var tint
+    struct ScaleSwatch: View {
+        @Environment(\.dynamicTint) private var tint
+        let variant: Theme.Color.Variant
+        var mark: Bool = false
+        
+        init(_ variant: Theme.Color.Variant, mark: Bool = false) {
+            self.variant = variant
+            self.mark = mark
+        }
+
+        
+        var body: some View {
+            Rectangle()
+                .foundation(.foreground(.dynamic(variant)))
+                .foundation(.size(.small))
+                .overlay(alignment: .topTrailing) {
+                    if mark {
+                        Circle()
+                            .foundation(.size(.xxSmall))
+                            .foundation(.padding(.small))
+                            .foundation(.foreground(tint.blendMode(.vibrant).opacity(0.2)))
+                    }
+                }
+        }
+    }
+    var body: some View {
+        VStack(spacing: 0) {
+            TextSample()
+            Divider()
+                .foundation(.size(width: .small))
+                .foundation(.foreground(.dynamic(.borderSubtle)))
+            ScaleSwatch(.backgroundSubtle)
+            ScaleSwatch(.background, mark: true)
+            ScaleSwatch(.backgroundProminent)
+            ScaleSwatch(.borderSubtle)
+            ScaleSwatch(.border, mark: true)
+            ScaleSwatch(.borderProminent)
+            ScaleSwatch(.fillSubtle)
+            ScaleSwatch(.fill, mark: true)
+            ScaleSwatch(.fillProminent)
+            ScaleSwatch(.solidSubtle)
+            ScaleSwatch(.solid, mark: true)
+            ScaleSwatch(.solidProminent)
+            ScaleSwatch(.textSubtle)
+            ScaleSwatch(.text, mark: true)
+            ScaleSwatch(.textProminent)
+            
+        }
+        .foundation(.padding(.regular))
+        .foundation(.background(.dynamic(.backgroundSubtle)))
+    }
+    
+    struct TextSample: View {
+        var body: some View {
+            Text("Text")
+                .foundation(.padding(.regular))
+                .foundation(.foreground(.dynamic(.text)))
+                .foundation(.font(.small))
+                .fixedSize()
+        }
+    }
+}
+
+struct ColorScalePreview: PreviewProvider {
+    struct ScaleSet: View {
+        var body: some View {
+            HStack(spacing: 0) {
+                Theme.Color.swatch().foundation(.tintColor(.accentColor))
+                Theme.Color.swatch().foundation(.tint(.primary))
+            }
+        }
+    }
+    
+    static var previews: some View {
+        Theme.Color.swatch()
+        ScaleSet()
+            .foundation(.clip(.rect(cornerRadius: 8)))
+            .scenePadding()
+            ._colorScheme(.light)
+            .previewDisplayName("Scale Light")
+        ScaleSet()
+            .foundation(.clip(.rect(cornerRadius: 8)))
+            ._colorScheme(.dark)
+            .scenePadding()
+            .previewDisplayName("Scale Dark")
+    }
+}
+
+// MARK: UI Mock Preview
 
 struct Sample_Preview: PreviewProvider {
     struct PushButton: View {
@@ -666,19 +765,6 @@ struct Sample_Preview: PreviewProvider {
         }
     }
     
-//    struct Card: View {
-//        var body: some View {
-//            VStack {
-//                Text("Title")
-//                    .foundation(.font(.xLarge))
-//                Text("Subtitle")
-//                    .foundation(.font(.large))
-//                Text("Heading")
-//                    .foundation(.foreground(.dynamic(.textSubtle)))
-//            }
-//        }
-//    }
-    
     
     struct Grouped: View {
         var body: some View {
@@ -726,132 +812,5 @@ struct Sample_Preview: PreviewProvider {
             Grouped()._colorScheme(.dark)
         }
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
-    }
-}
-
-
-struct ColorScalePreview: PreviewProvider {
-    struct ColorPatch: View {
-        let color: Theme.Color
-        var body: some View {
-            RoundedRectangle.foundation(.regular)
-                .foundation(.foreground(color))
-                .foundation(.size(.small))
-        }
-    }
-    struct Scale: View {
-        @Environment(\.dynamicTint) private var tint
-        struct ScaleSwatch: View {
-            @Environment(\.dynamicTint) private var tint
-            let variant: Theme.Color.Variant
-            var mark: Bool = false
-            
-            init(_ variant: Theme.Color.Variant, mark: Bool = false) {
-                self.variant = variant
-                self.mark = mark
-            }
-
-            
-            var body: some View {
-                Rectangle()
-                    .foundation(.foreground(.dynamic(variant)))
-                    .foundation(.size(.small))
-                    .overlay(alignment: .topTrailing) {
-                        if mark {
-                            Circle()
-                                .foundation(.size(.xxSmall))
-                                .foundation(.padding(.small))
-                                .foundation(.foreground(tint.blendMode(.vibrant).opacity(0.2)))
-                        }
-                    }
-//                    .overlay {
-//                        if isSolid {
-//                            VStack {
-//                                let components = tint.variant(variant).color.resolveComponents(in: .init(env))
-//                                let h = String(format: "%.2f", components.hue)
-//                                let s = String(format: "%.2f", components.saturation)
-//                                let b = String(format: "%.2f", components.brightness)
-//                                let o = String(format: "%.2f", components.opacity)
-//                                Text(h).fixedSize()
-//                                Text(s).fixedSize()
-//                                Text(b).fixedSize()
-//                                Text(o).fixedSize()
-//                            }
-//                            .foundation(.font(.init(.system(size: 5))))
-//                            .foundation(.foreground(.dynamic(.text)))
-//                            .offset(x: 22)
-//                        }
-//                    }
-            }
-        }
-        var body: some View {
-            VStack(spacing: 0) {
-                TextSample()
-                Divider()
-                    .foundation(.size(width: .small))
-                    .foundation(.foreground(.dynamic(.borderSubtle)))
-                ScaleSwatch(.backgroundSubtle)
-                ScaleSwatch(.background, mark: true)
-                ScaleSwatch(.backgroundProminent)
-                ScaleSwatch(.borderSubtle)
-                ScaleSwatch(.border, mark: true)
-                ScaleSwatch(.borderProminent)
-                ScaleSwatch(.fillSubtle)
-                ScaleSwatch(.fill, mark: true)
-                ScaleSwatch(.fillProminent)
-                ScaleSwatch(.solidSubtle)
-                ScaleSwatch(.solid, mark: true)
-                ScaleSwatch(.solidProminent)
-                ScaleSwatch(.textSubtle)
-                ScaleSwatch(.text, mark: true)
-                ScaleSwatch(.textProminent)
-                
-            }
-            .foundation(.padding(.regular))
-            .foundation(.background(.dynamic(.backgroundSubtle)))
-        }
-    }
-    
-    struct TextSample: View {
-        var body: some View {
-            Text("Text")
-                .foundation(.padding(.regular))
-                .foundation(.foreground(.dynamic(.text)))
-                .foundation(.font(.small))
-                .fixedSize()
-        }
-    }
-    
-    struct ScaleSet: View {
-        var body: some View {
-            HStack(spacing: 0) {
-                Scale().foundation(.tintColor(.accentColor))
-//                Scale().foundation(.tint(.red))
-//                Scale().foundation(.tintColor(.orange))
-//                Scale().foundation(.tintColor(.brown))
-//                Scale().foundation(.tintColor(.indigo))
-//                Scale().foundation(.tintColor(.purple))
-//                Scale().foundation(.tintColor(.pink))
-//                Scale().foundation(.tintColor(.yellow))
-//                Scale().foundation(.tintColor(.cyan))
-//                Scale().foundation(.tintColor(.mint))
-//                Scale().foundation(.tintColor(.teal))
-//                Scale().foundation(.tint(.init(.init(hue: 0.4, saturation: 0.5, brightness: 0.75))))
-                Scale().foundation(.tint(.primary))
-            }
-        }
-    }
-    
-    static var previews: some View {
-        ScaleSet()
-            .foundation(.clip(.rect(cornerRadius: 8)))
-            .scenePadding()
-            ._colorScheme(.light)
-            .previewDisplayName("Scale Light")
-        ScaleSet()
-            .foundation(.clip(.rect(cornerRadius: 8)))
-            ._colorScheme(.dark)
-            .scenePadding()
-            .previewDisplayName("Scale Dark")
     }
 }

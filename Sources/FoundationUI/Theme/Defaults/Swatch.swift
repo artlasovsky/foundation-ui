@@ -8,21 +8,6 @@
 import Foundation
 import SwiftUI
 
-public extension Theme.Padding {
-    func swatch() -> some View {
-        Swatch("Padding", value: Theme.default.padding) { title, value in
-            HStack {
-                Text(title)
-                    .foundation(.foreground(.primary.variant(.textSubtle)))
-                    .foundation(.size(width: .value(.infinity), alignment: .trailing))
-                Text(String(format: "%.2f", value))
-                    .foundation(.size(width: .value(.infinity), alignment: .leading))
-            }
-            .frame(width: 150)
-        }
-    }
-}
-
 struct Swatch<Value: FoundationVariable & DefaultFoundationVariableTokenScale, Content: View>: View where Value.Token == Value {
     let title: String
     let content: (_ title: String, _ value: Value.Result) -> Content
@@ -37,6 +22,8 @@ struct Swatch<Value: FoundationVariable & DefaultFoundationVariableTokenScale, C
     public var body: some View {
         VStack {
             Text(title)
+                .foundation(.foreground(.dynamic(.textSubtle)))
+                .foundation(.padding(.small, .bottom))
             ForEach(Value.all) { token in
                 tokenView(token.name, token.value)
             }
@@ -48,13 +35,35 @@ struct Swatch<Value: FoundationVariable & DefaultFoundationVariableTokenScale, C
         content(title, value(token))
     }
 }
-//
+
+struct CGFloatSwatchLayout: View {
+    let title: String
+    let value: CGFloat
+    
+    init(_ title: String, _ value: CGFloat) {
+        self.title = title
+        self.value = value
+    }
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .foundation(.foreground(.primary.variant(.textSubtle)))
+                .foundation(.size(width: .value(.infinity), alignment: .trailing))
+            Text(String(format: "%.2f", value))
+                .foundation(.size(width: .value(.infinity), alignment: .leading))
+        }
+        .frame(width: 150)
+    }
+}
+
 struct Swatch_Preview: PreviewProvider {
     static var previews: some View {
-        VStack {
-            Theme.default.padding.swatch()
-            Theme.default.shadow.swatch()
+        HStack {
+            Theme.Padding.swatch()
+            Theme.Shadow.swatch()
         }
+        .foundation(.padding())
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
     }
 }
