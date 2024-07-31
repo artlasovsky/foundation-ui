@@ -25,11 +25,11 @@ extension Theme {
         
         #if os(macOS)
         public static func from(nsColor: NSColor) -> Self {
-            .from(nsColor: nsColor)
+            self.init(color: .from(nsColor: nsColor))
         }
         #elseif os(iOS)
         public static func from(uiColor: UIColor) -> Self {
-            .from(uiColor: uiColor)
+            self.init(color: .from(uiColor: uiColor))
         }
         #endif
     }
