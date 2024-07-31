@@ -110,14 +110,14 @@ All theme variables are explorable in `Theme.default`:
 
 ```swift
 // Theme.default.variableName(tokenName)
-let value = Theme.default.padding(.small)
+let smallPadding = Theme.default.padding(.small)
 ```
 
 
 For variables that result in native SwiftUI value types, there's a way to access them with a `.foundation()` shortcut:
 
 ```swift
-// Get spacing for HStack (CGFloat)
+// Set spacing for HStack (CGFloat)
 HStack(spacing: .foundation(.spacing(.small))) {
   Text("Theme")
     // or use it in SwiftUI's `.foregroundStyle` view modifier (ShapeStyle)
@@ -156,18 +156,17 @@ All these variables comes with in predefined sizes:
 
 Here is default values for variables:
 
+|         | Padding | Spacing | Radius | Size |
+| ------- | ------- | ------- | ------ | ---- |
+| xxSmall | 1       | 1       | 2      | 8    |
+| xSmall  | 2       | 2       | 4      | 16   |
+| small   | 4       | 4       | 5      | 32   |
+| regular | 8       | 8       | 8      | 64   |
+| large   | 16      | 16      | 12     | 128  |
+| xLarge  | 32      | 32      | 18     | 256  |
+| xxLarge | 64      | 64      | 27     | 512  |
+
 > ### [TODO: FoundationAdjustableVariable (CGFloat) & FoundationVariableStep]
-
-
-> Default values and steps
-
-> public let padding = Padding(base: baseValue, multiplier: 2)  
-public let radius = Radius(base: baseValue, multiplier: 1.5)  
-public let size = Size(base: baseValue * 8, multiplier: 2)  
-public let spacing = Spacing(base: baseValue * 1.25, multiplier: 2)
-
-
-> ### [TODO: Swatch]
 
 
 
@@ -221,11 +220,11 @@ extension Theme.Padding {
 
 > - [ ] Modify color
 > - [ ] Variants (Scale)
-> 	- [ ] Semantic meaning
-> 	- [ ] Adding colors for using with scale
+>     - [ ] Semantic meaning
+>     - [ ] Adding colors for using with scale
 > - [ ] Resolving color
-> 	- [ ] ShapeStyle conformance
-> 	- [ ] resolveColor
+>     - [ ] ShapeStyle conformance
+>     - [ ] resolveColor
 
 FoundationUI employs its own color system, DynamicColor, offering full compatibility with SwiftUI.Color, as well as NS/UIColor. It lets you specify color components for up to four color schemes: `light`, `dark`, `lightAccessible`, and `darkAccessible`. Additionally, you can declare universal color components that function across all schemes.
 
@@ -278,10 +277,10 @@ All variable tokens could be overriden or extended.
 
 > - [ ] via `.foundation()` modifiers
 > - [ ] via `Theme.Color`
-> 	- [ ] in SwiftUI
-> 	- [ ] outside SwiftUI
+>     - [ ] in SwiftUI
+>     - [ ] outside SwiftUI
 > - [ ] in SwiftUI views context
-> 	`.dynamic()` & `.foundation(.tint())`
+>     `.dynamic()` & `.foundation(.tint())`
 
 
 ### Modify Color
