@@ -14,13 +14,10 @@ let package = Package(
             name: "FoundationUI",
             targets: ["FoundationUI"])
     ],
-    dependencies: [
-    ],
     targets: [
         // Default theme – Native experience
         .target(
             name: "FoundationUI",
-            dependencies: [],
             path: "Sources/FoundationUI"
         ),
         .testTarget(

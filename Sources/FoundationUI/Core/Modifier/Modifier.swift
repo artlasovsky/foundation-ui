@@ -12,7 +12,7 @@ import SwiftUI
 public struct FoundationModifier<M: ViewModifier> {    
     let value: M
     
-    init(_ value: M) {
+    public init(_ value: M) {
         self.value = value
     }
 }
