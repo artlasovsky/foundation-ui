@@ -459,25 +459,25 @@ public protocol FoundationColorDefaultVariant {
 }
 
 public extension FoundationColorDefaultVariant {
-    static var backgroundSubtle: Self { .backgroundSubtle }
-    static var background: Self { .background }
-    static var backgroundProminent: Self { .backgroundProminent }
+    static var backgroundSubtle:    Theme.Color.Variant { .backgroundSubtle }
+    static var background:          Theme.Color.Variant { .background }
+    static var backgroundProminent: Theme.Color.Variant { .backgroundProminent }
     
-    static var fillSubtle: Self { .fillSubtle }
-    static var fill: Self { .fill }
-    static var fillProminent: Self { .fillProminent }
+    static var fillSubtle:          Theme.Color.Variant { .fillSubtle }
+    static var fill:                Theme.Color.Variant { .fill }
+    static var fillProminent:       Theme.Color.Variant { .fillProminent }
     
-    static var borderSubtle:Self { .borderSubtle }
-    static var border: Self { .border }
-    static var borderProminent: Self { .borderProminent }
+    static var borderSubtle:        Theme.Color.Variant { .borderSubtle }
+    static var border:              Theme.Color.Variant { .border }
+    static var borderProminent:     Theme.Color.Variant { .borderProminent }
     
-    static var solidSubtle: Self { .solidSubtle }
-    static var solid: Self { .solid }
-    static var solidProminent: Self { .solidProminent }
+    static var solidSubtle:         Theme.Color.Variant { .solidSubtle }
+    static var solid:               Theme.Color.Variant { .solid }
+    static var solidProminent:      Theme.Color.Variant { .solidProminent }
     
-    static var textSubtle: Self { .textSubtle }
-    static var text: Self { .text }
-    static var textProminent: Self { .textProminent }
+    static var textSubtle:          Theme.Color.Variant { .textSubtle }
+    static var text:                Theme.Color.Variant { .text }
+    static var textProminent:       Theme.Color.Variant { .textProminent }
 }
 
 internal extension Theme.Color.Variant {
