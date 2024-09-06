@@ -12,6 +12,21 @@ import SwiftUI
 
 /// FoundationUI's theme
 ///
+/// # Default Theme
+/// By default FoundationUI has no predefined tokens,
+/// but you can always use the optinal default theme like that:
+/// ```swift
+/// // Add default padding values
+/// extension Theme.Padding: FoundationTheme.Padding {}
+/// // Add default colors (only `.primary`)
+/// extension Theme.Color: FoundationTheme.Color {}
+/// // Add default color variables (such as `.background` or `.textSubtle`)
+/// extension Theme.Color.Variable: FoundationTheme.ColorVariable {}
+///
+/// ```
+///
+/// > Note: All the examples in the documentation referencing the default theme tokens (such as `.xSmall`, or `.regular` for values, `.primary` for colors and `.background` for color variants)
+///
 /// # Usage
 /// You could use the theme variables via ``SwiftUI/View/foundation(_:bypass:)`` modifiers.
 ///
@@ -34,7 +49,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// # Extending variable tokens
+/// # Extending variable tokens (extending theme)
 /// To add new token to the variable, just extend it's struct:
 /// ```swift
 /// extension Theme.Size {
@@ -55,14 +70,37 @@ import SwiftUI
 /// ```
 ///
 /// # Overriding variable tokens
-/// Overriding existing tokens works the same way as extending, just use the name of existing tokens:
+/// If you're using default theme (or any other theme defined via protocol)
+/// You can always override tokens. It works the same way as extending, just use the name of the existing token:
 /// ```swift
 /// extension Theme.Padding {
 ///     static let regular = Self.value(10) // default value was 8
 /// }
 /// ```
+///
+/// # Extending theme with new variables
+/// You can add new variables to the theme by extending it:
+/// ```swift
+/// struct ElementSize {
+///     var value: CGSize = .zero
+///
+///     static let small = Self(value: .init(width: 10, height: 4))
+///     static let regular = Self(value: .init(width: 12, height: 6))
+///     static let large = Self(value: .init(width: 14, height: 8))
+/// }
+///
+/// public extension Theme {
+///     let elementSize = ElementSize()
+/// }
+///
+///
+/// // Then use it:
+/// let buttonSize = Theme.default.elementSize.small
+/// ```
 public struct Theme: ThemeConfiguration {
-    private static let baseValue: CGFloat = 8
+    /// Main access point to all theme values
+    public static let `default` = Theme()
+    
     private init() {}
     
     /// # Color
@@ -72,15 +110,6 @@ public struct Theme: ThemeConfiguration {
     /// ```swift
     /// let foreground = Theme.default.color(.primary)
     /// let background = Theme.default.color(.primary.variant(.background))
-    /// ```
-    ///
-    /// ## Default values:
-    /// ```
-    /// .primary    // Slightly adjusted (can be overriden)
-    /// .black      // 100% black
-    /// .white      // 100% white
-    /// .gray       // 50% black
-    /// .clear      // 100% transparent
     /// ```
     ///
     /// # Override or Extend Color or Color Variant
@@ -96,18 +125,7 @@ public struct Theme: ThemeConfiguration {
     ///
     /// let value = Theme.default.padding(.regular)
     /// ```
-    ///
-    /// ## Default values:
-    /// ```
-    /// xxSmall = 1
-    /// xSmall  = 2
-    /// small   = 4
-    /// regular = 8
-    /// large   = 16
-    /// xLarge  = 32
-    /// xxLarge = 64
-    /// ```
-    public let padding = Padding(base: baseValue, multiplier: 2)
+    public let padding = Padding()
     
     /// # Radius
     /// Radius values
@@ -118,18 +136,7 @@ public struct Theme: ThemeConfiguration {
     ///
     /// let value = Theme.default.radius(.regular)
     /// ```
-    ///
-    /// ## Default values:
-    /// ```
-    /// xxSmall = 2
-    /// xSmall  = 4
-    /// small   = 5
-    /// regular = 8
-    /// large   = 12
-    /// xLarge  = 18
-    /// xxLarge = 27
-    /// ```
-    public let radius = Radius(base: baseValue, multiplier: 1.5)
+    public let radius = Radius()
     
     /// # Size
     /// Size values
@@ -140,18 +147,7 @@ public struct Theme: ThemeConfiguration {
     ///
     /// let value = Theme.default.size(.regular)
     /// ```
-    ///
-    /// ## Default values:
-    /// ```
-    /// xxSmall = 8
-    /// xSmall  = 16
-    /// small   = 32
-    /// regular = 64
-    /// large   = 128
-    /// xLarge  = 256
-    /// xxLarge = 512
-    /// ```
-    public let size = Size(base: baseValue * 8, multiplier: 2)
+    public let size = Size()
     
     /// # Spacing
     /// Spacing values
@@ -162,25 +158,13 @@ public struct Theme: ThemeConfiguration {
     ///
     /// let value = Theme.default.spacing(.regular)
     /// ```
-    ///
-    /// ## Default values:
-    /// ```
-    /// xxSmall = 1
-    /// xSmall  = 2
-    /// small   = 4
-    /// regular = 8
-    /// large   = 16
-    /// xLarge  = 32
-    /// xxLarge = 64
-    /// ```
-    public let spacing = Spacing(base: baseValue, multiplier: 2)
+    public let spacing = Spacing()
     
     public let font = Font()
     public let shadow = Shadow()
-    
-    /// Default FoundationUI theme
-    public static let `default` = Theme()
 }
+
+// MARK: - Extensions
 
 public enum FoundationCGFloatVariables {
     case padding(Theme.Padding)

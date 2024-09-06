@@ -319,11 +319,6 @@ public extension ColorComponents {
     #if os(macOS)
     init(nsColor color: NSColor, colorScheme: FoundationColorScheme) {
         var colorComponents = ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
-        var hue: CGFloat = 0,
-            saturation: CGFloat = 0,
-            brightness: CGFloat = 0,
-            alpha: CGFloat = 0
-        let appearance = colorScheme.appearance()
         if let nsColor = color.usingColorSpace(.deviceRGB) {
             // TODO: Log error if color wasn't unwrapped
             colorComponents = .init(

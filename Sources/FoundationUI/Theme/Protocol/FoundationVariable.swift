@@ -28,48 +28,45 @@ public extension FoundationVariableWithValue {
     }
 }
 
-// MARK: - Default Token Scale
-
-/// Default size scale from `xxSmall` to `xxLarge`
-public protocol DefaultFoundationVariableTokenScale {
-    static var xxSmall: Self { get }
-    static var xSmall: Self { get }
-    static var small: Self { get }
-    static var regular: Self { get }
-    static var large: Self { get }
-    static var xLarge: Self { get }
-    static var xxLarge: Self { get }
+public enum FoundationVariableStep: CGFloat {
+    case full
+    case half
+    case third
+    case quarter
 }
 
-internal extension DefaultFoundationVariableTokenScale {
-    static var all: [NamedValue<Self>] {
-        [
-            .init("xxSmall", .xxSmall),
-            .init("xSmall", .xSmall),
-            .init("small", .small),
-            .init("regular", .regular),
-            .init("large", .large),
-            .init("xLarge", .xLarge),
-            .init("xxLarge", .xxLarge)
-        ]
-    }
-}
-
-internal struct NamedValue<V>: Hashable, Identifiable {
-    var id: String { name }
-    
-    let name: String
-    let value: V
-    
-    init(_ name: String, _ value: V) {
-        self.name = name
-        self.value = value
+public extension FoundationVariableWithValue where Value: FloatingPoint {
+    static func value(_ value: Value) -> Self {
+        .init(value: value)
     }
     
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
+    func up(_ step: FoundationVariableStep) -> Self {
+        switch step {
+        case .full:
+            .init(value + value)
+        case .half:
+            .init(value + value / 2)
+        case .third:
+            .init(value + value / 3)
+        case .quarter:
+            .init(value + value / 4)
+        }
     }
-    static func == (lhs: NamedValue, rhs: NamedValue) -> Bool {
-        lhs.hashValue == rhs.hashValue
+    
+    func down(_ step: FoundationVariableStep) -> Self {
+        let stepDown = value / 2
+        switch step {
+        case .full:
+            return .init(value - stepDown)
+        case .half:
+            return .init(value - stepDown / 2)
+        case .third:
+            return .init(value - stepDown / 3)
+        case .quarter:
+            return .init(value - stepDown / 4)
+        }
+    }
+    func negative() -> Self {
+        .init(value: value * -1)
     }
 }

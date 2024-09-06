@@ -331,218 +331,7 @@ extension Theme.Color.Variant {
     }
 }
 
-// MARK: - Defaults
-
-public protocol FoundationColorDefaultValues {
-    static var primary: Self { get }
-}
-
-public extension FoundationColorDefaultValues where Self == Theme.Color {
-    static var primary: Self {
-        .init(
-            light: .init(grayscale: 0.5),
-            dark: .init(grayscale: 0.57)
-        )
-    }
-}
-
-extension Theme.Color: FoundationColorDefaultValues {
-    public static var clear: Self {
-        .init(.init(grayscale: 0, opacity: 0))
-    }
-    
-    public static var black: Self {
-        .init(.init(grayscale: 0, opacity: 1))
-    }
-    
-    public static var white: Self {
-        .init(.init(grayscale: 1, opacity: 1))
-    }
-    
-    public static var gray: Self {
-        .init(.init(grayscale: 0.5, opacity: 1))
-    }
-}
-
-internal extension Theme.Color {
-    static var blue: Self {
-        .init(
-            light: .init(red8bit: 0, green: 122, blue: 255),
-            dark: .init(red8bit: 10, green: 132, blue: 255)
-        )
-    }
-    static var orange: Self {
-        .init(
-            light: .init(red8bit: 255, green: 149, blue: 0),
-            dark: .init(red8bit: 255, green: 159, blue: 10)
-        )
-    }
-    static var red: Self {
-        .init(
-            light: .init(red8bit: 255, green: 59, blue: 48),
-            dark: .init(red8bit: 255, green: 69, blue: 58)
-        )
-    }
-}
-
-public protocol FoundationColorDefaultVariant {
-    static var backgroundSubtle: Self { get }
-    static var background: Self { get }
-    static var backgroundProminent: Self { get }
-    
-    static var fillSubtle: Self { get }
-    static var fill: Self { get }
-    static var fillProminent: Self { get }
-    
-    static var borderSubtle:Self { get }
-    static var border: Self { get }
-    static var borderProminent: Self { get }
-    
-    static var solidSubtle: Self { get }
-    static var solid: Self { get }
-    static var solidProminent: Self { get }
-    
-    static var textSubtle: Self { get }
-    static var text: Self { get }
-    static var textProminent: Self { get }
-}
-
-extension Theme.Color.Variant: FoundationColorDefaultVariant {}
-
-public extension FoundationColorDefaultVariant where Self == Theme.Color.Variant {
-    static var backgroundSubtle: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.99 : 0.99 }, method: .override)
-                .saturation(0.01)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.07 : 0.05 }, method: .override)
-                .saturation(0.4)
-            }
-        )
-    }
-    static var background: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.99 : 0.98 }, method: .override)
-                .saturation(0.02)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.11 : 0.08 }, method: .override)
-                .saturation(0.4)
-            }
-        )
-    }
-    static var backgroundProminent: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.99 : 0.97 }, method: .override)
-                .saturation(0.04)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.14 : 0.11 }, method: .override)
-                .saturation(0.4)
-            }
-        )
-    }
-    static var borderSubtle: Self {
-        .modifiedColor(
-            light: .dynamic(.border).brightness(1.07).saturation(0.5),
-            dark: .dynamic(.border).brightness(0.82).saturation(0.9)
-        )
-    }
-    static var border: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.9 : 0.86 }, method: .override)
-                .saturation(0.1)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.22 : 0.2 }, method: .override)
-                .saturation(0.2)
-            }
-        )
-    }
-    static var borderProminent: Self {
-        .modifiedColor(
-            light: .dynamic(.border).brightness(0.9).saturation(1.2),
-            dark: .dynamic(.border).brightness(1.5)
-        )
-    }
-    static var fillSubtle: Self {
-        .modifiedColor(
-            light: .dynamic(.fill).brightness(1.05).saturation(0.7),
-            dark: .dynamic(.fill).brightness(0.75).saturation(0.8)
-        )
-    }
-    static var fill: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.94 : 0.8 }, method: .override)
-                .saturation(0.35)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.49 : 0.38 }, method: .override)
-                .saturation(0.6)
-            }
-        )
-    }
-    static var fillProminent: Self {
-        .modifiedColor(
-            light: .dynamic(.fill).brightness(0.92).saturation(1.25),
-            dark: .dynamic(.fill).brightness(1.3).saturation(1.2)
-        )
-    }
-    
-    static var solidSubtle: Self {
-        .modifiedColor(
-            light: .dynamic(.solid).brightness(1.14).saturation(0.9),
-            dark: .dynamic(.solid).brightness(0.8).saturation(1.05)
-        )
-    }
-    static var solid: Self { .init { $0 } }
-    static var solidProminent: Self {
-        .modifiedColor(
-            light: .dynamic(.solid).brightness(0.86).saturation(0.98),
-            dark: .dynamic(.solid).brightness(1.2).saturation(0.94)
-        )
-    }
-    
-    static var textSubtle: Self {
-        .modifiedSource(
-            light: {
-                $0.brightness(dynamic: { $0.isSaturated ? 0.65 : 0.6 }, method: .override)
-                .saturation(0.3)
-            },
-            dark: {
-                $0.brightness(dynamic: { $0.isSaturated ? 0.6 : 0.6 }, method: .override)
-                .saturation(0.35)
-            }
-        )
-    }
-    
-    static var text: Self {
-        .modifiedSource(
-            light: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.5 : 0.24 }, method: .override)
-                .saturation(0.95)
-            },
-            dark: { $0
-                .brightness(dynamic: { $0.isSaturated ? 0.97 : 0.95 }, method: .override)
-                .saturation(0.2)
-            }
-        )
-    }
-    
-    static var textProminent: Self {
-        // TODO: with ModifierAdjust
-        .modifiedColor(
-            light: .dynamic(.text).brightness(0.5),
-            dark: .dynamic(.text).brightness(1.2)
-        )
-    }
-}
+// MARK: - Swatch
 
 public extension Theme.Color {
     static func swatch() -> some View {
@@ -699,7 +488,8 @@ struct Sample_Preview: PreviewProvider {
     
     struct PopUpButton: View {
         var body: some View {
-            VStack(alignment: .leading, spacing: .foundation(.spacing(.small))) {
+//            VStack(alignment: .leading, spacing: .foundation(.spacing(.small))) {
+            VStack {
                 PushButton()
                 VStack(alignment: .leading, spacing: 0) {
                     ListItem(label: "Item One")
@@ -768,7 +558,8 @@ struct Sample_Preview: PreviewProvider {
     
     struct Grouped: View {
         var body: some View {
-            HStack(spacing: .foundation(.spacing(.large))) {
+//            HStack(spacing: .foundation(.spacing(.large))) {
+            HStack {
                 VStack {
                     VStack {
                         Text("Title").foundation(.foreground(.dynamic(.textProminent)))
@@ -801,7 +592,7 @@ struct Sample_Preview: PreviewProvider {
                 }
             }
             .foundation(.tintColor(.accentColor))
-            .foundation(.padding())
+            .foundation(.padding(.regular))
             .foundation(.backgroundStyle(.background))
         }
     }
