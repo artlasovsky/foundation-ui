@@ -112,12 +112,12 @@ enum EitherShapeStyle<First: ShapeStyle, Second: ShapeStyle>: ShapeStyle {
     case first(First)
     case second(Second)
     
-    func _apply(to shape: inout _ShapeStyle_Shape) {
-        switch self {
-        case .first(let style):
-            style._apply(to: &shape)
-        case .second(let style):
-            style._apply(to: &shape)
-        }
-    }
+	func resolve(in environment: EnvironmentValues) -> AnyShapeStyle {
+		switch self {
+		case .first(let first):
+			AnyShapeStyle(first)
+		case .second(let second):
+			AnyShapeStyle(second)
+		}
+	}
 }
