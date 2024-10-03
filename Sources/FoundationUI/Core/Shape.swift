@@ -99,7 +99,8 @@ public extension Shape {
     static func roundedRectangle(_ token: Theme.Radius, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
         self.roundedRectangle(radius: Theme.default.radius(token), style: style)
     }
-    static func roundedSquare(_ token: Theme.Radius, size sizeToken: Theme.Size) -> some View {
+	@MainActor
+	static func roundedSquare(_ token: Theme.Radius, size sizeToken: Theme.Size) -> some View {
         self.roundedRectangle(token)
             .foundation(.size(sizeToken))
     }

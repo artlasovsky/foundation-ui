@@ -206,7 +206,7 @@ extension Theme.Color: Equatable {
 public extension Theme.Color {
     struct Variant: Sendable {
         public typealias ColorValue = DynamicColor
-        public typealias ComponentAdjust = (ColorValue.Components) -> ColorValue.Components
+        public typealias ComponentAdjust = @Sendable (ColorValue.Components) -> ColorValue.Components
         
         var adjust: @Sendable (ColorValue) -> ColorValue
         
@@ -256,7 +256,7 @@ extension Theme.Color.Variant: Hashable {
 
 extension Theme.Color.Variant {
     public typealias Variant = Theme.Color.Variant
-    public enum Modifier {
+	public enum Modifier: Sendable {
         case source(ComponentAdjust)
         case color(Theme.Color)
         

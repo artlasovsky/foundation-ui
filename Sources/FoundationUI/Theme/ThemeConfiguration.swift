@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Theme Configuration
 
-public protocol ThemeConfiguration {
+public protocol ThemeConfiguration: Sendable {
     associatedtype Padding = FoundationVariable
     associatedtype Spacing = FoundationVariable
     associatedtype Size = FoundationVariable

@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-@frozen
+@frozen @MainActor
 public struct FoundationModifier<M: ViewModifier> {    
     let value: M
     
