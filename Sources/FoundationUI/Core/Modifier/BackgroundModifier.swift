@@ -68,7 +68,7 @@ struct BackgroundModifier_Preview: PreviewProvider {
             Text("Shadow")
                 .foundation(.padding(.regular))
                 .foundation(.background(.primary.variant(.background), in: .roundedRectangle(.regular)))
-                .foundation(.shadow(.regular, in: .roundedRectangle(.regular)))
+                .foundation(.backgroundShadow(.regular, in: .roundedRectangle(.regular)))
             //
             ZStack {
                 Text("Radius")

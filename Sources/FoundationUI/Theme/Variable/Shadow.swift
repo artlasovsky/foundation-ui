@@ -47,7 +47,7 @@ struct ShadowPreview: PreviewProvider {
             Text(label)
                 .foundation(.size(.small.up(.half)))
                 .foundation(.background(.white))
-                .foundation(.shadow(value))
+                .foundation(.backgroundShadow(value))
                 .foundation(.cornerRadius(.regular))
                 .foundation(.font(.xxSmall))
         }

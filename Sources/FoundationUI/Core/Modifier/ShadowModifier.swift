@@ -12,62 +12,74 @@ public extension FoundationModifierLibrary {
     struct ShadowModifier<Style: ShapeStyle, S: InsettableShape>: ViewModifier {
         @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
         @Environment(\.dynamicCornerRadiusStyle) private var dynamicCornerRadiusStyle
+		@Environment(\.colorScheme) private var colorScheme
+		@Environment(\.colorSchemeContrast) private var colorSchemeContrast
         let style: Style
         let shape: S
-        let radius: CGFloat
-        let spread: CGFloat
-        let x: CGFloat
-        let y: CGFloat
+		let scope: Scope
+		
+		enum Scope {
+			case content(radius: CGFloat, x: CGFloat, y: CGFloat)
+			case background(radius: CGFloat, spread: CGFloat, x: CGFloat, y: CGFloat)
+		}
+		
+		private var color: Color {
+			if let color = (style as? Color) {
+				return color
+			}
+			if let color = (style as? DynamicColor)?.resolveColor(in: .init(colorScheme: colorScheme, colorSchemeContrast: colorSchemeContrast)) {
+				return color
+			}
+			if let color = (style as? Theme.Color)?.resolveColor(in: .init(colorScheme: colorScheme, colorSchemeContrast: colorSchemeContrast)) {
+				return color
+			}
+			return .red
+		}
         
         public func body(content: Content) -> some View {
-            content.background {
-                shapeView
-                    .foregroundStyle(style)
-                    .blur(radius: radius)
-                    .offset(x: x, y: y)
-            }
+			switch scope {
+			case .content(let radius, let x, let y):
+				content.shadow(
+					color: color,
+					radius: radius,
+					x: x,
+					y: y
+				)
+			case .background(let radius, let spread, let x, let y):
+				content.background {
+					shapeView(spread: spread)
+						.foregroundStyle(style)
+						.blur(radius: radius)
+						.offset(x: x, y: y)
+				}
+			}
         }
         
-        private var shapeView: some View {
+		private func shapeView(spread: CGFloat) -> some View {
             ShapeBuilder.resolveInsettableShape(
                 shape,
-                inset: inset,
+                inset: spread * -1,
                 strokeWidth: nil,
                 dynamicCornerRadius: dynamicCornerRadius,
                 dynamicCornerRadiusStyle: dynamicCornerRadiusStyle
             )
         }
-        
-        private var inset: CGFloat {
-            spread * -1
-        }
     }
 }
 
 public extension FoundationModifier {
-    static func shadow<S: Shape>(
-        color: Theme.Color,
-        radius: CGFloat,
-        spread: CGFloat = 0,
-        x: CGFloat = 0,
-        y: CGFloat = 0,
-        in shape: S = .dynamicRoundedRectangle()
-    ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
-        .init(.init(style: color, shape: shape, radius: radius, spread: spread, x: x, y: y))
-    }
-    
-    static func shadow<Style: ShapeStyle, S: Shape>(
-        style: Style,
-        radius: CGFloat,
-        spread: CGFloat = 0,
-        x: CGFloat = 0,
-        y: CGFloat = 0,
-        in shape: S = .dynamicRoundedRectangle()
-    ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Style, S>> {
-        .init(.init(style: style, shape: shape, radius: radius, spread: spread, x: x, y: y))
-    }
-    
-    static func shadow<S: Shape>(
+	/// Applies shadow token configuration using native SwiftUI's `.shadow(color:radius:x:y:)` modifier
+	/// > Important: It will ignore `spread` parameter of the `Theme.Shadow` token
+	static func contentShadow(_ token: Theme.Shadow) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, Rectangle>> {
+		let configuration = token.value
+		return .init(.init(
+			style: configuration.color,
+			shape: Rectangle(),
+			scope: .content(radius: configuration.radius, x: configuration.x, y: configuration.y)
+		))
+	}
+	
+    static func backgroundShadow<S: Shape>(
         _ token: Theme.Shadow,
         in shape: S = .dynamicRoundedRectangle()
     ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
@@ -75,12 +87,31 @@ public extension FoundationModifier {
         return .init(.init(
             style: configuration.color,
             shape: shape,
-            radius: configuration.radius,
-            spread: configuration.spread,
-            x: configuration.x,
-            y: configuration.y
+			scope: .background(radius: configuration.radius, spread: configuration.spread, x: configuration.x, y: configuration.y)
         ))
     }
+	
+	static func backgroundShadowColor<S: Shape>(
+		_ color: Theme.Color,
+		radius: CGFloat,
+		spread: CGFloat = 0,
+		x: CGFloat = 0,
+		y: CGFloat = 0,
+		in shape: S = .dynamicRoundedRectangle()
+	) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
+		.init(.init(style: color,shape: shape, scope: .background(radius: radius, spread: spread, x: x, y: y)))
+	}
+	
+	static func backgroundShadowStyle<Style: ShapeStyle, S: Shape>(
+		_ style: Style,
+		radius: CGFloat,
+		spread: CGFloat = 0,
+		x: CGFloat = 0,
+		y: CGFloat = 0,
+		in shape: S = .dynamicRoundedRectangle()
+	) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Style, S>> {
+		.init(.init(style: style, shape: shape, scope: .background(radius: radius, spread: spread, x: x, y: y)))
+	}
 }
 
 struct ShadowModifierPreview: PreviewProvider {
@@ -90,8 +121,8 @@ struct ShadowModifierPreview: PreviewProvider {
                 .foundation(.size(.regular))
                 .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))
                 .foundation(
-                    .shadow(
-                        color: .dynamic(.background).colorScheme(.dark),
+                    .backgroundShadowColor(
+                        .dynamic(.background).colorScheme(.dark),
                         radius: 2.5,
                         spread: -1.5,
                         y: 2,

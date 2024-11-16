@@ -68,6 +68,7 @@ public extension FoundationModifier {
     ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape, width: width, placement: placement, level: level))
     }
+	
     static func borderStyle<Style: ShapeStyle, S: Shape>(
         _ style: Style,
         width: CGFloat = 1,

@@ -450,7 +450,7 @@ struct Sample_Preview: PreviewProvider {
                 .foundation(.padding(.small, .vertical))
                 .foundation(.foreground(foreground))
                 .foundation(.background(background))
-                .foundation(.shadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
+                .foundation(.backgroundShadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
                 .foundation(.border(border, width: 0.75, placement: .outside))
                 .foundation(.cornerRadius(.small))
         }
@@ -500,7 +500,7 @@ struct Sample_Preview: PreviewProvider {
                 .foundation(.padding(.small.up(.half), adjustNestedCornerRadius: .soft))
                 .foundation(.background(.primary.variant(.background)))
                 .foundation(.border(.primary.variant(.border), width: 0.75, placement: .outside))
-                .foundation(.shadow(.xLarge))
+                .foundation(.backgroundShadow(.xLarge))
                 .foundation(.cornerRadius(.regular.up(.half)))
             }
         }
@@ -544,7 +544,7 @@ struct Sample_Preview: PreviewProvider {
                 .foundation(.padding(.small, .vertical))
                 .foundation(.background(.primary.variant(.background)))
                 .foundation(.border(.primary.variant(.borderProminent), width: 1))
-                .foundation(.shadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
+                .foundation(.backgroundShadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
                 .foundation(.border(.dynamic(.fillProminent), width: 3, placement: .outside, level: .below))
                 .foundation(.cornerRadius(.regular))
                 .overlay(alignment: .trailing) {
