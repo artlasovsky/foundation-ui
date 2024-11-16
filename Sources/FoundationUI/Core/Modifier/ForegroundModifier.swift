@@ -31,6 +31,10 @@ public extension FoundationModifier {
     static func foregroundColor(_ color: Color) -> FoundationModifier<FoundationModifierLibrary.ForegroundModifier<Color>> {
         .init(.init(style: color))
     }
+	
+	static func foregroundGradient(_ gradient: Theme.Gradient) -> FoundationModifier<FoundationModifierLibrary.ForegroundModifier<Theme.Gradient>> {
+		.init(.init(style: gradient))
+	}
 }
 
 

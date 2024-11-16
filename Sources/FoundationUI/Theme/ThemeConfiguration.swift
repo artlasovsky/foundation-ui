@@ -17,6 +17,7 @@ public protocol ThemeConfiguration: Sendable {
     associatedtype Color = FoundationColorVariable
     associatedtype Shadow = FoundationVariable
     associatedtype Font = FoundationVariable
+	associatedtype Gradient = FoundationVariable
     
     var padding: Padding { get }
     var spacing: Spacing { get }
@@ -26,4 +27,5 @@ public protocol ThemeConfiguration: Sendable {
     var shadow: Shadow { get }
     var font: Font { get }
     var color: Color { get }
+	var gradient: Gradient { get }
 }

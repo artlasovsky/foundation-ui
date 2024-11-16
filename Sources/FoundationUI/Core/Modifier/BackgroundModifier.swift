@@ -54,6 +54,14 @@ public extension FoundationModifier {
     ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Color, S>> {
         .init(.init(style: color, shape: shape))
     }
+	
+	static func backgroundGradient<S: Shape, VM: ViewModifier>(
+		_ gradient: Theme.Gradient,
+		in shape: S = .dynamicRoundedRectangle(),
+		modifier: VM = EmptyModifier()
+	) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Theme.Gradient, S>> {
+		.init(.init(style: gradient, shape: shape))
+	}
 }
 
 struct BackgroundModifier_Preview: PreviewProvider {

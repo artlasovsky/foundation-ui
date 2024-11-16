@@ -115,6 +115,24 @@ public struct Theme: ThemeConfiguration {
     /// # Override or Extend Color or Color Variant
     /// You can read how to override or extend colors at ``Theme/Color-swift.struct`` documentation page
     public let color = Color.primary
+	
+	/// # Gradient
+	/// Gradient values accessible via modifiers
+	/// It uses ``DynamicGradient``
+	///
+	/// ## Example
+	/// ```swift
+	/// View.foundation(.backgroundGradient(.customGradient))
+	/// View.foundation(.foregroundGradient(.customGradient))
+	/// View.foundation(.borderGradient(.customGradient))
+	///	```
+	///
+	/// Since it conforms to `ShapeStyle`, it could be also used without FoundationUI modifiers:
+	/// ```swift
+	/// View.background(Theme.gradient.customGradient)
+	/// View.foregroundStyle(Theme.gradient.customGradient)
+	/// ```
+	public let gradient = Gradient()
     
     /// # Padding
     /// Padding values

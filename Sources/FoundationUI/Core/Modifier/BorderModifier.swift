@@ -78,6 +78,26 @@ public extension FoundationModifier {
     ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Style, S>> {
         .init(.init(style: style, shape: shape, width: width, placement: placement, level: level))
     }
+	
+	static func borderColor<S: Shape>(
+		_ color: SwiftUI.Color,
+		width: CGFloat = 1,
+		placement: FoundationModifierLibrary.BorderPlacement = .center,
+		level: FoundationModifierLibrary.BorderLevel = .above,
+		in shape: S = .dynamicRoundedRectangle()
+	) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<SwiftUI.Color, S>> {
+		.init(.init(style: color, shape: shape, width: width, placement: placement, level: level))
+	}
+	
+	static func borderGradient<S: Shape>(
+		_ gradient: Theme.Gradient,
+		width: CGFloat = 1,
+		placement: FoundationModifierLibrary.BorderPlacement = .center,
+		level: FoundationModifierLibrary.BorderLevel = .above,
+		in shape: S = .dynamicRoundedRectangle()
+	) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Theme.Gradient, S>> {
+		.init(.init(style: gradient, shape: shape, width: width, placement: placement, level: level))
+	}
 }
 
 #if DEBUG

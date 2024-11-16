@@ -8,8 +8,8 @@
 import Foundation
 import SwiftUI
 
-public struct DynamicGradient: ShapeStyle {
-    public struct Stop: Sendable {
+public struct DynamicGradient: ShapeStyle, Equatable, Hashable {
+	public struct Stop: Sendable, Equatable, Hashable {
         let color: Theme.Color
         let location: CGFloat
         
@@ -19,7 +19,7 @@ public struct DynamicGradient: ShapeStyle {
         }
     }
     
-    public enum GradientType: Sendable {
+	public enum GradientType: Sendable, Equatable, Hashable {
         case linear(startPoint: UnitPoint, endPoint: UnitPoint)
         case radial(center: UnitPoint, startRadius: CGFloat, endRadius: CGFloat)
         case angular(center: UnitPoint, startAngle: Angle, endAngle: Angle? = nil)
