@@ -118,7 +118,7 @@ struct ShadowModifierPreview: PreviewProvider {
     static var previews: some View {
         VStack {
             Text("Shadow")
-                .foundation(.size(.regular))
+				.foundation(.size(square: .regular))
                 .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))
                 .foundation(
                     .backgroundShadowColor(

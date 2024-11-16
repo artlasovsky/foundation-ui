@@ -113,7 +113,7 @@ struct BorderModifier_Preview: PreviewProvider {
         var body: some View {
             ZStack {
                 Text("Border")
-                    .foundation(.size(.regular))
+					.foundation(.size(square: .regular))
                     .foundation(.border(.from(color: .orange), width: 4, placement: .center))
                     .foundation(.border(.from(color: .cyan.opacity(0.5)), width: 4, placement: .inside))
                     .foundation(.border(.from(color: .blue.opacity(0.5)), width: 4, placement: .outside))

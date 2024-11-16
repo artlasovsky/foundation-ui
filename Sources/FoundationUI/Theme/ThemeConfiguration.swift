@@ -12,6 +12,7 @@ import Foundation
 public protocol ThemeConfiguration: Sendable {
     associatedtype Padding = FoundationVariable
     associatedtype Spacing = FoundationVariable
+	associatedtype Length = FoundationVariable
     associatedtype Size = FoundationVariable
     associatedtype Radius = FoundationVariable
     associatedtype Color = FoundationColorVariable
@@ -21,7 +22,8 @@ public protocol ThemeConfiguration: Sendable {
     
     var padding: Padding { get }
     var spacing: Spacing { get }
-    var size: Size { get }
+	var length: Length { get }
+	var size: Size { get }
     var radius: Radius { get }
     
     var shadow: Shadow { get }

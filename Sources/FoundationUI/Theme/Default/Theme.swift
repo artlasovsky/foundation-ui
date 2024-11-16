@@ -156,16 +156,25 @@ public struct Theme: ThemeConfiguration {
     /// ```
     public let radius = Radius()
     
-    /// # Size
-    /// Size values
+    /// # Length
+    /// Length values
     ///
     /// ## Example
     /// ```swift
     /// View.foundation(.size(width: .regular, height: .large))
     ///
-    /// let value = Theme.default.size(.regular)
+    /// let value = Theme.default.length(.regular)
     /// ```
-    public let size = Size()
+	public let length = Length()
+	
+	/// # Size
+	/// Size values
+	///
+	/// ## Example
+	/// ```swift
+	/// View.foundation(.size(.customSize))
+	/// ```
+	public let size = Size()
     
     /// # Spacing
     /// Spacing values
@@ -188,7 +197,7 @@ public enum FoundationCGFloatVariables {
     case padding(Theme.Padding)
     case spacing(Theme.Spacing)
     case radius(Theme.Radius)
-    case size(Theme.Size)
+	case length(Theme.Length)
 }
 
 extension CGFloat {
@@ -200,8 +209,8 @@ extension CGFloat {
             Theme.default.spacing(spacing)
         case .radius(let radius):
             Theme.default.radius(radius)
-        case .size(let size):
-            Theme.default.size(size)
+        case .length(let length):
+			Theme.default.length(length)
         }
     }
 }

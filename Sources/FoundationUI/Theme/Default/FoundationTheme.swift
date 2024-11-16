@@ -130,11 +130,11 @@ internal extension Theme.Radius {
     static var xxLarge: Theme.Radius { .init(14) }
 }
 
-// MARK: - Size
+// MARK: - Length
 
 public extension FoundationTheme {
-    /// # Size
-    /// Size values
+    /// # Length
+    /// Length values
     ///
     /// ## Default values:
     /// ```
@@ -149,38 +149,38 @@ public extension FoundationTheme {
     ///
     /// ## How to use
     /// ```swift
-    /// extension Theme.Size: FoundationTheme.Size {}
+    /// extension Theme.Length: FoundationTheme.Length {}
     /// ```
-    typealias Size = FoundationThemeSize
+    typealias Length = FoundationThemeLength
 }
 
-public protocol FoundationThemeSize: DefaultFoundationVariableTokenScale {}
+public protocol FoundationThemeLength: DefaultFoundationVariableTokenScale {}
 
-public extension FoundationThemeSize {
+public extension FoundationThemeLength {
     /// value = 8
-    static var xxSmall: Theme.Size { .xxSmall }
+    static var xxSmall: Theme.Length { .xxSmall }
     /// value = 16
-    static var xSmall:  Theme.Size { .xSmall }
+    static var xSmall:  Theme.Length { .xSmall }
     /// value = 32
-    static var small:   Theme.Size { .small }
+    static var small:   Theme.Length { .small }
     /// value = 64
-    static var regular: Theme.Size { .regular }
+    static var regular: Theme.Length { .regular }
     /// value = 128
-    static var large:   Theme.Size { .large }
+    static var large:   Theme.Length { .large }
     /// value = 256
-    static var xLarge:  Theme.Size { .xLarge }
+    static var xLarge:  Theme.Length { .xLarge }
     /// value = 512
-    static var xxLarge: Theme.Size { .xxLarge }
+    static var xxLarge: Theme.Length { .xxLarge }
 }
 
-internal extension Theme.Size {
-    static var xxSmall: Theme.Size { .init(8) }
-    static var xSmall:  Theme.Size { .init(16) }
-    static var small:   Theme.Size { .init(32) }
-    static var regular: Theme.Size { .init(64) }
-    static var large:   Theme.Size { .init(128) }
-    static var xLarge:  Theme.Size { .init(256) }
-    static var xxLarge: Theme.Size { .init(512) }
+internal extension Theme.Length {
+    static var xxSmall: Theme.Length { .init(8) }
+    static var xSmall:  Theme.Length { .init(16) }
+    static var small:   Theme.Length { .init(32) }
+    static var regular: Theme.Length { .init(64) }
+    static var large:   Theme.Length { .init(128) }
+    static var xLarge:  Theme.Length { .init(256) }
+    static var xxLarge: Theme.Length { .init(512) }
 }
 
 // MARK: - Spacing

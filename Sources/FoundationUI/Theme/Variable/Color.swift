@@ -358,11 +358,11 @@ struct Scale: View {
         var body: some View {
             Rectangle()
                 .foundation(.foreground(.dynamic(variant)))
-                .foundation(.size(.small))
+				.foundation(.size(square: .small))
                 .overlay(alignment: .topTrailing) {
                     if mark {
                         Circle()
-                            .foundation(.size(.xxSmall))
+							.foundation(.size(square: .xxSmall))
                             .foundation(.padding(.small))
                             .foundation(.foreground(tint.blendMode(.vibrant).opacity(0.2)))
                     }

@@ -45,7 +45,7 @@ struct ShadowPreview: PreviewProvider {
         let value: Theme.Shadow
         var body: some View {
             Text(label)
-                .foundation(.size(.small.up(.half)))
+				.foundation(.size(square: .small.up(.half)))
                 .foundation(.background(.white))
                 .foundation(.backgroundShadow(value))
                 .foundation(.cornerRadius(.regular))

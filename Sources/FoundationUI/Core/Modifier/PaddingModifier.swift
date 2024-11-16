@@ -66,17 +66,17 @@ struct PaddingModifierPreview: PreviewProvider {
             Text(Theme.default.padding(.small).description)
 
             RoundedRectangle(cornerRadius: .foundation(.radius(.small)))
-                .foundation(.size(.regular))
+				.foundation(.size(square: .regular))
                 .overlay {
                     RoundedRectangle(cornerRadius: .foundation(.radius(.regular)))
                         .foundation(.padding(.init(value: Theme.default.padding(.regular)), .horizontal))
                         .foundation(.padding(.regular, .vertical))
-                        .foundation(.size(.regular))
+						.foundation(.size(square: .regular))
                         .foundation(.foreground(.white))
                     RoundedRectangle(cornerRadius: .foundation(.radius(.regular)))
                         .foundation(.padding(.init(value: .foundation(.padding(.regular.up(.half)))), .horizontal))
                         .foundation(.padding(.regular, .vertical))
-                        .foundation(.size(.regular))
+						.foundation(.size(square: .regular))
                         .foundation(.foreground(.gray.variant(.fill)))
                 }
         }.padding()

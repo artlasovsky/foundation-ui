@@ -36,7 +36,7 @@ struct ClipModifierPreview: PreviewProvider {
     static var previews: some View {
         VStack {
             Rectangle()
-                .foundation(.size(.regular))
+				.foundation(.size(square: .regular))
                 .overlay {
                     Rectangle()
                         .foundation(.size(width: .large, height: .small))
