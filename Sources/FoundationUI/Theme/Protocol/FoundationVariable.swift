@@ -31,7 +31,6 @@ public extension FoundationVariableWithValue {
 public enum FoundationVariableStep: CGFloat {
     case full
     case half
-    case third
     case quarter
 }
 
@@ -40,19 +39,37 @@ public extension FoundationVariableWithValue where Value: FloatingPoint {
         .init(value: value)
     }
     
+	///	Step up from the current value by the following amounts:
+	///	- `.full` doubles the value
+	///	- `.half` adds half of the value
+	///	- `.quarter` adds a quarter of the value
+	///
+	///	| Step		| 8		| 16		|
+	/// | -			| -		| -		|
+	/// | `.quarter`	| 10		| 20		|
+	/// | `.half`		| 12		| 24		|
+	/// | `.full`		| 16		| 32		|
     func up(_ step: FoundationVariableStep) -> Self {
         switch step {
         case .full:
             .init(value + value)
         case .half:
             .init(value + value / 2)
-        case .third:
-            .init(value + value / 3)
         case .quarter:
             .init(value + value / 4)
         }
     }
     
+	/// Step down from the current value by the following proportions of half the value:
+	/// - `.full` subtracts half the value
+	/// - `.half` subtracts a quarter of the value
+	/// - `.quarter` subtracts an eighth of the value
+	///
+	/// | Step		| 16		| 8		|
+	/// | -			| -		| -		|
+	/// | `.quarter`	| 14		| 7		|
+	/// | `.half`		| 12		| 6		|
+	/// | `.full`		| 8		| 4		|
     func down(_ step: FoundationVariableStep) -> Self {
         let stepDown = value / 2
         switch step {
@@ -60,13 +77,28 @@ public extension FoundationVariableWithValue where Value: FloatingPoint {
             return .init(value - stepDown)
         case .half:
             return .init(value - stepDown / 2)
-        case .third:
-            return .init(value - stepDown / 3)
         case .quarter:
             return .init(value - stepDown / 4)
         }
     }
+	
     func negative() -> Self {
-        .init(value: value * -1)
+        self * -1
     }
+	
+	static func +(lhs: Self, rhs: Value) -> Self {
+		.init(lhs.value + rhs)
+	}
+	
+	static func -(lhs: Self, rhs: Value) -> Self {
+		.init(lhs.value + rhs)
+	}
+	
+	static func *(lhs: Self, rhs: Value) -> Self {
+		.init(lhs.value * rhs)
+	}
+	
+	static func /(lhs: Self, rhs: Value) -> Self {
+		.init(lhs.value / rhs)
+	}
 }

@@ -315,6 +315,10 @@ public extension ColorComponents {
             #endif
         }
     }
+	
+	static func color(_ color: Color, colorScheme: FoundationColorScheme) -> Self {
+		.init(color: color, colorScheme: colorScheme)
+	}
     
     #if os(macOS)
     init(nsColor color: NSColor, colorScheme: FoundationColorScheme) {
@@ -330,6 +334,10 @@ public extension ColorComponents {
         }
         self = colorComponents
     }
+	
+	static func nsColor(_ color: NSColor, colorScheme: FoundationColorScheme) -> Self {
+		.init(nsColor: color, colorScheme: colorScheme)
+	}
     #elseif os(iOS)
     init(uiColor color: UIColor, colorScheme: FoundationColorScheme) {
         var colorComponents = ColorComponents(hue: 0.99, saturation: 0.99, brightness: 0.99, opacity: 0)
@@ -348,6 +356,10 @@ public extension ColorComponents {
         }
         self = .init(hue: hue, saturation: saturation, brightness: brightness, opacity: alpha)
     }
+	
+	static func uiColor(_ color: UIColor, colorScheme: FoundationColorScheme) -> Self {
+		.init(uiColor: color, colorScheme: colorScheme)
+	}
     #endif
 }
 
@@ -381,6 +393,10 @@ public extension ColorComponents {
         
         self = .init(red8bit: Int(r), green: Int(g), blue: Int(b), opacity: Int(a))
     }
+	
+	static func hex(_ value: String) -> Self {
+		.init(hex: value)
+	}
 }
 
 // MARK: RGB

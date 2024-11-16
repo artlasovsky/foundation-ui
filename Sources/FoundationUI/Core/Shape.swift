@@ -93,12 +93,10 @@ public extension Shape {
         )
     }
     
-    static func roundedRectangle(radius: CGFloat, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
-        return RoundedRectangle(cornerRadius: radius, style: style)
-    }
     static func roundedRectangle(_ token: Theme.Radius, style: RoundedCornerStyle = .continuous) -> RoundedRectangle {
-        self.roundedRectangle(radius: Theme.default.radius(token), style: style)
+		.init(cornerRadius: Theme.default.radius(token), style: style)
     }
+	
 	@MainActor
 	static func roundedSquare(_ token: Theme.Radius, size sizeToken: Theme.Size) -> some View {
         self.roundedRectangle(token)
