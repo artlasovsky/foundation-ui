@@ -485,12 +485,12 @@ public extension ColorComponents {
 	/// Initialize a Color using OKLCH color space coordinates
 	/// - Parameters:
 	///   - lightness: Lightness component (0 to 1)
-	///   - chroma: Chroma component (0 to ~0.4)
+	///   - chroma: Chroma component (0 to 0.37)
 	///   - hue: Hue component in degrees (0 to 360)
 	///   - opacity: Opacity value (0 to 1)
-	static func oklch(lightness: CGFloat, chroma: CGFloat, hue: CGFloat, opacity: CGFloat = 1) -> Self {
+	static func oklch(lightness: CGFloat, chroma: CGFloat, hue: Int, opacity: CGFloat = 1) -> Self {
 		// Convert OKLCH to Oklab
-		let hRad = hue * .pi / 180
+		let hRad = CGFloat(hue) * .pi / 180
 		let a = chroma * cos(hRad)
 		let b = chroma * sin(hRad)
 

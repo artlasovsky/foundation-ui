@@ -30,4 +30,7 @@ macOS 12+, iOS 15+
 	- [ ] Advanced features of the framework
 	- [ ] Extending the features of the framework
 - [ ] Tests
+	- [ ] DynamicColor / ColorComponents
+	- [ ] Modifiers
+	- [ ] Variables
 - [ ] watchOS support
