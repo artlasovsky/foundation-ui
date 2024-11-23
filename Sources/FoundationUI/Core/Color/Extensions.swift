@@ -26,3 +26,9 @@ internal extension Float {
         NSString(format: "%.\(digits)f" as NSString, self).floatValue
     }
 }
+
+internal extension Double {
+	func precise(_ digits: Int = 2) -> Self {
+		NSString(format: "%.\(digits)f" as NSString, self).doubleValue
+	}
+}

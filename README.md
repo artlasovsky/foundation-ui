@@ -11,8 +11,11 @@ macOS 12+, iOS 15+
 ## Nov '24
 - [x] API: Implement all core features
 - [x] API: Make it ready for beta testing
+- [x] API: Add OKLCH support
 - [ ] Readme: The idea, core principles and mission of the FoundationUI
 - [ ] Readme: Example
+- [ ] Code Documentation: DynamicColor / ColorComponent inits and methods
+- [ ] Code Documentation: Modifiers
 - [ ] Documentation: Introductory Tutorials
 	- [ ] How to extend theme (`Color`, `Padding`, `Size`, `Font`, `Radius`)
 	- [ ] How to create tokens with state (`isPressed`, `isHovered`, etc.)

@@ -443,15 +443,15 @@ public extension ColorComponents {
         self.init(red: CGFloat(red) / 255, green: CGFloat(green) / 255, blue: CGFloat(blue) / 255, opacity: CGFloat(opacity) / 255)
     }
     
-    func rgba() -> (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
+	func rgba() -> (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
         #if os(macOS)
         let nsColor = NSColor(.init(hue: hue, saturation: saturation, brightness: brightness, opacity: opacity)).usingColorSpace(.deviceRGB)
-        return (
-            (nsColor?.redComponent ?? 0).precise(),
-            (nsColor?.greenComponent ?? 0).precise(),
-            (nsColor?.blueComponent ?? 0).precise(),
-            (nsColor?.alphaComponent ?? 0).precise()
-        )
+		return (
+			(nsColor?.redComponent ?? 0).precise(),
+			(nsColor?.greenComponent ?? 0).precise(),
+			(nsColor?.blueComponent ?? 0).precise(),
+			(nsColor?.alphaComponent ?? 0).precise()
+		)
         #elseif os(iOS)
         let uiColor = UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: opacity)
         var red: CGFloat = 0
@@ -459,7 +459,12 @@ public extension ColorComponents {
         var blue: CGFloat = 0
         var alpha: CGFloat = 0
         uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        return (red, green, blue, alpha)
+		return (
+			red.precise(),
+			green.precise(),
+			blue.precise(),
+			alpha.precise()
+		)
         #endif
     }
     func rgba8() -> (red: Int, green: Int, blue: Int, opacity: Int) {
@@ -472,6 +477,86 @@ private extension CGFloat {
     func to8bit() -> Int {
         Int((self * 255).rounded(.toNearestOrEven))
     }
+}
+
+// MARK: - OKLCH
+
+public extension ColorComponents {
+	/// Initialize a Color using OKLCH color space coordinates
+	/// - Parameters:
+	///   - lightness: Lightness component (0 to 1)
+	///   - chroma: Chroma component (0 to ~0.4)
+	///   - hue: Hue component in degrees (0 to 360)
+	///   - opacity: Opacity value (0 to 1)
+	static func oklch(lightness: CGFloat, chroma: CGFloat, hue: CGFloat, opacity: CGFloat = 1) -> Self {
+		// Convert OKLCH to Oklab
+		let hRad = hue * .pi / 180
+		let a = chroma * cos(hRad)
+		let b = chroma * sin(hRad)
+
+		let (r, g, b_) = OKLCH.oklabToLinearRGB(l: lightness, a: a, b: b)
+		let (sR, sG, sB) = OKLCH.linearRGBToSRGB(r: r, g: g, b: b_)
+		
+		return .init(red: sR, green: sG, blue: sB, opacity: opacity)
+	}
+	
+	public func oklch() -> (lightness: Double, chroma: Double, hue: Double) {
+		let (r, g, b, _) = rgba()
+		let (lR, lG, lB) = OKLCH.sRGBToLinearRGB(r: r, g: g, b: b)
+		let (l, a, b_) = OKLCH.linearRGBToOklab(r: lR, g: lG, b: lB)
+		let c = sqrt(a * a + b_ * b_)
+		let h = atan2(b_, a) * 180 / .pi
+		return (l.precise(), c.precise(), (h >= 0 ? h : h + 360).precise(0))
+	}
+	
+}
+
+private struct OKLCH {
+	static func sRGBToLinearRGB(r: Double, g: Double, b: Double) -> (r: Double, g: Double, b: Double) {
+		let toLinear = { (x: Double) -> Double in
+			x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4)
+		}
+		return (toLinear(r), toLinear(g), toLinear(b))
+	}
+	
+	static func linearRGBToSRGB(r: Double, g: Double, b: Double) -> (r: Double, g: Double, b: Double) {
+		let toSRGB = { (x: Double) -> Double in
+			x <= 0.0031308 ? 12.92 * x : 1.055 * pow(x, 1/2.4) - 0.055
+		}
+		return (toSRGB(r), toSRGB(g), toSRGB(b))
+	}
+	
+	static func linearRGBToOklab(r: Double, g: Double, b: Double) -> (l: Double, a: Double, b: Double) {
+		let l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b
+		let m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b
+		let s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b
+		
+		let l_ = pow(l, 1.0/3.0)
+		let m_ = pow(m, 1.0/3.0)
+		let s_ = pow(s, 1.0/3.0)
+		
+		return (
+			0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
+			1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
+			0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
+		)
+	}
+	
+	static func oklabToLinearRGB(l: Double, a: Double, b: Double) -> (r: Double, g: Double, b: Double) {
+		let l_ = l + 0.3963377774 * a + 0.2158037573 * b
+		let m = l - 0.1055613458 * a - 0.0638541728 * b
+		let s = l - 0.0894841775 * a - 1.2914855480 * b
+		
+		let l_cubed = l_ * l_ * l_
+		let m_cubed = m * m * m
+		let s_cubed = s * s * s
+		
+		return (
+			4.0767416621 * l_cubed - 3.3077115913 * m_cubed + 0.2309699292 * s_cubed,
+			-1.2684380046 * l_cubed + 2.6097574011 * m_cubed - 0.3413193965 * s_cubed,
+			-0.0041960863 * l_cubed - 0.7034186147 * m_cubed + 1.7076147010 * s_cubed
+		)
+	}
 }
 
 // MARK: - NS/UIColor, CGColor
