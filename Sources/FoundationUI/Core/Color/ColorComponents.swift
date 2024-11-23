@@ -479,9 +479,8 @@ private extension CGFloat {
     }
 }
 
-// MARK: - OKLCH
-
-public extension ColorComponents {
+// MARK: - OKLCH [WIP]
+private extension ColorComponents {
 	/// Initialize a Color using OKLCH color space coordinates
 	/// - Parameters:
 	///   - lightness: Lightness component (0 to 1)
@@ -500,7 +499,7 @@ public extension ColorComponents {
 		return .init(red: sR, green: sG, blue: sB, opacity: opacity)
 	}
 	
-	public func oklch() -> (lightness: Double, chroma: Double, hue: Double) {
+	func oklch() -> (lightness: Double, chroma: Double, hue: Double) {
 		let (r, g, b, _) = rgba()
 		let (lR, lG, lB) = OKLCH.sRGBToLinearRGB(r: r, g: g, b: b)
 		let (l, a, b_) = OKLCH.linearRGBToOklab(r: lR, g: lG, b: lB)
