@@ -42,37 +42,37 @@ extension Theme.Gradient: ShapeStyle {
 }
 
 public extension Theme.Gradient {
-	private func modifyColors(_ modifier: (Theme.Color) -> Theme.Color) -> Self {
+	private func modifyColors(_ modifier: (Theme.Color) -> Theme.Color) -> Theme.Gradient {
 		.init(
 			stops: self.value.stops.map { .init(color: modifier($0.color), location: $0.location) },
 			type: self.value.type
 		)
 	}
-	func brightness(_ brightness: CGFloat) -> Self {
+	func brightness(_ brightness: Double) -> Theme.Gradient {
 		modifyColors { $0.brightness(brightness) }
 	}
 	
-	func hue(_ hue: CGFloat) -> Self {
+	func hue(_ hue: Double) -> Theme.Gradient {
 		modifyColors { $0.hue(hue) }
 	}
 	
-	func saturation(_ saturation: CGFloat) -> Self {
+	func saturation(_ saturation: Double) -> Theme.Gradient {
 		modifyColors { $0.saturation(saturation) }
 	}
 	
-	func opacity(_ opacity: CGFloat) -> Self {
+	func opacity(_ opacity: Double) -> Theme.Gradient {
 		modifyColors { $0.opacity(opacity) }
 	}
 	
-	func colorScheme(_ colorScheme: FoundationColorScheme) -> Self {
+	func colorScheme(_ colorScheme: FoundationColorScheme) -> Theme.Gradient {
 		modifyColors { $0.colorScheme(colorScheme) }
 	}
 	
-	func blendMode(_ blendMode: BlendMode) -> Self {
+	func blendMode(_ blendMode: BlendMode) -> Theme.Gradient {
 		modifyColors { $0.blendMode(blendMode) }
 	}
 	
-	func blendMode(_ blendMode: DynamicColor.ExtendedBlendMode) -> Self {
+	func blendMode(_ blendMode: DynamicColor.ExtendedBlendMode) -> Theme.Gradient {
 		modifyColors { $0.blendMode(blendMode) }
 	}
 }
