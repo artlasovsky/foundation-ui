@@ -3,29 +3,45 @@
 A framework designed to streamline and accelerate the prototyping and development of user interfaces using SwiftUI.
 
 <p align="left">
-<img src="https://img.shields.io/github/v/tag/artlasovsky/foundation-ui?label=Beta">
+<img src="https://img.shields.io/github/v/tag/artlasovsky/foundation-ui?label=Beta&color=yellow">
 <img src="https://img.shields.io/badge/iOS-15+-orange.svg">
 <img src="https://img.shields.io/badge/macOS-12+-orange.svg">
+<img src="https://img.shields.io/badge/watchOS-Soon-lightgrey.svg">
+<img src="https://img.shields.io/badge/tvOS-WIP-lightgrey.svg">
+<img src="https://img.shields.io/badge/visionOS-WIP-lightgrey.svg">
 <img src="https://img.shields.io/badge/Licence-MIT-green">
 </p>
+
+## The Idea
+FoundationUI was created to simplify and accelerate the development of SwiftUI-based applications. 
+By abstracting repetitive tasks and offering intuitive, reusable components, it empowers developers to focus on delivering great user experiences.
+
+## Core Principles
+1.	**Simplicity:** Easy-to-adopt APIs with minimal boilerplate.
+2.	**Extensibility:** Modular design for seamless integration into any project.
+3.	**Discoverability:** Rich documentation and intuitive structure to make it easy to explore and utilize the design system.
+4.	**Consistency:** Centralized theming and dynamic colors ensure a unified design.
+
+## Mission
+To bridge the gap between rapid prototyping and production-ready apps, empowering developers to swiftly create refined interfaces while maintaining best practice standards.
 
 # Roadmap
 ## Nov '24
 - [x] API: Implement all core features
 - [x] API: Make it ready for beta testing
 - [x] Readme: Example
-- [ ] Readme: The idea, core principles and mission of the FoundationUI
+- [x] Readme: The idea, core principles and mission of the FoundationUI
 - [ ] Code Documentation: DynamicColor / ColorComponent inits and methods
 - [ ] Code Documentation: Modifiers
-- [ ] Documentation: Introductory Tutorials
+ 
+## Dec '24
+- [ ] Documentation: Basic Interactive Tutorials
 	- [ ] How to extend theme (`Color`, `Padding`, `Size`, `Font`, `Radius`)
 	- [ ] How to create tokens with state (`isPressed`, `isHovered`, etc.)
 	- [ ] How to work with nested radii (`DynamicRoundedRectangle`)
+	- [ ] Cross platform design system
 	- [ ] How to use default theme
- 
-## Dec '24
-- [ ] Documentation: Improved Documentation
-- [ ] Documentation: More Interactive Tutorials
+- [ ] Documentation: Advanced Interactive Tutorials
 	- [ ] Theme scope
 	- [ ] Create sharable themes
 	- [ ] Advanced features of the framework
@@ -422,4 +438,3 @@ By separating style tokens into Theme extensions and utilizing features like Dyn
 
 Interested in exploring more? 
 Dive into FoundationUI's other features using the built-in DocC documentation to create stunning, native-feeling interfaces!
-
