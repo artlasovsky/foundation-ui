@@ -6,6 +6,7 @@ A framework designed to streamline and accelerate the prototyping and developmen
 
 macOS 12+, iOS 15+
 
+> **Current Release:** Beta
 
 # Roadmap
 ## Nov '24

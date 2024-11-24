@@ -198,6 +198,8 @@ public enum FoundationCGFloatVariables {
     case spacing(Theme.Spacing)
     case radius(Theme.Radius)
 	case length(Theme.Length)
+	case sizeWidth(Theme.Size)
+	case sizeHeight(Theme.Size)
 }
 
 extension CGFloat {
@@ -211,8 +213,18 @@ extension CGFloat {
             Theme.default.radius(radius)
         case .length(let length):
 			Theme.default.length(length)
+		case .sizeWidth(let size):
+			Theme.default.size(size).cgSize.width
+		case .sizeHeight(let size):
+			Theme.default.size(size).cgSize.height
         }
     }
+}
+
+extension CGSize {
+	public static func foundation(_ size: Theme.Size) -> Self {
+		Theme.default.size(size).cgSize
+	}
 }
 
 extension ShapeStyle where Self == Theme.Color {

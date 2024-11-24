@@ -48,11 +48,19 @@ public extension Theme {
 			self.value = value
 		}
 		
+		public var cgSize: CGSize {
+			value.cgSize
+		}
+		
 		public struct Configuration: Equatable, Hashable, Sendable {
-			let width: Length
-			let height: Length
+			public let width: Length
+			public let height: Length
 			
-			static let zero = Self(width: .init(0), height: .init(0))
+			public var cgSize: CGSize {
+				.init(width: width.value, height: height.value)
+			}
+			
+			public static let zero = Self(width: .init(0), height: .init(0))
 		}
     }
 }
