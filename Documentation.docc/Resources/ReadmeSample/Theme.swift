@@ -1,4 +1,10 @@
-// FILE: - Theme.swift
+//
+//  Theme.swift
+//  
+//
+//  Created by Art Lasovsky on 23/11/2024.
+//
+
 import FoundationUI
 
 public extension Theme.Radius {

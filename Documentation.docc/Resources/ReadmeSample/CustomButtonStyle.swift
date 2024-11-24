@@ -1,11 +1,10 @@
 //
-//  Untitled.swift
+//  CustomButtonStyle.swift
 //  
 //
 //  Created by Art Lasovsky on 23/11/2024.
 //
 
-// FILE: - CustomButtonStyle.swift
 import FoundationUI
 
 private extension Theme.Size {
