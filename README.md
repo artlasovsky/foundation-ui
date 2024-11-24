@@ -2,11 +2,12 @@
 
 A framework designed to streamline and accelerate the prototyping and development of user interfaces using SwiftUI.
 
-## Compatibility
-
-macOS 12+, iOS 15+
-
-> **Current Release:** Beta
+<p align="left">
+<img src="https://img.shields.io/github/v/tag/artlasovsky/foundation-ui?label=Beta">
+<img src="https://img.shields.io/badge/iOS-15+-orange.svg">
+<img src="https://img.shields.io/badge/macOS-12+-orange.svg">
+<img src="https://img.shields.io/badge/Licence-MIT-green">
+</p>
 
 # Roadmap
 ## Nov '24
