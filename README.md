@@ -1,7 +1,5 @@
 # FoundationUI
 
-A framework designed to streamline and accelerate the prototyping and development of user interfaces using SwiftUI.
-
 <p align="left">
 <img src="https://img.shields.io/github/v/tag/artlasovsky/foundation-ui?label=Beta&color=yellow">
 <img src="https://img.shields.io/badge/iOS-15+-orange.svg">
@@ -12,7 +10,9 @@ A framework designed to streamline and accelerate the prototyping and developmen
 <img src="https://img.shields.io/badge/Licence-MIT-green">
 </p>
 
-## The Idea
+A framework designed to streamline and accelerate the prototyping and development of user interfaces using SwiftUI.
+
+## Idea
 FoundationUI was created to simplify and accelerate the development of SwiftUI-based applications. 
 By abstracting repetitive tasks and offering intuitive, reusable components, it empowers developers to focus on delivering great user experiences.
 
