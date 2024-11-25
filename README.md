@@ -264,7 +264,7 @@ struct CustomButtonStyle: ButtonStyle {
 Next, we'll create the `background` token. Currently, we have two button styles: `regular` and `prominent`. Additionally, we need to show the `isPressed` state.
 
 Let's extend `Theme.Color`. It based on FoundationUI's `DynamicColor` designed to be flexible: 
-- It can be created with multiple `ColorComponents` across various color models (HSL, RGB, HEX, OKLCH) or through native colors (SwiftUI.Color, UIColor, NSColor).
+- It can be created with multiple `ColorComponents` across various color models (HSB, RGB, HEX, OKLCH) or through native colors (SwiftUI.Color, UIColor, NSColor).
 - You have the option to configure each component for various color schemes: `light`, `dark`, `lightAccessible`, and `darkAccessible`
 - It has built-in modifiers, such as brightness, hue, saturation, opacity, blendMode, and more.
 
