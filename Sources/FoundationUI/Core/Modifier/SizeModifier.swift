@@ -10,13 +10,14 @@ import SwiftUI
 
 public extension FoundationModifierLibrary {
     struct SizeModifier: ViewModifier {
-		@OptionalTokenValue<Theme.Length> private var width: CGFloat?
-		@OptionalTokenValue<Theme.Length> private var height: CGFloat?
+		@Environment(\.self) private var environment
+		let widthToken: Theme.Length?
+		let heightToken: Theme.Length?
         private let alignment: Alignment
         
 		init(width: Theme.Length?, height: Theme.Length?, alignment: Alignment) {
-			self._width = .init(token: width, value: Theme.default.length, defaultValue: nil)
-			self._height = .init(token: height, value: Theme.default.length, defaultValue: nil)
+			self.widthToken = width
+			self.heightToken = height
             self.alignment = alignment
         }
 		
@@ -31,6 +32,14 @@ public extension FoundationModifierLibrary {
                 content.frame(width: width, height: height, alignment: alignment)
             }
         }
+		
+		private var width: CGFloat? {
+			widthToken?.resolve(in: environment)
+		}
+		
+		private var height: CGFloat? {
+			heightToken?.resolve(in: environment)
+		}
     }
 }
 

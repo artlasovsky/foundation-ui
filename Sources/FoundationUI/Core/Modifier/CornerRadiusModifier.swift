@@ -10,29 +10,25 @@ import SwiftUI
 
 public extension FoundationModifierLibrary {
     struct CornerRadiusModifier: ViewModifier {
-        @OptionalTokenValue<Theme.Radius> var cornerRadius: CGFloat?
+		@Environment(\.self) private var environment
+		let cornerRadiusToken: Theme.Radius?
         var style: RoundedCornerStyle
-        
-        init(cornerRadius: Theme.Radius? = nil, style: RoundedCornerStyle) {
-            self._cornerRadius = .init(
-                token: cornerRadius,
-                value: Theme.default.radius,
-                defaultValue: nil
-            )
-            self.style = style
-        }
         
         public func body(content: Content) -> some View {
             content
                 .environment(\.dynamicCornerRadius, cornerRadius)
                 .environment(\.dynamicCornerRadiusStyle, style)
         }
+		
+		private var cornerRadius: CGFloat? {
+			cornerRadiusToken?.resolve(in: environment)
+		}
     }
 }
 
 public extension FoundationModifier {
     static func cornerRadius(_ cornerRadius: Theme.Radius?, style: RoundedCornerStyle = .continuous) -> FoundationModifier<FoundationModifierLibrary.CornerRadiusModifier> {
-        .init(.init(cornerRadius: cornerRadius, style: style))
+        .init(.init(cornerRadiusToken: cornerRadius, style: style))
     }
 }
 
@@ -63,15 +59,14 @@ struct CornerRadiusModifiefPreview: PreviewProvider {
                 .foundation(.padding(.regular, .vertical))
                 // Use Dynamic Corner Radius
                 .foundation(.background(.dynamic(.fill)))
-    //            .foundation(.back)
-                .foundation(.padding(.small))
+				.foundation(.padding(.small, adjustNestedCornerRadius: .soft))
             Spacer()
             Text("Custom Radius")
                 .frame(maxWidth: .infinity)
                 .foundation(.padding(.regular, .vertical))
                 // Set Corner Radius manually
                 .foundation(
-                    .background(.dynamic(.fill), in: .rect(cornerRadius: 12))
+                    .background(.dynamic(.fill), in: .rect(cornerRadius: 30))
                 )
                 .foundation(.padding(.small))
         }

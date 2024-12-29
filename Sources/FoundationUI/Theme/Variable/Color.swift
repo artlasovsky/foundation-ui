@@ -14,6 +14,8 @@ extension Theme {
         public var color: DynamicColor
         private var variant: Variant?
         private var colorScheme: FoundationColorScheme?
+		
+		public var environmentAdjustment: (@Sendable (_ environmentAdjustment: EnvironmentValues) -> Self?)? = nil
         
         public init(color: DynamicColor) {
             self.color = color
@@ -33,6 +35,14 @@ extension Theme {
         }
         #endif
     }
+}
+
+extension Theme.Color: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(color)
+		hasher.combine(variant)
+		hasher.combine(colorScheme)
+	}
 }
 
 // MARK: Initializers
@@ -93,14 +103,17 @@ public extension Theme.Color {
 // MARK: Conform to ShapeStyle
 extension Theme.Color {
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
-        resolveColorValue(in: environment)
+		resolveColorValue(in: environment)
     }
     
     public func resolveColor(in environment: EnvironmentValues) -> SwiftUI.Color {
-        resolveColorValue(in: environment).resolveColor(in: environment)
+		resolveColorValue(in: environment).resolveColor(in: environment)
     }
     
-    private func resolveColorValue(in environment: EnvironmentValues) -> ColorValue {
+	private func resolveColorValue(in environment: EnvironmentValues) -> Variant.ColorValue {
+		let themed = resolveWithAdjustedEnviroment(in: environment)
+		let variant = themed.variant
+		let color = themed.color
         if let variant {
             let tint = environment.dynamicTint.color
             var adjusted = variant.adjust(tint)
@@ -125,6 +138,10 @@ extension Theme.Color {
             return color
         }
     }
+	
+	private func resolveWithAdjustedEnviroment(in environment: EnvironmentValues) -> Self {
+		environmentAdjustment?(environment) ?? self
+	}
 }
 
 // MARK: Modifiers

@@ -10,16 +10,15 @@ import SwiftUI
 
 public extension Theme {
     @frozen
-    struct Spacing: FoundationVariableWithValue {
+	struct Spacing: FoundationVariableWithValue {
         public var value: CGFloat
+		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Spacing?)?
+		
         init() {
             self.value = 0
         }
         public init(value: CGFloat) {
             self.value = value
-        }
-        public func callAsFunction(_ token: Self) -> CGFloat {
-            token.value
         }
     }
 }

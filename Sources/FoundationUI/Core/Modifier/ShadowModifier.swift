@@ -14,9 +14,10 @@ public extension FoundationModifierLibrary {
         @Environment(\.dynamicCornerRadiusStyle) private var dynamicCornerRadiusStyle
 		@Environment(\.colorScheme) private var colorScheme
 		@Environment(\.colorSchemeContrast) private var colorSchemeContrast
-        let style: Style
+		@Environment(\.self) private var environment
+		let style: (_ env: EnvironmentValues) -> Style
         let shape: S
-		let scope: Scope
+		let scope: (_ env: EnvironmentValues) -> Scope
 		
 		enum Scope {
 			case content(radius: CGFloat, x: CGFloat, y: CGFloat)
@@ -24,6 +25,7 @@ public extension FoundationModifierLibrary {
 		}
 		
 		private var color: Color {
+			let style = style(environment)
 			if let color = (style as? Color) {
 				return color
 			}
@@ -37,7 +39,7 @@ public extension FoundationModifierLibrary {
 		}
         
         public func body(content: Content) -> some View {
-			switch scope {
+			switch scope(environment) {
 			case .content(let radius, let x, let y):
 				content.shadow(
 					color: color,
@@ -48,7 +50,7 @@ public extension FoundationModifierLibrary {
 			case .background(let radius, let spread, let x, let y):
 				content.background {
 					shapeView(spread: spread)
-						.foregroundStyle(style)
+						.foregroundStyle(style(environment))
 						.blur(radius: radius)
 						.offset(x: x, y: y)
 				}
@@ -71,11 +73,13 @@ public extension FoundationModifier {
 	/// Applies shadow token configuration using native SwiftUI's `.shadow(color:radius:x:y:)` modifier
 	/// > Important: It will ignore `spread` parameter of the `Theme.Shadow` token
 	static func contentShadow(_ token: Theme.Shadow) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, Rectangle>> {
-		let configuration = token.value
-		return .init(.init(
-			style: configuration.color,
+		.init(.init(
+			style: { env in token.resolve(in: env).color },
 			shape: Rectangle(),
-			scope: .content(radius: configuration.radius, x: configuration.x, y: configuration.y)
+			scope: { env in
+				let configuration = token.resolve(in: env)
+				return .content(radius: configuration.radius, x: configuration.x, y: configuration.y)
+			}
 		))
 	}
 	
@@ -83,11 +87,13 @@ public extension FoundationModifier {
         _ token: Theme.Shadow,
         in shape: S = .dynamicRoundedRectangle()
     ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
-        let configuration = token.value
-        return .init(.init(
-            style: configuration.color,
+        .init(.init(
+			style: { env in token.resolve(in: env).color },
             shape: shape,
-			scope: .background(radius: configuration.radius, spread: configuration.spread, x: configuration.x, y: configuration.y)
+			scope: { env in
+				let configuration = token.resolve(in: env)
+				return .background(radius: configuration.radius, spread: configuration.spread, x: configuration.x, y: configuration.y)
+			}
         ))
     }
 	
@@ -99,7 +105,11 @@ public extension FoundationModifier {
 		y: CGFloat = 0,
 		in shape: S = .dynamicRoundedRectangle()
 	) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
-		.init(.init(style: color,shape: shape, scope: .background(radius: radius, spread: spread, x: x, y: y)))
+		.init(.init(
+			style: { _ in color },
+			shape: shape,
+			scope: { _ in .background(radius: radius, spread: spread, x: x, y: y) }
+		))
 	}
 	
 	static func backgroundShadowStyle<Style: ShapeStyle, S: Shape>(
@@ -110,7 +120,11 @@ public extension FoundationModifier {
 		y: CGFloat = 0,
 		in shape: S = .dynamicRoundedRectangle()
 	) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Style, S>> {
-		.init(.init(style: style, shape: shape, scope: .background(radius: radius, spread: spread, x: x, y: y)))
+		.init(.init(
+			style: { env in style },
+			shape: shape,
+			scope: { env in .background(radius: radius, spread: spread, x: x, y: y) }
+		))
 	}
 }
 

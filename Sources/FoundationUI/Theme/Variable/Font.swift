@@ -10,14 +10,11 @@ import SwiftUI
 
 extension Theme {
     @frozen
-    public struct Font: FoundationVariableWithValue {
+	public struct Font: FoundationVariableWithValue {
         public typealias Result = SwiftUI.Font
         
-        public func callAsFunction(_ scale: Self) -> SwiftUI.Font {
-            scale.value
-        }
-        
         public var value: SwiftUI.Font
+		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Font?)?
         
         public init() { self = .init(.body) }
         

@@ -10,21 +10,23 @@ import SwiftUI
 
 public extension FoundationModifierLibrary {
     struct FontModifier: ViewModifier {
-        @TokenValue<Theme.Font> private var font: Font
+		@Environment(\.self) private var environment
+		let fontToken: Theme.Font
         
-        init(_ token: Theme.Font) {
-            self._font = .init(token: token, value: Theme.default.font)
-        }
         public func body(content: Content) -> some View {
             content
                 .font(font)
         }
+		
+		private var font: Font {
+			fontToken.resolve(in: environment)
+		}
     }
 }
 
 public extension FoundationModifier {
     static func font(_ token: Theme.Font) -> FoundationModifier<FoundationModifierLibrary.FontModifier> {
-        .init(.init(token))
+		.init(.init(fontToken: token))
     }
 }
 

@@ -12,14 +12,13 @@ public extension Theme {
 	@frozen
 	struct Length: FoundationVariableWithValue {
 		public var value: CGFloat
+		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Length?)?
+		
 		init() {
 			self.value = 0
 		}
 		public init(value: CGFloat) {
 			self.value = value
-		}
-		public func callAsFunction(_ token: Self) -> CGFloat {
-			token.value
 		}
 	}
 	
@@ -27,6 +26,7 @@ public extension Theme {
     @frozen
 	struct Size: FoundationVariableWithValue {
 		public var value: Configuration
+		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Size?)?
         
 		init() {
 			self.value = .zero
@@ -38,10 +38,6 @@ public extension Theme {
 		
 		public init(width: CGFloat, height: CGFloat) {
 			self.value = .init(width: .init(width), height: .init(height))
-        }
-		
-		public func callAsFunction(_ token: Self) -> Configuration {
-            token.value
         }
 		
 		public init(value: Configuration) {

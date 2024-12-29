@@ -10,16 +10,14 @@ import SwiftUI
 
 public extension Theme {
     @frozen
-    struct Padding: FoundationVariableWithValue {
+	struct Padding: FoundationVariableWithValue {
         public var value: CGFloat
+		public var environmentAdjustment: (@Sendable (_ environment: EnvironmentValues) -> Self?)?
         init() {
             self.value = 0
         }
         public init(value: CGFloat) {
             self.value = value
-        }
-        public func callAsFunction(_ token: Self) -> CGFloat {
-            token.value
         }
     }
 }
@@ -47,6 +45,8 @@ struct Padding_Preview: PreviewProvider {
             PaddingTest(label: "large", value: .large)
             PaddingTest(label: "xLarge", value: .xLarge)
             PaddingTest(label: "xxLarge", value: .xxLarge)
+			Text("\(Theme.Padding.large.value)")
+			Text("\(Theme.Padding.large.resolve(theme: .none))")
         }
         .padding()
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])

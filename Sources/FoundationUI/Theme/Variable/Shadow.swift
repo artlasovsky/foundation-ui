@@ -10,12 +10,9 @@ import SwiftUI
 
 extension Theme {
     @frozen
-    public struct Shadow: FoundationVariableWithValue {
-        public func callAsFunction(_ token: Self) -> Configuration {
-            token.value
-        }
-        
+	public struct Shadow: FoundationVariableWithValue {        
         public var value: Configuration
+		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Shadow?)?
         
         public init() {
             self = .init(color: .clear, radius: 0)

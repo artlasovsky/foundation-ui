@@ -28,11 +28,11 @@ import SwiftUI
 /// > Note: All the examples in the documentation referencing the default theme tokens (such as `.xSmall`, or `.regular` for values, `.primary` for colors and `.background` for color variants)
 ///
 /// # Usage
-/// You could use the theme variables via ``SwiftUI/View/foundation(_:bypass:)`` modifiers.
+/// You could use the theme variables via ``SwiftUICore/View/foundation(_:bypass:)`` modifiers.
 ///
-/// To access theme variables them directly via `Theme.default.variableName(tokenName)`, like:
+/// Or access them directly:
 /// ``` swift
-/// let smallPadding = Theme.default.padding(.small)
+/// let smallPadding = Theme.Padding(.small).value
 /// ```
 ///
 /// For variables that result in native SwiftUI value types, there's a way to access them with a `.foundation()` shortcut:
@@ -49,7 +49,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// # Extending variable tokens (extending theme)
+/// ## Extending variable tokens (extending theme)
 /// To add new token to the variable, just extend it's struct:
 /// ```swift
 /// extension Theme.Size {
@@ -69,7 +69,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// # Overriding variable tokens
+/// ## Overriding variable tokens
 /// If you're using default theme (or any other theme defined via protocol)
 /// You can always override tokens. It works the same way as extending, just use the name of the existing token:
 /// ```swift
@@ -78,118 +78,88 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// # Extending theme with new variables
+/// ## Extending theme with new variables
 /// You can add new variables to the theme by extending it:
 /// ```swift
-/// struct ElementSize {
-///     var value: CGSize = .zero
-///
-///     static let small = Self(value: .init(width: 10, height: 4))
-///     static let regular = Self(value: .init(width: 12, height: 6))
-///     static let large = Self(value: .init(width: 14, height: 8))
-/// }
 ///
 /// public extension Theme {
-///     let elementSize = ElementSize()
+/// 	struct ElementSize {
+///     	var value: CGSize = .zero
+///
+///     	static let small = Self(value: .init(width: 10, height: 4))
+///     	static let regular = Self(value: .init(width: 12, height: 6))
+///     	static let large = Self(value: .init(width: 14, height: 8))
+/// 	}
 /// }
 ///
 ///
 /// // Then use it:
-/// let buttonSize = Theme.default.elementSize.small
+/// let buttonSize = Theme.ElementSize.small
 /// ```
-public struct Theme: ThemeConfiguration {
-    /// Main access point to all theme values
-    public static let `default` = Theme()
-    
-    private init() {}
-    
-    /// # Color
-    /// Values used to define UI element padding
-    ///
-    /// ## Example
-    /// ```swift
-    /// let foreground = Theme.default.color(.primary)
-    /// let background = Theme.default.color(.primary.variant(.background))
-    /// ```
-    ///
-    /// # Override or Extend Color or Color Variant
-    /// You can read how to override or extend colors at ``Theme/Color-swift.struct`` documentation page
-    public let color = Color.primary
+///
+/// # Themes
+/// FoundatonUI comes with multiple themes support
+///
+/// ## Add Theme
+/// By extending ``FoundationUI/Theme`` with static value you could add new themes
+/// ```swift
+/// extension Theme {
+///		static let alternative = Self(rawValue: "alternative")
+///	}
+/// ```
+///
+/// ## Adjusting variables to handle the theme changes
+/// Using the ``FoundationVariableWithValue/themeable(_:)`` method the token value could be adjusted to reflect themes
+/// ```swift
+///	extension Theme.Padding {
+///		static let large = Theme.Padding(8)
+///			.themeable { theme in
+/// 			switch theme {
+/// 	   		case .alternative:
+/// 				.value(32) 	// new value for "alternative" theme
+/// 	   		default:
+/// 				nil 		// default value (8)
+/// 	   		}
+/// 		}
+/// }
+/// ```
+///
+/// ## Setting the theme for the view
+/// When using ``SwiftUICore/View/foundation(_:bypass:)`` modifiers, theme will be applied automatically
+/// ```swift
+///	struct Component: View {
+///		var body: some View {
+///			Text("Component")
+///				.foundation(.padding(.large))
+///				.foundation(.theme(.alternative))
+///		}
+///	}
+/// ```
+///	When accessing variables directly using ``FoundationVariableWithValue/value-swift.property`` it will always return default theme's value,
+///	use ``FoundationVariableWithValue/resolve(theme:colorScheme:)`` to resolve value for the desired theme and color scheme
+///	or ``FoundationVariableWithValue/resolve(in:)`` to resolve value using manually passed `EnvironmentValues`
+///
+/// > Default theme:
+/// When the theme is `nil` (default), the initial variable values will be used
+public struct Theme: RawRepresentable, Sendable, Equatable {
+	public let rawValue: String
 	
-	/// # Gradient
-	/// Gradient values accessible via modifiers
-	/// It uses ``DynamicGradient``
-	///
-	/// ## Example
-	/// ```swift
-	/// View.foundation(.backgroundGradient(.customGradient))
-	/// View.foundation(.foregroundGradient(.customGradient))
-	/// View.foundation(.borderGradient(.customGradient))
-	///	```
-	///
-	/// Since it conforms to `ShapeStyle`, it could be also used without FoundationUI modifiers:
-	/// ```swift
-	/// View.background(Theme.gradient.customGradient)
-	/// View.foregroundStyle(Theme.gradient.customGradient)
-	/// ```
-	public let gradient = Gradient()
-    
-    /// # Padding
-    /// Padding values
-    ///
-    /// ## Example
-    /// ```swift
-    /// View.foundation(.padding(.regular))
-    ///
-    /// let value = Theme.default.padding(.regular)
-    /// ```
-    public let padding = Padding()
-    
-    /// # Radius
-    /// Radius values
-    ///
-    /// ## Example
-    /// ```swift
-    /// View.foundation(.cornerRadius(.regular))
-    ///
-    /// let value = Theme.default.radius(.regular)
-    /// ```
-    public let radius = Radius()
-    
-    /// # Length
-    /// Length values
-    ///
-    /// ## Example
-    /// ```swift
-    /// View.foundation(.size(width: .regular, height: .large))
-    ///
-    /// let value = Theme.default.length(.regular)
-    /// ```
-	public let length = Length()
-	
-	/// # Size
-	/// Size values
-	///
-	/// ## Example
-	/// ```swift
-	/// View.foundation(.size(.customSize))
-	/// ```
-	public let size = Size()
-    
-    /// # Spacing
-    /// Spacing values
-    ///
-    /// ## Example
-    /// ```swift
-    /// HStack(spacing: .foundation(.spacing(.regular))) { ... }
-    ///
-    /// let value = Theme.default.spacing(.regular)
-    /// ```
-    public let spacing = Spacing()
-    
-    public let font = Font()
-    public let shadow = Shadow()
+	public init(rawValue: String) {
+		self.rawValue = rawValue
+	}
 }
+
+private struct FoundationThemeKey: EnvironmentKey {
+	static let defaultValue: Theme? = nil
+}
+
+extension EnvironmentValues {
+	var foundationTheme: Theme? {
+		get { self[FoundationThemeKey.self] }
+		set { self[FoundationThemeKey.self] = newValue }
+	}
+}
+
 
 // MARK: - Extensions
 
@@ -203,33 +173,33 @@ public enum FoundationCGFloatVariables {
 }
 
 extension CGFloat {
-    public static func foundation(_ variable: FoundationCGFloatVariables) -> Self {
+	public static func foundation(_ variable: FoundationCGFloatVariables, in environment: EnvironmentValues? = nil) -> Self {
         switch variable {
         case .padding(let padding):
-            Theme.default.padding(padding)
+			padding.resolve(in: environment)
         case .spacing(let spacing):
-            Theme.default.spacing(spacing)
+			spacing.resolve(in: environment)
         case .radius(let radius):
-            Theme.default.radius(radius)
+			radius.resolve(in: environment)
         case .length(let length):
-			Theme.default.length(length)
+			length.resolve(in: environment)
 		case .sizeWidth(let size):
-			Theme.default.size(size).cgSize.width
+			size.resolve(in: environment).cgSize.width
 		case .sizeHeight(let size):
-			Theme.default.size(size).cgSize.height
+			size.resolve(in: environment).cgSize.height
         }
     }
 }
 
 extension CGSize {
 	public static func foundation(_ size: Theme.Size) -> Self {
-		Theme.default.size(size).cgSize
+		size.cgSize
 	}
 }
 
 extension ShapeStyle where Self == Theme.Color {
     public static func foundation(_ color: Theme.Color) -> Self {
-        Theme.default.color(color)
+       color
     }
 }
 
@@ -240,7 +210,7 @@ extension Color {
     ///   - colorScheme: Color will be resolved in selected color scheme
     /// - Returns: Returns SwiftUI's Color
     public static func foundation(_ color: Theme.Color, in colorScheme: FoundationColorScheme) -> Self {
-        Theme.default.color(color).resolveColor(in: .init(colorScheme: colorScheme))
+        color.resolveColor(in: .init(colorScheme: colorScheme))
     }
 }
 
@@ -249,6 +219,6 @@ extension Font {
     /// - Parameter token: Font variable token
     /// - Returns: Returns SwiftUI's font
     public static func foundation(_ token: Theme.Font) -> Self {
-        Theme.default.font(token)
+		token.value
     }
 }

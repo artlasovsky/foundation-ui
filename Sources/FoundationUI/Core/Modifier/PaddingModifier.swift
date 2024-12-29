@@ -10,12 +10,13 @@ import SwiftUI
 
 public extension FoundationModifierLibrary {
     struct PaddingModifier: ViewModifier {
-        let padding: CGFloat
+		@Environment(\.self) private var environment
+		let paddingToken: FoundationUI.Theme.Padding
         let edges: Edge.Set
         let adjustNestedCornerRadius: AdjustNestedCornerRadius?
         
         public func body(content: Content) -> some View {
-            content.padding(edges, padding)
+			content.padding(edges, padding)
                 .transformEnvironment(\.dynamicCornerRadius) { radius in
                     if let cornerRadius = radius, let adjustNestedCornerRadius {
                         var minCornerRadius: CGFloat = 0
@@ -31,6 +32,10 @@ public extension FoundationModifierLibrary {
                     }
                 }
         }
+		
+		private var padding: CGFloat {
+			paddingToken.resolve(in: environment)
+		}
         
         public enum AdjustNestedCornerRadius {
             case minimum(CGFloat = 2)
@@ -48,7 +53,7 @@ public extension FoundationModifier {
     ) -> FoundationModifier<FoundationModifierLibrary.PaddingModifier> {
         .init(
             .init(
-                padding: .foundation(.padding(token)),
+                paddingToken: token,
                 edges: edges,
                 adjustNestedCornerRadius: adjustNestedCornerRadius
             )
@@ -59,17 +64,17 @@ public extension FoundationModifier {
 struct PaddingModifierPreview: PreviewProvider {
     static var previews: some View {
         VStack {
-            Text(Theme.default.padding(.large).description)
-            Text(Theme.default.padding(.regular.up(.half)).description)
-            Text(Theme.default.padding(.regular).description)
-            Text(Theme.default.padding(.regular.down(.half)).description)
-            Text(Theme.default.padding(.small).description)
+			Text(Theme.Padding.large.value.description)
+			Text(Theme.Padding.regular.up(.half).value.description)
+			Text(Theme.Padding.regular.value.description)
+			Text(Theme.Padding.regular.down(.half).value.description)
+			Text(Theme.Padding.small.value.description)
 
             RoundedRectangle(cornerRadius: .foundation(.radius(.small)))
 				.foundation(.size(square: .regular))
                 .overlay {
                     RoundedRectangle(cornerRadius: .foundation(.radius(.regular)))
-                        .foundation(.padding(.init(value: Theme.default.padding(.regular)), .horizontal))
+						.foundation(.padding(.init(value: Theme.Padding.regular.value), .horizontal))
                         .foundation(.padding(.regular, .vertical))
 						.foundation(.size(square: .regular))
                         .foundation(.foreground(.white))

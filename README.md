@@ -27,14 +27,19 @@ To bridge the gap between rapid prototyping and production-ready apps, empowerin
 
 # Roadmap
 ## Nov '24
-- [x] API: Implement all core features
-- [x] API: Make it ready for beta testing
+- [x] Implement all core features
+- [x] Make it ready for beta testing
 - [x] Readme: Example
 - [x] Readme: The idea, core principles and mission of the FoundationUI
+- [x] Themes
+
+## Jan '25
+- [ ] Tests
+	- [ ] DynamicColor / ColorComponents
+	- [ ] Modifiers
+	- [ ] Variables
 - [ ] Code Documentation: DynamicColor / ColorComponent inits and methods
 - [ ] Code Documentation: Modifiers
- 
-## Dec '24
 - [ ] Documentation: Basic Interactive Tutorials
 	- [ ] How to extend theme (`Color`, `Padding`, `Size`, `Font`, `Radius`)
 	- [ ] How to create tokens with state (`isPressed`, `isHovered`, etc.)
@@ -46,12 +51,9 @@ To bridge the gap between rapid prototyping and production-ready apps, empowerin
 	- [ ] Create sharable themes
 	- [ ] Advanced features of the framework
 	- [ ] Extending the features of the framework
-- [ ] Tests
-	- [ ] DynamicColor / ColorComponents
-	- [ ] Modifiers
-	- [ ] Variables
+## Feb '25
 - [ ] watchOS support
-- [ ] API: Add OKLCH support
+- [ ] Add OKLCH support
 
 
 # Quick Start Guide

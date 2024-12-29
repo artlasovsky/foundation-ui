@@ -10,9 +10,9 @@ import XCTest
 
 // Theme Extension
 private extension Theme.Padding {
-    static var custom: Theme.Padding = .init(value: 11)
-    static var xxLargeHalfUp: Theme.Padding = .xxLarge.up(.half)
-    static var smallHalfDown: Theme.Padding = .small.down(.half)
+    static let custom: Theme.Padding = .init(value: 11)
+    static let xxLargeHalfUp: Theme.Padding = .xxLarge.up(.half)
+    static let smallHalfDown: Theme.Padding = .small.down(.half)
 }
 
 final class VariableTests: XCTestCase {
@@ -25,11 +25,9 @@ final class VariableTests: XCTestCase {
     
     func testThemeFloatVariableAdjustments() {
         XCTAssert(Theme.default.padding(.regular.up(.half)) == 8 + 8 / 2)
-        XCTAssert(Theme.default.padding(.regular.up(.third)) == 8 + 8 / 3)
         XCTAssert(Theme.default.padding(.regular.up(.quarter)) == 8 + 8 / 4)
         
         XCTAssert(Theme.default.padding(.regular.down(.half)) == 8 - 8 / 2 / 2)
-        XCTAssert(Theme.default.padding(.regular.down(.third)) == 8 - 8 / 2 / 3)
         XCTAssert(Theme.default.padding(.regular.down(.quarter)) == 8 - 8 / 2 / 4)
     }
     

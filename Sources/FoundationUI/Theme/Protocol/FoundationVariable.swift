@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 // MARK: - Variable
 #warning("TODO: Tests! To make sure it's working all the time!")
@@ -16,10 +17,37 @@ public protocol FoundationVariable: Hashable {
     func callAsFunction(_ token: Token) -> Result
 }
 
-public protocol FoundationVariableWithValue: FoundationVariable {
+public protocol FoundationVariableWithValue: FoundationVariable, AdjustableByEnvironment {
     associatedtype Value: Hashable
     var value: Value { get }
     init(value: Value)
+}
+
+public extension FoundationVariableWithValue {
+	func callAsFunction(_ token: Self) -> Value {
+		token.value
+	}
+	
+	func resolve(in environment: EnvironmentValues?) -> Value {
+		guard let environment else { return value }
+		return environmentAdjustment?(environment)?.value ?? value
+	}
+	
+	func resolve(theme: Theme?, colorScheme: FoundationColorScheme = .light) -> Value {
+		var environment = colorScheme.environmentValues()
+		environment.foundationTheme = theme
+		return environmentAdjustment?(environment)?.value ?? value
+	}
+}
+
+public extension FoundationVariableWithValue {
+	static func ==(lhs: Self, rhs: Self) -> Bool {
+		lhs.hashValue == rhs.hashValue
+	}
+	
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(value)
+	}
 }
 
 public extension FoundationVariableWithValue {
@@ -38,6 +66,8 @@ public extension FoundationVariableWithValue where Value: FloatingPoint {
     static func value(_ value: Value) -> Self {
         .init(value: value)
     }
+	
+	static var zero: Self { value(0) }
     
 	///	Step up from the current value by the following amounts:
 	///	- `.full` doubles the value
