@@ -26,14 +26,9 @@ By abstracting repetitive tasks and offering intuitive, reusable components, it 
 To bridge the gap between rapid prototyping and production-ready apps, empowering developers to swiftly create refined interfaces while maintaining best practice standards.
 
 # Roadmap
-## Nov '24
-- [x] Implement all core features
-- [x] Make it ready for beta testing
-- [x] Readme: Example
-- [x] Readme: The idea, core principles and mission of the FoundationUI
-- [x] Themes
 
 ## Q1 '25
+- [ ] Changelog
 - [ ] Tests
 	- [ ] DynamicColor / ColorComponents
 	- [ ] Modifiers
