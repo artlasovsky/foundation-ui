@@ -33,7 +33,7 @@ To bridge the gap between rapid prototyping and production-ready apps, empowerin
 - [x] Readme: The idea, core principles and mission of the FoundationUI
 - [x] Themes
 
-## Jan '25
+## Q1 '25
 - [ ] Tests
 	- [ ] DynamicColor / ColorComponents
 	- [ ] Modifiers
@@ -51,7 +51,6 @@ To bridge the gap between rapid prototyping and production-ready apps, empowerin
 	- [ ] Create sharable themes
 	- [ ] Advanced features of the framework
 	- [ ] Extending the features of the framework
-## Feb '25
 - [ ] watchOS support
 - [ ] Add OKLCH support
 
