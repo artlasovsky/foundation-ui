@@ -25,31 +25,6 @@ By abstracting repetitive tasks and offering intuitive, reusable components, it 
 ## Mission
 To bridge the gap between rapid prototyping and production-ready apps, empowering developers to swiftly create refined interfaces while maintaining best practice standards.
 
-# Roadmap
-
-## Q1 '25
-- [ ] Changelog
-- [ ] Tests
-	- [ ] DynamicColor / ColorComponents
-	- [ ] Modifiers
-	- [ ] Variables
-- [ ] Code Documentation: DynamicColor / ColorComponent inits and methods
-- [ ] Code Documentation: Modifiers
-- [ ] Documentation: Basic Interactive Tutorials
-	- [ ] How to extend theme (`Color`, `Padding`, `Size`, `Font`, `Radius`)
-	- [ ] How to create tokens with state (`isPressed`, `isHovered`, etc.)
-	- [ ] How to work with nested radii (`DynamicRoundedRectangle`)
-	- [ ] Cross platform design system
-	- [ ] How to use default theme
-- [ ] Documentation: Advanced Interactive Tutorials
-	- [ ] Theme scope
-	- [ ] Create sharable themes
-	- [ ] Advanced features of the framework
-	- [ ] Extending the features of the framework
-- [ ] watchOS support
-- [ ] Add OKLCH support
-
-
 # Quick Start Guide
 
 ## Setup
@@ -206,6 +181,15 @@ struct CustomButtonStylePreview: View {
 }
 ```
 
+<div align="center">
+	<img 
+		src="Documentation.docc/Resources/ReadmeSample/Images/readme_sample_01.jpg" 
+		alt="Step 1: Unstyled `CustomButtonStyle`"
+		width=400
+	>
+</div>
+
+
 ## Step 2 - Essentials
 
 ### Theme
@@ -337,6 +321,14 @@ struct CustomButtonStyle: ButtonStyle {
 }
 ```
 
+<div align="center">
+	<img 
+		src="Documentation.docc/Resources/ReadmeSample/Images/readme_sample_02.jpg" 
+		alt="Step 2 - Essentials"
+		width=400
+	>
+</div>
+
 ## Step 3 - Details
 
 For the final step, we will modify the highlight for the dark variant of the `CustomButtonStyle`. A vertical linear gradient will be applied over the background. 
@@ -422,6 +414,14 @@ struct CustomButtonStyle: ButtonStyle {
 }
 ```
 
+<div align="center">
+	<img 
+		src="Documentation.docc/Resources/ReadmeSample/Images/readme_sample_03.jpg" 
+		alt="Step 3 - Details"
+		width=400
+	>
+</div>
+
 ## Done!
 Your button now features a polished, native-like appearance that:
 - Seamlessly adapts to both light and dark modes
@@ -432,5 +432,30 @@ Your button now features a polished, native-like appearance that:
 This example illustrates how FoundationUI's modifiers and theme system collaborate to create sophisticated, maintainable UI components. 
 By separating style tokens into Theme extensions and utilizing features like DynamicColor and DynamicGradient, you can craft reusable components that naturally integrate with the platform while keeping your code tidy and organized.
 
-Interested in exploring more? 
-Dive into FoundationUI's other features using the built-in DocC documentation to create stunning, native-feeling interfaces!
+<br/>
+<br/>
+<br/>
+
+# Roadmap
+
+## Q1 '25
+- [ ] Changelog
+- [ ] Tests
+	- [ ] DynamicColor / ColorComponents
+	- [ ] Modifiers
+	- [ ] Variables
+- [ ] Code Documentation: DynamicColor / ColorComponent inits and methods
+- [ ] Code Documentation: Modifiers
+- [ ] Documentation: Basic Interactive Tutorials
+	- [ ] How to extend theme (`Color`, `Padding`, `Size`, `Font`, `Radius`)
+	- [ ] How to create tokens with state (`isPressed`, `isHovered`, etc.)
+	- [ ] How to work with nested radii (`DynamicRoundedRectangle`)
+	- [ ] Cross platform design system
+	- [ ] How to use default theme
+- [ ] Documentation: Advanced Interactive Tutorials
+	- [ ] Theme scope
+	- [ ] Create sharable themes
+	- [ ] Advanced features of the framework
+	- [ ] Extending the features of the framework
+- [ ] watchOS support
+- [ ] Add OKLCH support
