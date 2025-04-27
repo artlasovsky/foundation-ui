@@ -24,6 +24,26 @@ public protocol FoundationVariableWithValue: FoundationVariable, AdjustableByEnv
 }
 
 public extension FoundationVariableWithValue {
+	static func ==(lhs: Self, rhs: Value) -> Bool {
+		lhs.value == rhs
+	}
+	
+	static func ==(lhs: Value, rhs: Self) -> Bool {
+		lhs == rhs.value
+	}
+}
+
+public extension FoundationVariableWithValue where Value == CGFloat {
+	static func ==(lhs: Self, rhs: Int) -> Bool {
+		lhs.value == CGFloat(rhs)
+	}
+	
+	static func ==(lhs: Int, rhs: Self) -> Bool {
+		CGFloat(lhs) == rhs.value
+	}
+}
+
+public extension FoundationVariableWithValue {
 	func callAsFunction(_ token: Self) -> Value {
 		token.value
 	}
