@@ -10,7 +10,7 @@ import SwiftUI
 
 public extension Theme {
     @frozen
-	struct Radius: FoundationVariableWithValue {
+	struct Radius: FoundationVariableWithCGFloatValue {
         public var value: CGFloat
 		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Radius?)?
         

@@ -10,7 +10,7 @@ import SwiftUI
 
 public extension Theme {
 	@frozen
-	struct Length: FoundationVariableWithValue {
+	struct Length: FoundationVariableWithCGFloatValue {
 		public var value: CGFloat
 		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Length?)?
 		
@@ -35,10 +35,6 @@ public extension Theme {
 		public init(width: Length, height: Length) {
 			self.value = .init(width: width, height: height)
 		}
-		
-		public init(width: CGFloat, height: CGFloat) {
-			self.value = .init(width: .init(width), height: .init(height))
-        }
 		
 		public init(value: Configuration) {
 			self.value = value

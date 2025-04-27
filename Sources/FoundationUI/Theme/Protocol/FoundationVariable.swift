@@ -43,6 +43,19 @@ public extension FoundationVariableWithValue where Value == CGFloat {
 	}
 }
 
+public extension FoundationVariableWithValue where Value == CGFloat {
+	init(floatLiteral value: FloatLiteralType) {
+		self.init(value: value)
+	}
+	init(integerLiteral value: Int) {
+		self.init(value: Value(value))
+	}
+}
+
+public protocol FoundationVariableWithCGFloatValue: FoundationVariableWithValue, ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral {
+	associatedtype Value = CGFloat
+}
+
 public extension FoundationVariableWithValue {
 	func callAsFunction(_ token: Self) -> Value {
 		token.value

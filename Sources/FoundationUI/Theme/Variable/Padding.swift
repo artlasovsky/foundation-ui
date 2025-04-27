@@ -10,7 +10,7 @@ import SwiftUI
 
 public extension Theme {
     @frozen
-	struct Padding: FoundationVariableWithValue {
+	struct Padding: FoundationVariableWithCGFloatValue {
         public var value: CGFloat
 		public var environmentAdjustment: (@Sendable (_ environment: EnvironmentValues) -> Self?)?
         init() {

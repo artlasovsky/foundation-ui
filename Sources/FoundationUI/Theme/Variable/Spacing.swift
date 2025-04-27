@@ -10,7 +10,7 @@ import SwiftUI
 
 public extension Theme {
     @frozen
-	struct Spacing: FoundationVariableWithValue {
+	struct Spacing: FoundationVariableWithCGFloatValue {
         public var value: CGFloat
 		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Spacing?)?
 		

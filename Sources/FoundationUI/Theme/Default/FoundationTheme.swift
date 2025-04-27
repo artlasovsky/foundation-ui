@@ -68,13 +68,13 @@ public extension FoundationThemePadding {
 }
 
 internal extension Theme.Padding {
-    static var xxSmall: Theme.Padding { .init(1) }
-    static var xSmall:  Theme.Padding { .init(2) }
-    static var small:   Theme.Padding { .init(4) }
-    static var regular: Theme.Padding { .init(8) }
-    static var large:   Theme.Padding { .init(16) }
-    static var xLarge:  Theme.Padding { .init(32) }
-    static var xxLarge: Theme.Padding { .init(64) }
+    static var xxSmall: Theme.Padding { 1 }
+    static var xSmall:  Theme.Padding { 2 }
+    static var small:   Theme.Padding { 4 }
+    static var regular: Theme.Padding { 8 }
+    static var large:   Theme.Padding { 16 }
+    static var xLarge:  Theme.Padding { 32 }
+    static var xxLarge: Theme.Padding { 64 }
 }
 
 // MARK: - Radius
@@ -121,13 +121,13 @@ public extension FoundationThemeRadius {
 }
 
 internal extension Theme.Radius {
-    static var xxSmall: Theme.Radius { .init(2) }
-    static var xSmall:  Theme.Radius { .init(4) }
-    static var small:   Theme.Radius { .init(6) }
-    static var regular: Theme.Radius { .init(8) }
-    static var large:   Theme.Radius { .init(10) }
-    static var xLarge:  Theme.Radius { .init(12) }
-    static var xxLarge: Theme.Radius { .init(14) }
+    static var xxSmall: Theme.Radius { 2 }
+    static var xSmall:  Theme.Radius { 4 }
+    static var small:   Theme.Radius { 6 }
+    static var regular: Theme.Radius { 8 }
+    static var large:   Theme.Radius { 10 }
+    static var xLarge:  Theme.Radius { 12 }
+    static var xxLarge: Theme.Radius { 14 }
 }
 
 // MARK: - Length
@@ -174,13 +174,13 @@ public extension FoundationThemeLength {
 }
 
 internal extension Theme.Length {
-    static var xxSmall: Theme.Length { .init(8) }
-    static var xSmall:  Theme.Length { .init(16) }
-    static var small:   Theme.Length { .init(32) }
-    static var regular: Theme.Length { .init(64) }
-    static var large:   Theme.Length { .init(128) }
-    static var xLarge:  Theme.Length { .init(256) }
-    static var xxLarge: Theme.Length { .init(512) }
+    static var xxSmall: Theme.Length { 8 }
+    static var xSmall:  Theme.Length { 16 }
+    static var small:   Theme.Length { 32 }
+    static var regular: Theme.Length { 64 }
+    static var large:   Theme.Length { 128 }
+    static var xLarge:  Theme.Length { 256 }
+    static var xxLarge: Theme.Length { 512 }
 }
 
 // MARK: - Spacing
@@ -227,13 +227,13 @@ public extension FoundationThemeSpacing {
 }
 
 internal extension Theme.Spacing {
-    static var xxSmall: Theme.Spacing { .init(1) }
-    static var xSmall:  Theme.Spacing { .init(2) }
-    static var small:   Theme.Spacing { .init(4) }
-    static var regular: Theme.Spacing { .init(8) }
-    static var large:   Theme.Spacing { .init(16) }
-    static var xLarge:  Theme.Spacing { .init(32) }
-    static var xxLarge: Theme.Spacing { .init(64) }
+    static var xxSmall: Theme.Spacing { 1 }
+    static var xSmall:  Theme.Spacing { 2 }
+    static var small:   Theme.Spacing { 4 }
+    static var regular: Theme.Spacing { 8 }
+    static var large:   Theme.Spacing { 16 }
+    static var xLarge:  Theme.Spacing { 32 }
+    static var xxLarge: Theme.Spacing { 64 }
 }
 
 // MARK: - Shadow
