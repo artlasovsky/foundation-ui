@@ -1,9 +1,10 @@
-import XCTest
+import Testing
 import SwiftUI
 @testable import FoundationUI
 
-final class ColorComponentsInitializers: XCTestCase {
-    func testHex() throws {
+@Suite("ColorComponents")
+struct ColorComponentsTests {
+    @Test func hex() throws {
         checkHex("f30", target: (255, 51, 0, 255))
         checkHex("#f30", target: (255, 51, 0, 255))
         checkHex("FF3300", target: (255, 51, 0, 255))
@@ -17,7 +18,7 @@ final class ColorComponentsInitializers: XCTestCase {
         checkHex("#fa3b30fa", target: (250, 59, 48, 250))
     }
     
-    func testIdenticalInitialization() throws {
+	@Test func identicalInitialization() throws {
         let hsb = ColorComponents(hue: 3 / 360, saturation: 0.81, brightness: 1)
         let hsb360 = ColorComponents(hue360: 3, saturation: 81, brightness: 100)
         let hex = ColorComponents(hex: "#FF3B30")
@@ -25,14 +26,14 @@ final class ColorComponentsInitializers: XCTestCase {
         let rgb8 = ColorComponents(red8bit: 255, green: 59, blue: 48)
         let color = Color(hue: 3 / 360, saturation: 0.81, brightness: 1)
         
-        XCTAssertEqualColors(hsb, rgb)
-        XCTAssertEqualColors(hsb, hsb360)
-        XCTAssertEqualColors(hsb, rgb8)
-        XCTAssertEqualColors(hsb, hex)
-        XCTAssert(hsb.color == color)
+		assertColorsAreEqual(hsb, rgb)
+		assertColorsAreEqual(hsb, hsb360)
+		assertColorsAreEqual(hsb, rgb8)
+		assertColorsAreEqual(hsb, hex)
+		#expect(hsb.color == color)
     }
     
-    func testMultiply() throws {
+	@Test func testMultiply() throws {
         let color = ColorComponents(
             hue: 0.01,
             saturation: 0.81,
@@ -57,10 +58,10 @@ final class ColorComponentsInitializers: XCTestCase {
             opacity: color.opacity * opacityAdjust
         )
         
-        XCTAssert(adjusted == targetColor, "\(adjusted) \n should be equal to \(targetColor)")
+		#expect(adjusted == targetColor, "\(adjusted) \n should be equal to \(targetColor)")
     }
     
-    func testOverride() throws {
+	@Test func override() throws {
         let color = ColorComponents(
             hue: 0.01,
             saturation: 0.81,
@@ -85,36 +86,16 @@ final class ColorComponentsInitializers: XCTestCase {
             opacity: opacityAdjust
         )
         
-        XCTAssert(adjusted == targetColor, "\(adjusted) \n should be equal to \(targetColor)")
+		#expect(adjusted == targetColor, "\(adjusted) \n should be equal to \(targetColor)")
     }
     
     #warning("Conditional Adjustment Tests")
 }
 
-private func XCTAssertEqualColors(
-    _ first: ColorComponents,
-    _ second: ColorComponents,
-    file: StaticString = #filePath,
-    line: UInt = #line
-) {
-    XCTAssert(first == second, "\(first) not precisely equal to \(second)", file: file, line: line)
+private func assertColorsAreEqual(_ first: ColorComponents, _ second: ColorComponents) {
+	#expect(first == second, "\(first) not precisely equal to \(second)")
 }
 
-private func XCTAssertComponent<V: Numeric>(
-    name: String? = nil,
-    value: V,
-    correct: V,
-    file: StaticString = #filePath,
-    line: UInt = #line
-) {
-    XCTAssert(value == correct, [name, "should be \(correct), but got \(value)"].compactMap({ $0 }).joined(separator: " "), file: file, line: line)
-}
-
-private func checkHex(
-    _ hex: String,
-    target: (r: Int, g: Int, b: Int, a: Int),
-    file: StaticString = #filePath,
-    line: UInt = #line
-) {
-    XCTAssertEqual(ColorComponents(hex: hex), .init(red8bit: target.r, green: target.g, blue: target.b, opacity: target.a))
+private func checkHex(_ hex: String, target: (r: Int, g: Int, b: Int, a: Int)) {
+	#expect(ColorComponents(hex: hex) == .init(red8bit: target.r, green: target.g, blue: target.b, opacity: target.a))
 }

@@ -1,6 +1,8 @@
-import XCTest
+import Testing
 import SwiftUI
 @testable import FoundationUI
+
+extension Theme.Color: FoundationThemeColor {}
 
 private let lightColor = ColorComponents(hue: 0.1, saturation: 0.8, brightness: 1)
 private let lightAccessibleColor = lightColor.saturation(1.2)
@@ -24,16 +26,16 @@ extension Color {
         )
     }
 }
-
-final class DynamicColorTests: XCTestCase {
-    func testInit() throws {
-        XCTAssert(color.resolveColor(in: .init(colorScheme: .light, colorSchemeContrast: .standard)) == lightColor.color)
-        XCTAssert(color.resolveColor(in: .init(colorScheme: .light, colorSchemeContrast: .increased)) == lightAccessibleColor.color)
-        XCTAssert(color.resolveColor(in: .init(colorScheme: .dark, colorSchemeContrast: .standard)) == darkColor.color)
-        XCTAssert(color.resolveColor(in: .init(colorScheme: .dark, colorSchemeContrast: .increased)) == darkAssessibleColor.color)
-    }
+@Suite("DynamicColor")
+struct DynamicColorTests {
+	@Test func initialization() async throws {
+		#expect(color.resolveColor(in: .init(colorScheme: .light, colorSchemeContrast: .standard)) == lightColor.color)
+		#expect(color.resolveColor(in: .init(colorScheme: .light, colorSchemeContrast: .increased)) == lightAccessibleColor.color)
+		#expect(color.resolveColor(in: .init(colorScheme: .dark, colorSchemeContrast: .standard)) == darkColor.color)
+		#expect(color.resolveColor(in: .init(colorScheme: .dark, colorSchemeContrast: .increased)) == darkAssessibleColor.color)
+	}
     
-    func testSimpleAdjust() throws {
+	@Test func simpleAdjust() throws {
         let hueAdjust: CGFloat = 0.2
         let saturationAdjust: CGFloat = 0.8
         let brightnessAdjust: CGFloat = 2
@@ -52,7 +54,7 @@ final class DynamicColorTests: XCTestCase {
             opacity: lightColor.opacity * opacityAdjust
         )
         
-        XCTAssert(adjusted.light == targetLight)
+		#expect(adjusted.light == targetLight)
         
         if #available(macOS 14.0, iOS 17.0, *) {
             // Compare with SwiftUI.Color
@@ -65,15 +67,15 @@ final class DynamicColorTests: XCTestCase {
             let env = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
             let resolvedAdjusted = adjusted.resolveColor(in: env).preciseResolve(in: env)
             let resolvedTarget = targetColor.preciseResolve(in: env)
-            XCTAssert(resolvedAdjusted == resolvedTarget)
-            XCTAssert(resolvedAdjusted.red == resolvedTarget.red)
-            XCTAssert(resolvedAdjusted.green == resolvedTarget.green)
-            XCTAssert(resolvedAdjusted.blue == resolvedTarget.blue)
-            XCTAssert(resolvedAdjusted.opacity == resolvedTarget.opacity)
+			#expect(resolvedAdjusted == resolvedTarget)
+			#expect(resolvedAdjusted.red == resolvedTarget.red)
+			#expect(resolvedAdjusted.green == resolvedTarget.green)
+			#expect(resolvedAdjusted.blue == resolvedTarget.blue)
+			#expect(resolvedAdjusted.opacity == resolvedTarget.opacity)
         }
     }
     
-    func testConditionalAdjust() throws {
+    @Test func conditionalAdjust() throws {
         let env = EnvironmentValues(colorScheme: .light, colorSchemeContrast: .standard)
         
         let saturated = DynamicColor(.init(hue: 0, saturation: 0.4, brightness: 1))
@@ -88,19 +90,19 @@ final class DynamicColorTests: XCTestCase {
         let adjustedGrayscale = grayscale
             .brightness(dynamic: conditionalBrightness(_:))
         
-        XCTAssert(adjustedSaturated.resolveColor(in: env) == Color(hue: 0, saturation: 0.4, brightness: 0.9))
-        XCTAssert(adjustedGrayscale.resolveColor(in: env) == Color(hue: 0, saturation: 0, brightness: 0.8))
+		#expect(adjustedSaturated.resolveColor(in: env) == Color(hue: 0, saturation: 0.4, brightness: 0.9))
+		#expect(adjustedGrayscale.resolveColor(in: env) == Color(hue: 0, saturation: 0, brightness: 0.8))
     }
     
-    func testColorSchemeOverride() throws {
-        let color = Theme.default.color(.primary).color
+    @Test func colorSchemeOverride() throws {
+		let color = Theme.Color.primary.color
         
-        XCTAssert(color.light == color.colorScheme(.light).dark)
-        XCTAssert(color.light == color.colorScheme(.light).light)
-        XCTAssert(color.light == color.colorScheme(.light).lightAccessible)
-        XCTAssert(color.light == color.colorScheme(.light).darkAccessible)
+		#expect(color.light == color.colorScheme(.light).dark)
+		#expect(color.light == color.colorScheme(.light).light)
+		#expect(color.light == color.colorScheme(.light).lightAccessible)
+		#expect(color.light == color.colorScheme(.light).darkAccessible)
         
-        XCTAssert(color.light.opacity(0.5) == color.colorScheme(.light).opacity(0.5).darkAccessible)
+		#expect(color.light.opacity(0.5) == color.colorScheme(.light).opacity(0.5).darkAccessible)
     }
     
     #warning("BlendMode Tests")
