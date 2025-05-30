@@ -203,6 +203,13 @@ extension ShapeStyle where Self == Theme.Color {
     }
 }
 
+@available(macOS 14.0, *)
+extension Animation {
+	public static func foundation(_ animation: Theme.Animation) -> Self {
+		animation.value
+	}
+}
+
 extension Color {
     /// Get ``SwiftUI/Color`` from FoundationUI's theme color variables
     /// - Parameters:
