@@ -203,7 +203,7 @@ extension ShapeStyle where Self == Theme.Color {
     }
 }
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 extension Animation {
 	public static func foundation(_ animation: Theme.Animation) -> Self {
 		animation.value

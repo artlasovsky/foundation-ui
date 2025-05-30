@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Theme {
-	@available(macOS 14.0, *)
+	@available(macOS 14.0, iOS 17.0, *)
 	@frozen
 	public struct Animation: FoundationVariableWithValue {
 		public typealias Result = SwiftUI.Animation
