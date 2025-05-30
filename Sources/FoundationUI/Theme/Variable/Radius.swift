@@ -12,7 +12,7 @@ public extension Theme {
     @frozen
 	struct Radius: FoundationVariableWithCGFloatValue {
         public var value: CGFloat
-		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Radius?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
         
 		init() {
             self.value = 0

@@ -63,13 +63,13 @@ public extension FoundationVariableWithValue {
 	
 	func resolve(in environment: EnvironmentValues?) -> Value {
 		guard let environment else { return value }
-		return environmentAdjustment?(environment)?.value ?? value
+		return environmentAdjustment?(self, environment)?.value ?? value
 	}
 	
 	func resolve(theme: Theme?, colorScheme: FoundationColorScheme = .light) -> Value {
 		var environment = colorScheme.environmentValues()
 		environment.foundationTheme = theme
-		return environmentAdjustment?(environment)?.value ?? value
+		return environmentAdjustment?(self, environment)?.value ?? value
 	}
 }
 

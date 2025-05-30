@@ -10,9 +10,9 @@ import SwiftUI
 
 extension Theme {
     @frozen
-	public struct Gradient: FoundationVariableWithValue {        
+	public struct Gradient: FoundationVariableWithValue {
 		public var value: DynamicGradient
-		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Gradient?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
         
         public init() {
 			self.value = .init(colors: [], type: .linear(startPoint: .top, endPoint: .bottom))

@@ -15,7 +15,7 @@ extension Theme {
         private var variant: Variant?
         private var colorScheme: FoundationColorScheme?
 		
-		public var environmentAdjustment: (@Sendable (_ environmentAdjustment: EnvironmentValues) -> Self?)? = nil
+		public var environmentAdjustment: EnvironmentAdjustment?
         
         public init(color: DynamicColor) {
             self.color = color
@@ -140,7 +140,7 @@ extension Theme.Color {
     }
 	
 	private func resolveWithAdjustedEnviroment(in environment: EnvironmentValues) -> Self {
-		environmentAdjustment?(environment) ?? self
+		environmentAdjustment?(self, environment) ?? self
 	}
 }
 

@@ -12,7 +12,7 @@ public extension Theme {
 	@frozen
 	struct Length: FoundationVariableWithCGFloatValue {
 		public var value: CGFloat
-		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Length?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
 		
 		init() {
 			self.value = 0
@@ -26,7 +26,7 @@ public extension Theme {
     @frozen
 	struct Size: FoundationVariableWithValue {
 		public var value: Configuration
-		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Size?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
         
 		init() {
 			self.value = .zero

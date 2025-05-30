@@ -14,7 +14,7 @@ extension Theme {
         public typealias Result = SwiftUI.Font
         
         public var value: SwiftUI.Font
-		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Font?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
         
         public init() { self = .init(.body) }
         

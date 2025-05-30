@@ -12,7 +12,7 @@ public extension Theme {
     @frozen
 	struct Spacing: FoundationVariableWithCGFloatValue {
         public var value: CGFloat
-		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Spacing?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
 		
         init() {
             self.value = 0

@@ -12,7 +12,7 @@ extension Theme {
     @frozen
 	public struct Shadow: FoundationVariableWithValue {        
         public var value: Configuration
-		public var environmentAdjustment: (@Sendable (EnvironmentValues) -> Theme.Shadow?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
         
         public init() {
             self = .init(color: .clear, radius: 0)

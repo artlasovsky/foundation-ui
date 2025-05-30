@@ -12,7 +12,7 @@ public extension Theme {
     @frozen
 	struct Padding: FoundationVariableWithCGFloatValue {
         public var value: CGFloat
-		public var environmentAdjustment: (@Sendable (_ environment: EnvironmentValues) -> Self?)?
+		public var environmentAdjustment: EnvironmentAdjustment?
         init() {
             self.value = 0
         }

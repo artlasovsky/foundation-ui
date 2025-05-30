@@ -8,24 +8,23 @@
 import SwiftUI
 
 public protocol AdjustableByEnvironment {
-	var environmentAdjustment: (@Sendable (_ environment: EnvironmentValues) -> Self?)? { get set }
+	typealias EnvironmentAdjustment = @Sendable (_ variable: Self, _ environment: EnvironmentValues) -> Self?
+	var environmentAdjustment: (EnvironmentAdjustment)? { get set }
 	
 	func themeable(_ adjustment: @escaping @Sendable (_ theme: Theme?) -> Self?) -> Self
-	func withEnvironmentAdjustment(_ adjustment: @escaping @Sendable (_ environment: EnvironmentValues) -> Self?) -> Self
+	func withEnvironmentAdjustment(_ adjustment: @escaping EnvironmentAdjustment) -> Self
 }
 
 public extension AdjustableByEnvironment {
-	func withEnvironmentAdjustment(_ adjustment: @escaping @Sendable (_ environment: EnvironmentValues) -> Self?) -> Self {
+	func withEnvironmentAdjustment(_ adjustment: @escaping EnvironmentAdjustment) -> Self {
 		var copy = self
 		copy.environmentAdjustment = adjustment
 		return copy
 	}
 	
 	func themeable(_ adjustment: @escaping @Sendable (_ theme: Theme?) -> Self?) -> Self {
-		var copy = self
-		copy.environmentAdjustment = { env in
-			adjustment(env.foundationTheme)
+		withEnvironmentAdjustment { _, environment in
+			adjustment(environment.foundationTheme)
 		}
-		return copy
 	}
 }

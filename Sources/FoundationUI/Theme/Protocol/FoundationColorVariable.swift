@@ -13,7 +13,6 @@ public protocol FoundationColorVariable: FoundationVariable, ShapeStyle, Adjusta
     associatedtype Resolved = ShapeStyle
     associatedtype ColorValue
     var color: ColorValue { get }
-	var environmentAdjustment: (@Sendable (_ environment: EnvironmentValues) -> Self?)? { get set }
     
     func variant(_ variant: Variant) -> Self
     static func dynamic(_ variant: Variant) -> Self
