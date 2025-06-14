@@ -48,7 +48,7 @@ enum EitherShape<First: Shape, Second: Shape>: Shape {
 extension ShapeBuilder {
     @ShapeBuilder
     static func resolveShape(_ shape: some Shape, dynamicCornerRadius: CGFloat?, dynamicCornerRadiusStyle: RoundedCornerStyle) -> some Shape {
-        if let shape = shape as? DynamicRoundedRectangle {
+        if let shape = shape as? ConcentricRoundedRectangle {
             shape.setCornerRadius(dynamicCornerRadius, style: dynamicCornerRadiusStyle)
         } else {
             shape
@@ -63,7 +63,7 @@ extension ShapeBuilder {
         dynamicCornerRadius: CGFloat?,
         dynamicCornerRadiusStyle: RoundedCornerStyle
     ) -> some View {
-        if let shape = shape as? DynamicRoundedRectangle {
+        if let shape = shape as? ConcentricRoundedRectangle {
             shape
                 .setCornerRadius(dynamicCornerRadius, style: dynamicCornerRadiusStyle)
                 .adjusted(inset: inset, strokeWidth: strokeWidth)

@@ -514,7 +514,7 @@ struct Sample_Preview: PreviewProvider {
                     ListItem(label: "Item Three", isSelected: true)
                 }
                 .foundation(.size(width: .regular.up(.half), alignment: .leading))
-                .foundation(.padding(.small.up(.half), adjustNestedCornerRadius: .soft))
+                .foundation(.padding(.small.up(.half), concentricShapeStyle: .soft))
                 .foundation(.background(.primary.variant(.background)))
                 .foundation(.border(.primary.variant(.border), width: 0.75, placement: .outside))
                 .foundation(.backgroundShadow(.xLarge))

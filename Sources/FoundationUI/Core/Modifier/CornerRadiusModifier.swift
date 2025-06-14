@@ -59,7 +59,7 @@ struct CornerRadiusModifiefPreview: PreviewProvider {
                 .foundation(.padding(.regular, .vertical))
                 // Use Dynamic Corner Radius
                 .foundation(.background(.dynamic(.fill)))
-				.foundation(.padding(.small, adjustNestedCornerRadius: .soft))
+				.foundation(.padding(.small, concentricShapeStyle: .soft))
             Spacer()
             Text("Custom Radius")
                 .frame(maxWidth: .infinity)

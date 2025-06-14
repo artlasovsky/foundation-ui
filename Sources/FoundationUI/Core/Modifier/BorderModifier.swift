@@ -64,7 +64,7 @@ public extension FoundationModifier {
         width: CGFloat = 1,
         placement: FoundationModifierLibrary.BorderPlacement = .center,
         level: FoundationModifierLibrary.BorderLevel = .above,
-        in shape: S = .dynamicRoundedRectangle()
+        in shape: S = .concentricShape()
     ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape, width: width, placement: placement, level: level))
     }
@@ -74,7 +74,7 @@ public extension FoundationModifier {
         width: CGFloat = 1,
         placement: FoundationModifierLibrary.BorderPlacement = .center,
         level: FoundationModifierLibrary.BorderLevel = .above,
-        in shape: S = .dynamicRoundedRectangle()
+        in shape: S = .concentricShape()
     ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Style, S>> {
         .init(.init(style: style, shape: shape, width: width, placement: placement, level: level))
     }
@@ -84,7 +84,7 @@ public extension FoundationModifier {
 		width: CGFloat = 1,
 		placement: FoundationModifierLibrary.BorderPlacement = .center,
 		level: FoundationModifierLibrary.BorderLevel = .above,
-		in shape: S = .dynamicRoundedRectangle()
+		in shape: S = .concentricShape()
 	) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<SwiftUI.Color, S>> {
 		.init(.init(style: color, shape: shape, width: width, placement: placement, level: level))
 	}
@@ -94,7 +94,7 @@ public extension FoundationModifier {
 		width: CGFloat = 1,
 		placement: FoundationModifierLibrary.BorderPlacement = .center,
 		level: FoundationModifierLibrary.BorderLevel = .above,
-		in shape: S = .dynamicRoundedRectangle()
+		in shape: S = .concentricShape()
 	) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Theme.Gradient, S>> {
 		.init(.init(style: gradient, shape: shape, width: width, placement: placement, level: level))
 	}

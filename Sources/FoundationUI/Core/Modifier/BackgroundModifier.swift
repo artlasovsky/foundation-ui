@@ -33,7 +33,7 @@ public extension FoundationModifierLibrary {
 public extension FoundationModifier {
     static func background<S: Shape, VM: ViewModifier>(
         _ color: Theme.Color,
-        in shape: S = .dynamicRoundedRectangle(),
+        in shape: S = .concentricShape(),
         modifier: VM = EmptyModifier()
     ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape))
@@ -41,7 +41,7 @@ public extension FoundationModifier {
     
     static func backgroundStyle<Style: ShapeStyle, S: Shape, VM: ViewModifier>(
         _ style: Style,
-        in shape: S = .dynamicRoundedRectangle(),
+        in shape: S = .concentricShape(),
         modifier: VM = EmptyModifier()
     ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Style, S>> {
         .init(.init(style: style, shape: shape))
@@ -49,7 +49,7 @@ public extension FoundationModifier {
     
     static func backgroundColor<S: Shape, VM: ViewModifier>(
         _ color: Color,
-        in shape: S = .dynamicRoundedRectangle(),
+        in shape: S = .concentricShape(),
         modifier: VM = EmptyModifier()
     ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Color, S>> {
         .init(.init(style: color, shape: shape))
@@ -57,7 +57,7 @@ public extension FoundationModifier {
 	
 	static func backgroundGradient<S: Shape, VM: ViewModifier>(
 		_ gradient: Theme.Gradient,
-		in shape: S = .dynamicRoundedRectangle(),
+		in shape: S = .concentricShape(),
 		modifier: VM = EmptyModifier()
 	) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Theme.Gradient, S>> {
 		.init(.init(style: gradient, shape: shape))
@@ -78,14 +78,25 @@ struct BackgroundModifier_Preview: PreviewProvider {
                 .foundation(.background(.primary.variant(.background), in: .roundedRectangle(.regular)))
                 .foundation(.backgroundShadow(.regular, in: .roundedRectangle(.regular)))
             //
-            ZStack {
-                Text("Radius")
+            VStack {
+                Text("Concentric")
                     .foundation(.padding(.large))
-                    .foundation(.background(.dynamic(.fillProminent), in: .dynamicRoundedRectangle()))
-                    .foundation(.padding(.small, adjustNestedCornerRadius: .sharp))
-                    .foundation(.background(.primary, in: .dynamicRoundedRectangle()))
+					.foundation(.background(.dynamic(.fillProminent), in: .concentricShape()))
+					.foundation(.padding(.small.up(.half), concentricShapeStyle: .sharp))
+					.foundation(.background(.primary, in: .concentricShape()))
+					.foundation(.border(.red))
+				Text("Concentric")
+					.foundation(.padding(.large))
+					.foundation(.background(.dynamic(.fillProminent), in: .concentricShape(padding: .small.up(.half))))
+					.foundation(.background(.primary, in: .concentricShape()))
+					.foundation(.border(.red))
+				Text("Concentric")
+					.foundation(.padding(.large))
+					.foundation(.background(.dynamic(.fillProminent), in: .concentricShape()))
+					.foundation(.background(.primary, in: .concentricShape(padding: .small.up(.half).negative())))
+					.foundation(.border(.red))
             }
-            .foundation(.cornerRadius(.large))
+            .foundation(.cornerRadius(.xLarge))
             Text("Adj")
                 .border(.blue.opacity(0.5))
                 .foundation(.padding(.regular))

@@ -85,7 +85,7 @@ public extension FoundationModifier {
 	
     static func backgroundShadow<S: Shape>(
         _ token: Theme.Shadow,
-        in shape: S = .dynamicRoundedRectangle()
+        in shape: S = .concentricShape()
     ) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
         .init(.init(
 			style: { env in token.resolve(in: env).color },
@@ -103,7 +103,7 @@ public extension FoundationModifier {
 		spread: CGFloat = 0,
 		x: CGFloat = 0,
 		y: CGFloat = 0,
-		in shape: S = .dynamicRoundedRectangle()
+		in shape: S = .concentricShape()
 	) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Theme.Color, S>> {
 		.init(.init(
 			style: { _ in color },
@@ -118,7 +118,7 @@ public extension FoundationModifier {
 		spread: CGFloat = 0,
 		x: CGFloat = 0,
 		y: CGFloat = 0,
-		in shape: S = .dynamicRoundedRectangle()
+		in shape: S = .concentricShape()
 	) -> FoundationModifier<FoundationModifierLibrary.ShadowModifier<Style, S>> {
 		.init(.init(
 			style: { env in style },
@@ -133,14 +133,14 @@ struct ShadowModifierPreview: PreviewProvider {
         VStack {
             Text("Shadow")
 				.foundation(.size(square: .regular))
-                .foundation(.background(.dynamic(.background), in: .dynamicRoundedRectangle()))
+                .foundation(.background(.dynamic(.background), in: .concentricShape()))
                 .foundation(
                     .backgroundShadowColor(
                         .dynamic(.background).colorScheme(.dark),
                         radius: 2.5,
                         spread: -1.5,
                         y: 2,
-                        in: .dynamicRoundedRectangle()
+                        in: .concentricShape()
                     )
                 )
                 .foundation(.cornerRadius(.regular))

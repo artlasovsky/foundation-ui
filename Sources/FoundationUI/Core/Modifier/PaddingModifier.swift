@@ -13,14 +13,14 @@ public extension FoundationModifierLibrary {
 		@Environment(\.self) private var environment
 		let paddingToken: FoundationUI.Theme.Padding
         let edges: Edge.Set
-        let adjustNestedCornerRadius: AdjustNestedCornerRadius?
+        let concentricShapeStyle: ConcentricShapeStyle?
         
         public func body(content: Content) -> some View {
 			content.padding(edges, padding)
                 .transformEnvironment(\.dynamicCornerRadius) { radius in
-                    if let cornerRadius = radius, let adjustNestedCornerRadius {
+                    if let cornerRadius = radius, let concentricShapeStyle {
                         var minCornerRadius: CGFloat = 0
-                        switch adjustNestedCornerRadius {
+                        switch concentricShapeStyle {
                         case .minimum(let radius):
                             minCornerRadius = radius
                         case .soft:
@@ -37,7 +37,7 @@ public extension FoundationModifierLibrary {
 			paddingToken.resolve(in: environment)
 		}
         
-        public enum AdjustNestedCornerRadius {
+        public enum ConcentricShapeStyle {
             case minimum(CGFloat = 2)
             case soft
             case sharp
@@ -49,13 +49,13 @@ public extension FoundationModifier {
     static func padding(
         _ token: Theme.Padding,
         _ edges: Edge.Set = .all,
-        adjustNestedCornerRadius: FoundationModifierLibrary.PaddingModifier.AdjustNestedCornerRadius? = .none
+		concentricShapeStyle: FoundationModifierLibrary.PaddingModifier.ConcentricShapeStyle? = .none
     ) -> FoundationModifier<FoundationModifierLibrary.PaddingModifier> {
         .init(
             .init(
                 paddingToken: token,
                 edges: edges,
-                adjustNestedCornerRadius: adjustNestedCornerRadius
+				concentricShapeStyle: concentricShapeStyle
             )
         )
     }

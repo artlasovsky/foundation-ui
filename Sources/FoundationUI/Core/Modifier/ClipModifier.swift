@@ -27,7 +27,7 @@ public extension FoundationModifierLibrary {
 }
 
 public extension FoundationModifier {
-    static func clip<S: Shape>(_ shape: S = .dynamicRoundedRectangle()) -> FoundationModifier<FoundationModifierLibrary.ClipModifier<S>> {
+    static func clip<S: Shape>(_ shape: S = .concentricShape()) -> FoundationModifier<FoundationModifierLibrary.ClipModifier<S>> {
         .init(.init(shape: shape))
     }
 }

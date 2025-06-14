@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct DynamicRoundedRectangle: InsettableShape {
+public struct ConcentricRoundedRectangle: InsettableShape {
     public func inset(by amount: CGFloat) -> Self {
         var copy = self
         copy.padding = amount
@@ -41,8 +41,8 @@ public struct DynamicRoundedRectangle: InsettableShape {
     }
 }
 
-public extension Shape where Self == DynamicRoundedRectangle {
-    static func dynamicRoundedRectangle(padding: CGFloat = 0) -> Self { .init(padding: padding) }
+public extension Shape where Self == ConcentricRoundedRectangle {
+	static func concentricShape(padding: Theme.Padding = 0) -> Self { .init(padding: padding.value) }
 }
 
 public extension Shape where Self == RoundedRectangle {
