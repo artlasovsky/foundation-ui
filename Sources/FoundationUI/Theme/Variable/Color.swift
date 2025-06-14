@@ -37,6 +37,14 @@ extension Theme {
     }
 }
 
+// TODO: Move it to the `FoundationColorVariable` protocol
+extension Theme.Color: View {
+	public var body: some View {
+		Rectangle()
+			.foregroundStyle(self)
+	}
+}
+
 extension Theme.Color: Hashable {
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(color)
