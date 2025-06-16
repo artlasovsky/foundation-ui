@@ -1,56 +1,83 @@
 //
-//  Font.swift
+//  FontFamily.swift
+//  FoundationUI
 //
-//
-//  Created by Art Lasovsky on 29/06/2024.
+//  Created by Art Lasovsky on 16/06/2025.
 //
 
-import Foundation
 import SwiftUI
 
-// MARK: - Font
-
-extension Theme {
-    @frozen
-	public struct Font: FoundationVariableWithValue {
-        public typealias Result = SwiftUI.Font
-        
-        public var value: SwiftUI.Font
-		public var environmentAdjustment: EnvironmentAdjustment?
-        
-        public init() { self = .init(.body) }
-        
-        public init(value: SwiftUI.Font) {
-            self.value = value
-        }
-    }
-}
-
-// MARK: - Font Family
-
-#warning("TODO: Test on macOS / iOS")
 #warning("Font Style: normal, italic, ...")
 
 extension Theme.Font {
-	/// - TODO: Add mini tutorial on how to add font family (Project / Package)
+	/// Add font files and set correct "Target Membership" for them
+	///
+	/// Declare custom font:
+	/// ``` swift
+	/// public enum CustomFontWeight: FontWeight {
+	///		case light
+	///		case regular
+	///		case bold
+	///
+	///		public static defaultWeight = Self.regular
+	///
+	///		// Should reflect file name – "CustonFont-Regular.otf"
+	///		public var name: String {
+	///			switch self {
+	///				case .light: "CustomFont-Light"
+	///				case .regular: "CustomFont-Regular"
+	///				case .bold: "CustomFont-Bold"
+	///			}
+	///		}
+	///
+	///		// Map to system's weight
+	///		public func resolve() -> Font.Weight {
+	///			switch self {
+	///				case .thin: .thin
+	///				case .regular: .regular
+	///				case .bold: .bold
+	///			}
+	///		}
+	/// }
+	///
+	/// public extension Theme.Font.Family<CustomFontWeight> {
+	///		static let customFont = Self()
+	/// }
+	/// ```
+	///
+	/// Use:
+	/// ``` swift
+	/// // Using SwiftUI's `.font` modifier:
+	/// Text("Hello World!")
+	///		.font(.foundationFamily(.customFont, size: 14, weight: .light))
+	///
+	///	// or using FoundationUI's modifier:
+	///
+	///	extension Theme.Font {
+	///		static let customBody = Theme.Font.family(.customFont, size: 14, weight: .light)
+	/// }
+	///
+	///	Text("Hello World!").foundation(.font(.customBody))
+	/// ```
 	public struct Family<Weight: FontWeight>: Sendable {
-		public typealias Name = String
-		public let name: Name
+		public init() {}
 		
-		public init(_ name: Name) {
-			self.name = name
+		public func callAsFunction(size: CGFloat, weight: Weight = .defaultWeight, scaling: FontFamilyScaling = .textStyle(.body)) -> SwiftUI.Font {
+			resolve(size: size, weight: weight, scaling: scaling)
 		}
 		
-		public func resolve(size: CGFloat, weight: Weight, scaling: FontFamilyScaling = .textStyle(.body)) -> SwiftUI.Font {
-			if name == .system {
+		public func resolve(size: CGFloat, weight: Weight = .defaultWeight, scaling: FontFamilyScaling = .textStyle(.body)) -> SwiftUI.Font {
+			if Weight.self is FoundationUISystemFontWeight.Type {
 				return .system(size: size, weight: weight.resolve())
 			}
+			
 			Self.register()
+			
 			switch scaling {
 			case .fixed:
-				return .custom(name, fixedSize: size).weight(weight.resolve())
+				return .custom(Weight.defaultWeight.name, fixedSize: size).weight(weight.resolve())
 			case .textStyle(let textStyle):
-				return .custom(name, size: size, relativeTo: textStyle).weight(weight.resolve())
+				return .custom(Weight.defaultWeight.name, size: size, relativeTo: textStyle).weight(weight.resolve())
 			}
 		}
 		
@@ -85,18 +112,18 @@ extension Theme.Font {
 
 #if os(macOS)
 public extension Theme.Font.Family {
-	func resolve(size: CGFloat, weight: Weight, scaling: FontFamilyScaling = .textStyle(.body)) -> NSFont {
-		if name == .system {
+	func resolve(size: CGFloat, weight: Weight = .defaultWeight, scaling: FontFamilyScaling = .textStyle(.body)) -> NSFont {
+		if weight is FoundationUISystemFontWeight {
 			return .systemFont(ofSize: size, weight: weight.resolve())
 		}
 		Self.register()
 		var font: NSFont = .systemFont(ofSize: size)
 		switch scaling {
 		case .fixed:
-			font = .init(name: name, size: size) ?? font
+			font = .init(name: Weight.defaultWeight.name, size: size) ?? font
 		case .textStyle(let textStyle):
 			let size = NSFont.preferredFont(forTextStyle: textStyle.nsTextStyle()).pointSize
-			font = .init(name: name, size: size) ?? font
+			font = .init(name: Weight.defaultWeight.name, size: size) ?? font
 		}
 		
 		return font
@@ -106,18 +133,18 @@ public extension Theme.Font.Family {
 
 #if os(iOS)
 public extension Theme.Font.Family {
-	func resolve(size: CGFloat, weight: Weight, scaling: FontFamilyScaling = .textStyle(.body)) -> UIFont {
-		if name == .system {
+	func resolve(size: CGFloat, weight: Weight = .defaultWeight, scaling: FontFamilyScaling = .textStyle(.body)) -> UIFont {
+		if weight is FoundationUISystemFontWeight {
 			return .systemFont(ofSize: size, weight: weight.resolve())
 		}
 		Self.register()
 		var font: UIFont = .systemFont(ofSize: size)
 		switch scaling {
 		case .fixed:
-			font = .init(name: name, size: size) ?? font
+			font = .init(name: Weight.defaultWeight.name, size: size) ?? font
 		case .textStyle(let textStyle):
 			let size = UIFont.preferredFont(forTextStyle: textStyle.uiTextStyle()).pointSize
-			font = .init(name: name, size: size) ?? font
+			font = .init(name: Weight.defaultWeight.name, size: size) ?? font
 		}
 		
 		return font
@@ -127,9 +154,18 @@ public extension Theme.Font.Family {
 
 // MARK: Font Weight
 
-public protocol FontWeight: CaseIterable {
+public protocol FontWeight: CaseIterable, Sendable {
+	var name: String { get }
 	var url: URL? { get }
 	func resolve() -> Font.Weight
+	
+	static var defaultWeight: Self { get }
+}
+
+public extension FontWeight {
+	var url: URL? {
+		Bundle.main.url(forResource: name, withExtension: "otf")
+	}
 }
 
 public enum FoundationUISystemFontWeight: String, FontWeight {
@@ -142,6 +178,12 @@ public enum FoundationUISystemFontWeight: String, FontWeight {
 	case bold
 	case heavy
 	case black
+	
+	public static let defaultWeight = Self.regular
+	
+	public var name: String {
+		"San Francisco"
+	}
 	
 	public var url: URL? { nil }
 	
@@ -250,12 +292,12 @@ extension Font.TextStyle {
 
 // MARK: - System Font Family
 
-private extension Theme.Font.Family.Name {
-	static let system = "San Francisco"
-}
+//private extension Theme.Font.Family.Name {
+//	static let system = "San Francisco"
+//}
 
 public extension Theme.Font.Family<FoundationUISystemFontWeight> {
-	static let system = Self(.system)
+	static let system = Self()
 }
 
 // MARK: - SwiftUI.Font Extension
@@ -286,37 +328,3 @@ extension UIFont {
 	}
 }
 #endif
-
-
-// MARK: - Preview
-
-struct Font_Preview: PreviewProvider {
-    struct FontTest: View {
-        let label: String
-        let value: Theme.Font
-        var body: some View {
-            VStack(alignment: .leading, spacing: 1) {
-                Text("\(label)")
-                    .font(value.value)
-            }
-        }
-    }
-    static var previews: some View {
-        VStack(alignment: .leading) {
-            FontTest(label: "xxSmall", value: .xxSmall)
-            FontTest(label: "xSmall", value: .xSmall)
-            FontTest(label: "small", value: .small)
-            FontTest(label: "regular", value: .regular)
-            FontTest(label: "large", value: .large)
-            FontTest(label: "xLarge", value: .xLarge)
-            FontTest(label: "xxLarge", value: .xxLarge)
-			Divider()
-				.frame(maxWidth: 200)
-				.padding(.bottom, 16)
-			Text("Font Family")
-				.foundation(.font(.init(.foundationFamily(.system, size: 12, weight: .bold))))
-        }
-        .padding()
-        .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
-    }
-}
