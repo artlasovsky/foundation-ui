@@ -74,24 +74,26 @@ public extension RoundedRectangle {
 	}
 }
 
-public extension Shape {
-    @available(macOS 13.0, iOS 16.0, *)
-    static func roundedRectangle(
-        topLeadingRadius: Theme.Radius,
-        bottomLeadingRadius: Theme.Radius,
-        bottomTrailingRadius: Theme.Radius,
-        topTrailingRadius: Theme.Radius,
-        style: RoundedCornerStyle = .continuous
-    ) -> FoundationUnevenRoundedRectangle {
+@available(macOS 13.0, iOS 16.0, *)
+public extension Shape where Self == FoundationUnevenRoundedRectangle {
+	static func roundedRectangle(
+		topLeadingRadius: Theme.Radius,
+		bottomLeadingRadius: Theme.Radius,
+		bottomTrailingRadius: Theme.Radius,
+		topTrailingRadius: Theme.Radius,
+		style: RoundedCornerStyle = .continuous
+	) -> FoundationUnevenRoundedRectangle {
 		FoundationUnevenRoundedRectangle(
 			topLeadingRadius: topLeadingRadius,
 			bottomLeadingRadius: bottomLeadingRadius,
 			bottomTrailingRadius: bottomTrailingRadius,
 			topTrailingRadius: topTrailingRadius,
-            style: style
-        )
-    }
-    
+			style: style
+		)
+	}
+}
+
+public extension Shape where Self == FoundationRoundedRectangle {
     static func roundedRectangle(_ token: Theme.Radius, style: RoundedCornerStyle = .continuous) -> FoundationRoundedRectangle {
 		FoundationRoundedRectangle(cornerRadius: token, style: style)
     }
