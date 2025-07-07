@@ -285,6 +285,10 @@ public extension ColorComponents {
     init(grayscale brightness: CGFloat, opacity: CGFloat = 1) {
         self.init(hue: 0, saturation: 0, brightness: brightness, opacity: opacity)
     }
+	
+	init(grayscale8bit brightness: CGFloat, opacity: CGFloat = 255) {
+		self.init(hue: 0, saturation: 0, brightness: brightness / 255, opacity: opacity / 255)
+	}
     
     /// Extracting the components from SwiftUI.Color
     init(color: Color, colorScheme: FoundationColorScheme) {
