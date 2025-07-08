@@ -20,6 +20,7 @@ extension Theme.Font {
 	///		case bold
 	///
 	///		public static defaultWeight = Self.regular
+	///		public static fontFileExtension = .otf
 	///
 	///		// Should reflect file name – "CustonFont-Regular.otf"
 	///		public var name: String {
@@ -160,11 +161,18 @@ public protocol FontWeight: CaseIterable, Sendable {
 	func resolve() -> Font.Weight
 	
 	static var defaultWeight: Self { get }
+	static var fileExtension: FontFileExtension { get }
+}
+
+public enum FontFileExtension: String, Sendable {
+	case otf = "otf"
+	case ttf = "ttf"
 }
 
 public extension FontWeight {
+	static var fileExtension: FontFileExtension { .otf }
 	var url: URL? {
-		Bundle.main.url(forResource: name, withExtension: "otf")
+		Bundle.main.url(forResource: name, withExtension: Self.fileExtension.rawValue)
 	}
 }
 
