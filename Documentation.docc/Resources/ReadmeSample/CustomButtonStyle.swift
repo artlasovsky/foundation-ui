@@ -23,7 +23,7 @@ struct CustomButtonStyle: ButtonStyle {
 				.foundation(.borderGradient(.topEdgeHighlight, width: Self.topEdgeHighlightWidth, placement: .inside))
 				.foundation(.backgroundGradient(.backgroundHighlight), bypass: !isShowingBackgroundHighlight)
 				.foundation(.background(.background(variant, isPressed: isPressed)))
-				.foundation(.cornerRadius(.small))
+				.foundation(.concentricRoundedRectangle(.small))
 	}
 	
 	/// Conditionally showing background highlight

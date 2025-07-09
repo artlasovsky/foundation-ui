@@ -123,11 +123,7 @@ struct BackgroundModifier_Preview: PreviewProvider {
                 .border(.blue.opacity(0.5))
                 .foundation(.padding(.regular))
                 .border(.green.opacity(0.5))
-                .foundation(.background(.dynamic(.fillProminent))
-//                    .gradientMask(.init(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
-//                    .shadow(.regular)
-//                    .cornerRadius(.regular)
-                )
+                .foundation(.background(.dynamic(.fillProminent)))
         }
         .foundation(.tint(.red))
         .padding()

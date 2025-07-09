@@ -95,7 +95,7 @@ struct SimpleButton: View {
             .foundation(.size(.standard))
             .foundation(.foreground(.white))
             .foundation(.background(Theme.Color.from(color: .accentColor)))
-            .foundation(.cornerRadius(.small))
+            .foundation(.concentricRoundedRectangle(.small))
     }
 }
 ```
@@ -304,7 +304,7 @@ struct CustomButtonStyle: ButtonStyle {
 
 
 It's time to use one of the `Theme.Radius` tokens we declared initially. 
-We'll apply it with the `.foundation(.cornerRadius())` view modifier, which automatically adjusts the shape of `.foundation(.background())`. 
+We'll apply it with the `.foundation(.concentricRoundedRectangle())` view modifier, which automatically adjusts the shape of `.foundation(.background())`. 
 
 ```swift
 // FILE: - CustomButtonStyle.swift
@@ -315,7 +315,7 @@ struct CustomButtonStyle: ButtonStyle {
 				.foundation(.size(.button))
 				.foundation(.foreground(.foreground(variant)))
 				.foundation(.background(.background(variant, isPressed: isPressed)))
-				.foundation(.cornerRadius(.small))
+				.foundation(.concentricRoundedRectangle(.small))
 	}
 	// ..
 }
@@ -334,7 +334,7 @@ struct CustomButtonStyle: ButtonStyle {
 For the final step, we will modify the highlight for the dark variant of the `CustomButtonStyle`. A vertical linear gradient will be applied over the background. 
 FoundationUI provides `Theme.Gradient` with the custom `DynamicGradient` ShapeStyle, streamlining the creation and reuse of gradients.
 
-> **Note:** The `.foundation(.backgroundGradient())` view modifier automatically inherits the cornerRadius value from the `.foundation(.cornerRadius())` modifier, same way as the `.foundation(.background())`.
+> **Note:** The `.foundation(.backgroundGradient())` view modifier automatically inherits the cornerRadius value from the `.foundation(.concentricRoundedRectangle())` modifier, same way as the `.foundation(.background())`.
 >\
 > This behavior is enabled by default but can be adjusted or disabled. 
 
@@ -359,7 +359,7 @@ struct CustomButtonStyle: ButtonStyle {
 				.foundation(.foreground(.foreground(variant)))
 				.foundation(.backgroundGradient(.backgroundHighlight), bypass: !isShowingBackgroundHighlight)
 				.foundation(.background(.background(variant, isPressed: isPressed)))
-				.foundation(.cornerRadius(.small))
+				.foundation(.concentricRoundedRectangle(.small))
 	}
 
 	/// Conditionally showing background highlight
@@ -408,7 +408,7 @@ struct CustomButtonStyle: ButtonStyle {
 				.foundation(.borderGradient(.topEdgeHighlight, width: Self.topEdgeHighlightWidth, placement: .inside))
 				.foundation(.backgroundGradient(.backgroundHighlight), bypass: !isShowingBackgroundHighlight)
 				.foundation(.background(.background(variant, isPressed: isPressed)))
-				.foundation(.cornerRadius(.small))
+				.foundation(.concentricRoundedRectangle(.small))
 	}
 	// ...
 }
