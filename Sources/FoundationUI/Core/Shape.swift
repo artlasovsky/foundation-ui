@@ -60,7 +60,7 @@ public struct FoundationRoundedRectangle: InsettableShape {
     public func setCornerRadius(_ cornerRadius: CornerRadius<CGFloat>?, style: RoundedCornerStyle = .continuous) -> Self {
         var copy = self
 		if let cornerRadius {
-			if #available(macOS 13.0, *), !copy.cornerRadius.isEven {
+			if #available(macOS 13.0, iOS 16.0, *), !copy.cornerRadius.isEven {
 				if copy.cornerRadius.topLeading == nil {
 					copy.cornerRadius.topLeading = cornerRadius.topLeading
 				}
@@ -91,7 +91,7 @@ public struct FoundationRoundedRectangle: InsettableShape {
 			height: rect.height - padding * 2
 		)
 		
-		if #available(macOS 13.0, *), !cornerRadius.isEven {
+		if #available(macOS 13.0, iOS 16.0, *), !cornerRadius.isEven {
 			return UnevenRoundedRectangle(
 				topLeadingRadius: cornerRadius.topLeading ?? cornerRadius.all ?? 0,
 				bottomLeadingRadius: cornerRadius.bottomLeading ?? cornerRadius.all ?? 0,
