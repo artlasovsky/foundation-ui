@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Shape.swift
 //  
 //
 //  Created by Art Lasovsky on 19/07/2024.
@@ -8,192 +8,219 @@
 import Foundation
 import SwiftUI
 
-public struct ConcentricRoundedRectangle: InsettableShape {
+public struct FoundationRoundedRectangle: InsettableShape {
     public func inset(by amount: CGFloat) -> Self {
         var copy = self
         copy.padding = amount
         return copy
     }
     
-    public var cornerRadius: CGFloat = 0
-    public var padding: CGFloat = 0
-    public var style: RoundedCornerStyle = .continuous
+	private(set) var cornerRadius: CornerRadius<CGFloat>
+    private(set) var padding: CGFloat
+    private(set) var style: RoundedCornerStyle
+	
+	public init(
+		cornerRadius: CornerRadius<CGFloat>,
+		padding: CGFloat = 0,
+		style: RoundedCornerStyle = .continuous
+	) {
+		self.cornerRadius = cornerRadius
+		self.padding = padding
+		self.style = style
+	}
+	
+	public init(
+		cornerRadius: CGFloat? = nil,
+		padding: CGFloat = 0,
+		style: RoundedCornerStyle = .continuous
+	) {
+		self.cornerRadius = .init(cornerRadius)
+		self.padding = padding
+		self.style = style
+	}
+	
+	public init(
+		topLeadingRadius: CGFloat? = nil,
+		bottomLeadingRadius: CGFloat? = nil,
+		bottomTrailingRadius: CGFloat? = nil,
+		topTrailingRadius: CGFloat? = nil,
+		padding: CGFloat = 0,
+		style: RoundedCornerStyle = .continuous
+	) {
+		self.cornerRadius = .init(
+			topLeading: topLeadingRadius,
+			topTrailing: topTrailingRadius,
+			bottomLeading: bottomLeadingRadius,
+			bottomTrailing: bottomTrailingRadius
+		)
+		self.padding = padding
+		self.style = style
+	}
 
-    public func setCornerRadius(_ cornerRadius: CGFloat?, style: RoundedCornerStyle = .continuous) -> some InsettableShape {
-        guard let cornerRadius else { return self }
+    public func setCornerRadius(_ cornerRadius: CornerRadius<CGFloat>?, style: RoundedCornerStyle = .continuous) -> Self {
         var copy = self
-        copy.cornerRadius = cornerRadius
+		if let cornerRadius {
+			if #available(macOS 13.0, *), !copy.cornerRadius.isEven {
+				if copy.cornerRadius.topLeading == nil {
+					copy.cornerRadius.topLeading = cornerRadius.topLeading
+				}
+				if copy.cornerRadius.topTrailing == nil {
+					copy.cornerRadius.topTrailing = cornerRadius.topTrailing
+				}
+				if copy.cornerRadius.bottomLeading == nil {
+					copy.cornerRadius.bottomLeading = cornerRadius.bottomLeading
+				}
+				if copy.cornerRadius.bottomTrailing == nil {
+					copy.cornerRadius.bottomTrailing = cornerRadius.bottomTrailing
+				}
+			} else {
+				if copy.cornerRadius.all == nil {
+					copy.cornerRadius = .init(cornerRadius.all)
+				}
+			}
+		}
         copy.style = style
         return copy
     }
 
-    public func path(in rect: CGRect) -> Path {
-        .init(
-            roundedRect: .init(
-                x: rect.minX + padding,
-                y: rect.minY + padding,
-                width: rect.width - padding * 2,
-                height: rect.height - padding * 2
-            ),
-            cornerRadius: cornerRadius - padding,
-            style: style
-        )
-    }
-}
-
-public extension Shape where Self == ConcentricRoundedRectangle {
-	static func concentricShape(padding: Theme.Padding = 0) -> Self { .init(padding: padding.value) }
-}
-
-public extension Shape where Self == RoundedRectangle {
-    static func roundedRectangle(_ cornerRadius: Theme.Radius) -> Self {
-		.init(cornerRadius: cornerRadius.value)
-    }
-}
-
-public extension RoundedRectangle {
-    static func foundation(_ radius: Theme.Radius, style: RoundedCornerStyle = .continuous) -> FoundationRoundedRectangle {
-		FoundationRoundedRectangle(cornerRadius: radius, style: style)
-    }
-	
-	@available(macOS 13.0, iOS 16.0, *)
-	static func foundation(
-		topLeadingRadius: Theme.Radius = .zero,
-		bottomLeadingRadius: Theme.Radius = .zero,
-		bottomTrailingRadius: Theme.Radius = .zero,
-		topTrailingRadius: Theme.Radius = .zero,
-		style: RoundedCornerStyle = .continuous
-	) -> FoundationUnevenRoundedRectangle {
-		FoundationUnevenRoundedRectangle(
-			topLeadingRadius: topLeadingRadius,
-			bottomLeadingRadius: bottomLeadingRadius,
-			bottomTrailingRadius: bottomTrailingRadius,
-			topTrailingRadius: topTrailingRadius,
-			style: style
+	public func path(in rect: CGRect) -> Path {
+		let rect = CGRect(
+			x: rect.minX + padding,
+			y: rect.minY + padding,
+			width: rect.width - padding * 2,
+			height: rect.height - padding * 2
 		)
+		
+		if #available(macOS 13.0, *), !cornerRadius.isEven {
+			return UnevenRoundedRectangle(
+				topLeadingRadius: cornerRadius.topLeading ?? cornerRadius.all ?? 0,
+				bottomLeadingRadius: cornerRadius.bottomLeading ?? cornerRadius.all ?? 0,
+				bottomTrailingRadius: cornerRadius.bottomTrailing ?? cornerRadius.all ?? 0,
+				topTrailingRadius: cornerRadius.topTrailing ?? cornerRadius.all ?? 0,
+				style: style
+			)
+			.path(in: rect)
+		} else {
+			return RoundedRectangle(cornerRadius: (cornerRadius.all ?? padding) - padding, style: style)
+				.path(in: rect)
+		}
 	}
 }
 
-@available(macOS 13.0, iOS 16.0, *)
-public extension Shape where Self == FoundationUnevenRoundedRectangle {
-	static func roundedRectangle(
-		topLeadingRadius: Theme.Radius,
-		bottomLeadingRadius: Theme.Radius,
-		bottomTrailingRadius: Theme.Radius,
-		topTrailingRadius: Theme.Radius,
-		style: RoundedCornerStyle = .continuous
-	) -> FoundationUnevenRoundedRectangle {
-		FoundationUnevenRoundedRectangle(
-			topLeadingRadius: topLeadingRadius,
-			bottomLeadingRadius: bottomLeadingRadius,
-			bottomTrailingRadius: bottomTrailingRadius,
-			topTrailingRadius: topTrailingRadius,
-			style: style
-		)
+extension FoundationRoundedRectangle {
+	public struct CornerRadius<V: Hashable & Sendable>: Sendable {
+		public var all: V?
+		public var topLeading: V?
+		public var topTrailing: V?
+		public var bottomLeading: V?
+		public var bottomTrailing: V?
+		
+		init(topLeading: V?, topTrailing: V?, bottomLeading: V?, bottomTrailing: V?) {
+			self.all = nil
+			self.topLeading = topLeading
+			self.topTrailing = topTrailing
+			self.bottomLeading = bottomLeading
+			self.bottomTrailing = bottomTrailing
+		}
+		
+		init(_ value: V?) {
+			self.all = value
+		}
+		
+		public var isEven: Bool {
+			[topLeading, topTrailing, bottomLeading, bottomTrailing].allSatisfy({ $0 == nil })
+		}
+	}
+}
+
+public struct DynamicConcentricRoundedRectangle: InsettableShape {
+	public nonisolated func inset(by amount: CGFloat) -> some InsettableShape {
+		Rectangle()
+	}
+	public nonisolated func path(in rect: CGRect) -> Path {
+		Rectangle().path(in: rect)
+	}
+}
+
+public extension Shape where Self == DynamicConcentricRoundedRectangle {
+	/// Use Rounded Rectangle shape from environment
+	static func dynamicConcentricRoundedRectangle() -> Self {
+		.init()
 	}
 }
 
 public extension Shape where Self == FoundationRoundedRectangle {
-    static func roundedRectangle(_ token: Theme.Radius, style: RoundedCornerStyle = .continuous) -> FoundationRoundedRectangle {
-		FoundationRoundedRectangle(cornerRadius: token, style: style)
-    }
-	
-	@MainActor
-	static func roundedSquare(_ token: Theme.Radius, size sizeToken: Theme.Size) -> some View {
-        self.roundedRectangle(token)
-            .foundation(.size(sizeToken))
-    }
-}
-
-public struct FoundationRoundedRectangle: Shape, @unchecked Sendable {
-	@Environment(\.self) private var environment
-	let cornerRadius: Theme.Radius
-	let style: RoundedCornerStyle
-	
-	public init(cornerRadius: Theme.Radius, style: RoundedCornerStyle = .continuous) {
-		self.cornerRadius = cornerRadius
-		self.style = style
-	}
-	
-	public var animatableData: CGFloat {
-		get { radius }
-		set { interpolatedRadius = newValue }
-	}
-	
-	public nonisolated func path(in rect: CGRect) -> Path {
-		RoundedRectangle(
-			cornerRadius: radius,
-			style: style
+	static func roundedRectangle(
+		_ cornerRadius: Theme.Radius? = nil,
+		padding: Theme.Padding = 0
+	) -> Self {
+		.init(
+			cornerRadius: cornerRadius?.value,
+			padding: padding.value
 		)
-		.path(in: rect)
 	}
 	
-	private var interpolatedRadius: CGFloat = 0
-	
-	private var radius: CGFloat {
-		interpolatedRadius == 0 ? cornerRadius.resolve(in: environment) : interpolatedRadius
+	static func roundedRectangle(
+		topLeading: Theme.Radius? = nil,
+		topTrailing: Theme.Radius? = nil,
+		bottomLeading: Theme.Radius? = nil,
+		bottomTrailing: Theme.Radius? = nil,
+		padding: Theme.Padding = 0
+	) -> Self {
+		.init(
+			topLeadingRadius: topLeading?.value,
+			bottomLeadingRadius: bottomLeading?.value,
+			bottomTrailingRadius: bottomTrailing?.value,
+			topTrailingRadius: topTrailing?.value,
+			padding: padding.value
+		)
 	}
 }
 
+@MainActor
+public extension Shape where Self == RoundedRectangle {
+    static func roundedRectangle(_ cornerRadius: Theme.Radius) -> Self {
+		.foundation(cornerRadius)
+    }
+}
+
+@MainActor
 @available(macOS 13.0, iOS 16.0, *)
-public struct FoundationUnevenRoundedRectangle: Shape, @unchecked Sendable, Animatable {
-	@Environment(\.self) private var environment
-	let topLeadingRadius: Theme.Radius
-	let bottomLeadingRadius: Theme.Radius
-	let bottomTrailingRadius: Theme.Radius
-	let topTrailingRadius: Theme.Radius
-	var style: RoundedCornerStyle = .continuous
-	
-	public var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<CGFloat, CGFloat>> {
-		get {
-			AnimatablePair(
-				AnimatablePair(
-					_topLeadingRadius,
-					_topTrailingRadius
-				),
-				AnimatablePair(
-					_bottomLeadingRadius,
-					_bottomTrailingRadius
-				)
-			)
-		}
-		set {
-			topLeadingInterpolatedRadius = newValue.first.first
-			topTrailingInterpolatedRadius = newValue.first.second
-			bottomLeadingInterpolatedRadius = newValue.second.first
-			bottomTrailingInterpolatedRadius = newValue.second.second
-		}
-	}
-	
-	public var topLeadingInterpolatedRadius: CGFloat = 0
-	public var topTrailingInterpolatedRadius: CGFloat = 0
-	public var bottomLeadingInterpolatedRadius: CGFloat = 0
-	public var bottomTrailingInterpolatedRadius: CGFloat = 0
-	
-	private var _topLeadingRadius: CGFloat {
-		topLeadingInterpolatedRadius == 0 ? topLeadingRadius.resolve(in: environment) : topLeadingInterpolatedRadius
-	}
-	
-	private var _topTrailingRadius: CGFloat {
-		topTrailingInterpolatedRadius == 0 ? topTrailingRadius.resolve(in: environment) : topTrailingInterpolatedRadius
-	}
-	
-	private var _bottomLeadingRadius: CGFloat {
-		bottomLeadingInterpolatedRadius == 0 ? bottomLeadingRadius.resolve(in: environment) : bottomLeadingInterpolatedRadius
-	}
-	
-	private var _bottomTrailingRadius: CGFloat {
-		bottomTrailingInterpolatedRadius == 0 ? bottomTrailingRadius.resolve(in: environment) : bottomTrailingInterpolatedRadius
-	}
-	
-	public nonisolated func path(in rect: CGRect) -> Path {
-		UnevenRoundedRectangle(
-			topLeadingRadius: _topLeadingRadius,
-			bottomLeadingRadius: _bottomLeadingRadius,
-			bottomTrailingRadius: _bottomTrailingRadius,
-			topTrailingRadius: _topTrailingRadius,
+public extension Shape where Self == UnevenRoundedRectangle {
+	static func roundedRectangle(topLeading: Theme.Radius, topTrailing: Theme.Radius, bottomLeading: Theme.Radius, bottomTrailing: Theme.Radius, style: RoundedCornerStyle = .continuous) -> Self {
+		.init(
+			topLeadingRadius: topLeading.value,
+			bottomLeadingRadius: bottomLeading.value,
+			bottomTrailingRadius: bottomTrailing.value,
+			topTrailingRadius: topTrailing.value,
 			style: style
 		)
-		.path(in: rect)
+	}
+}
+
+@MainActor
+public extension RoundedRectangle {
+	static func foundation(
+		_ radius: Theme.Radius,
+		style: RoundedCornerStyle = .continuous
+	) -> RoundedRectangle {
+		.init(cornerRadius: radius.value, style: style)
+    }
+	
+	@available(macOS 13.0, iOS 16.0, *)
+	static func foundation(
+		topLeading: Theme.Radius = .zero,
+		bottomLeading: Theme.Radius = .zero,
+		bottomTrailing: Theme.Radius = .zero,
+		topTrailing: Theme.Radius = .zero,
+		style: RoundedCornerStyle = .continuous
+	) -> UnevenRoundedRectangle {
+		.init(
+			topLeadingRadius: topLeading.value,
+			bottomLeadingRadius: bottomLeading.value,
+			bottomTrailingRadius: bottomTrailing.value,
+			topTrailingRadius: topTrailing.value,
+			style: style
+		)
 	}
 }

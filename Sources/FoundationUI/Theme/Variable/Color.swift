@@ -477,7 +477,7 @@ struct Sample_Preview: PreviewProvider {
                 .foundation(.background(background))
                 .foundation(.backgroundShadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
                 .foundation(.border(border, width: 0.75, placement: .outside))
-                .foundation(.cornerRadius(.small))
+                .foundation(.concentricRoundedRectangle(.small))
         }
         
         private var border: Theme.Color {
@@ -526,7 +526,7 @@ struct Sample_Preview: PreviewProvider {
                 .foundation(.background(.primary.variant(.background)))
                 .foundation(.border(.primary.variant(.border), width: 0.75, placement: .outside))
                 .foundation(.backgroundShadow(.xLarge))
-                .foundation(.cornerRadius(.regular.up(.half)))
+                .foundation(.concentricRoundedRectangle(.regular.up(.half)))
             }
         }
         
@@ -571,7 +571,7 @@ struct Sample_Preview: PreviewProvider {
                 .foundation(.border(.primary.variant(.borderProminent), width: 1))
                 .foundation(.backgroundShadow(.init(color: .black.opacity(0.2), radius: 0.8, spread: -0.2, y: 0.8)))
                 .foundation(.border(.dynamic(.fillProminent), width: 3, placement: .outside, level: .below))
-                .foundation(.cornerRadius(.regular))
+                .foundation(.concentricRoundedRectangle(.regular))
                 .overlay(alignment: .trailing) {
                     Image(systemName: "xmark.circle.fill")
                         .foundation(.padding(.small, .trailing))

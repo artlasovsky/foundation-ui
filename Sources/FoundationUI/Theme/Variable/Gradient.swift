@@ -112,12 +112,12 @@ struct GradientPreview: PreviewProvider {
 			GradientSample(gradient: .Preview.angular)
 			Shape()
 				.foundation(.foreground(.clear))
-				.foundation(.borderGradient(.Preview.angular, width: 3, in: .concentricShape()))
+				.foundation(.borderGradient(.Preview.angular, width: 3, in: .roundedRectangle()))
 				.foundation(.backgroundGradient(.Preview.radial.opacity(0.5)))
 			Shape()
 				.foregroundStyle(Theme.Gradient.Preview.linear)
         }
-		.foundation(.cornerRadius(.regular))
+		.foundation(.concentricRoundedRectangle(.regular))
         .padding()
     }
 }

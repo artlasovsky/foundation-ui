@@ -10,24 +10,27 @@ import SwiftUI
 
 public extension FoundationModifierLibrary {
     struct ClipModifier<S: Shape>: ViewModifier {
-        @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
-        @Environment(\.dynamicCornerRadiusStyle) private var dynamicCornerRadiusStyle
+		@Environment(\.dynamicConcentricRoundedRectangle) private var dynamicConcentricRoundedRectangle
         let shape: S
+		
+		@ShapeBuilder
+		private var resolvedShape: some Shape {
+			if shape is DynamicConcentricRoundedRectangle {
+				dynamicConcentricRoundedRectangle
+			} else {
+				shape
+			}
+		}
+		
         public func body(content: Content) -> some View {
             content
-                .clipShape(
-                    ShapeBuilder.resolveShape(
-                        shape,
-                        dynamicCornerRadius: dynamicCornerRadius,
-                        dynamicCornerRadiusStyle: dynamicCornerRadiusStyle
-                    )
-                )
+                .clipShape(resolvedShape)
         }
     }
 }
 
 public extension FoundationModifier {
-    static func clip<S: Shape>(_ shape: S = .concentricShape()) -> FoundationModifier<FoundationModifierLibrary.ClipModifier<S>> {
+    static func clip<S: Shape>(_ shape: S = .dynamicConcentricRoundedRectangle()) -> FoundationModifier<FoundationModifierLibrary.ClipModifier<S>> {
         .init(.init(shape: shape))
     }
 }
@@ -42,7 +45,7 @@ struct ClipModifierPreview: PreviewProvider {
                         .foundation(.size(width: .large, height: .small))
                 }
                 .foundation(.clip())
-                .foundation(.cornerRadius(.regular))
+                .foundation(.concentricRoundedRectangle(.regular))
         }
         .padding()        
     }

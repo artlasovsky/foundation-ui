@@ -45,32 +45,42 @@ enum EitherShape<First: Shape, Second: Shape>: Shape {
     }
 }
 
-extension ShapeBuilder {
-    @ShapeBuilder
-    static func resolveShape(_ shape: some Shape, dynamicCornerRadius: CGFloat?, dynamicCornerRadiusStyle: RoundedCornerStyle) -> some Shape {
-        if let shape = shape as? ConcentricRoundedRectangle {
-            shape.setCornerRadius(dynamicCornerRadius, style: dynamicCornerRadiusStyle)
-        } else {
-            shape
-        }
-    }
-    
-    @ViewBuilder
-    static func resolveInsettableShape(
-        _ shape: some InsettableShape,
-        inset: CGFloat,
-        strokeWidth: CGFloat?,
-        dynamicCornerRadius: CGFloat?,
-        dynamicCornerRadiusStyle: RoundedCornerStyle
-    ) -> some View {
-        if let shape = shape as? ConcentricRoundedRectangle {
-            shape
-                .setCornerRadius(dynamicCornerRadius, style: dynamicCornerRadiusStyle)
-                .adjusted(inset: inset, strokeWidth: strokeWidth)
-        } else {
-            shape.adjusted(inset: inset, strokeWidth: strokeWidth)
-        }
-    }
+@resultBuilder
+struct InsettableShapeBuilder {
+	static func buildBlock<S: InsettableShape>(_ component: S) -> some InsettableShape {
+		component
+	}
+	
+	static func buildEither<TrueShape: InsettableShape, FalseShape: InsettableShape>(first: TrueShape) -> EitherInsettableShape<TrueShape, FalseShape> {
+		.first(first)
+	}
+	
+	static func buildEither<TrueShape: InsettableShape, FalseShape: InsettableShape>(second: FalseShape) -> EitherInsettableShape<TrueShape, FalseShape> {
+		.second(second)
+	}
+}
+
+enum EitherInsettableShape<First: InsettableShape, Second: InsettableShape>: InsettableShape {
+	case first(First)
+	case second(Second)
+	
+	nonisolated func inset(by amount: CGFloat) -> some InsettableShape {
+		switch self {
+		case .first(let shape):
+			return EitherInsettableShape<First.InsetShape, Second.InsetShape>.first(shape.inset(by: amount))
+		case .second(let shape):
+			return EitherInsettableShape<First.InsetShape, Second.InsetShape>.second(shape.inset(by: amount))
+		}
+	}
+	
+	func path(in rect: CGRect) -> Path {
+		switch self {
+		case .first(let shape):
+			return shape.path(in: rect)
+		case .second(let shape):
+			return shape.path(in: rect)
+		}
+	}
 }
 
 extension InsettableShape {

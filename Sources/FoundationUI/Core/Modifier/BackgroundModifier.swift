@@ -10,21 +10,22 @@ import SwiftUI
 
 public extension FoundationModifierLibrary {
     struct BackgroundModifier<Style: ShapeStyle, S: Shape>: ViewModifier {
-        @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
-        @Environment(\.dynamicCornerRadiusStyle) private var dynamicCornerRadiusStyle
+		@Environment(\.dynamicConcentricRoundedRectangle) private var dynamicConcentricRoundedRectangle
         let style: Style
         let shape: S
+		
+		@ShapeBuilder
+		var resolvedShape: some Shape {
+			if shape is DynamicConcentricRoundedRectangle {
+				dynamicConcentricRoundedRectangle
+			} else {
+				shape
+			}
+		}
         
         public func body(content: Content) -> some View {
             content
-                .background {
-                    ShapeBuilder.resolveShape(
-                        shape,
-                        dynamicCornerRadius: dynamicCornerRadius,
-                        dynamicCornerRadiusStyle: dynamicCornerRadiusStyle
-                    )
-                    .foregroundStyle(style)
-                }
+                .background { resolvedShape.foregroundStyle(style) }
         }
     }
 }
@@ -33,7 +34,7 @@ public extension FoundationModifierLibrary {
 public extension FoundationModifier {
     static func background<S: Shape, VM: ViewModifier>(
         _ color: Theme.Color,
-        in shape: S = .concentricShape(),
+        in shape: S = .dynamicConcentricRoundedRectangle(),
         modifier: VM = EmptyModifier()
     ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape))
@@ -41,7 +42,7 @@ public extension FoundationModifier {
     
     static func backgroundStyle<Style: ShapeStyle, S: Shape, VM: ViewModifier>(
         _ style: Style,
-        in shape: S = .concentricShape(),
+        in shape: S = .dynamicConcentricRoundedRectangle(),
         modifier: VM = EmptyModifier()
     ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Style, S>> {
         .init(.init(style: style, shape: shape))
@@ -49,7 +50,7 @@ public extension FoundationModifier {
     
     static func backgroundColor<S: Shape, VM: ViewModifier>(
         _ color: Color,
-        in shape: S = .concentricShape(),
+        in shape: S = .dynamicConcentricRoundedRectangle(),
         modifier: VM = EmptyModifier()
     ) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Color, S>> {
         .init(.init(style: color, shape: shape))
@@ -57,7 +58,7 @@ public extension FoundationModifier {
 	
 	static func backgroundGradient<S: Shape, VM: ViewModifier>(
 		_ gradient: Theme.Gradient,
-		in shape: S = .concentricShape(),
+		in shape: S = .dynamicConcentricRoundedRectangle(),
 		modifier: VM = EmptyModifier()
 	) -> FoundationModifier<FoundationModifierLibrary.BackgroundModifier<Theme.Gradient, S>> {
 		.init(.init(style: gradient, shape: shape))
@@ -75,28 +76,49 @@ struct BackgroundModifier_Preview: PreviewProvider {
                 .foundation(.background(.dynamic(.fillProminent)))
             Text("Shadow")
                 .foundation(.padding(.regular))
-                .foundation(.background(.primary.variant(.background), in: .roundedRectangle(.regular)))
-                .foundation(.backgroundShadow(.regular, in: .roundedRectangle(.regular)))
-            //
+				.foundation(.background(.primary.variant(.background)))
+                .foundation(.backgroundShadow(.regular))
+				.foundation(.concentricRoundedRectangle(.regular))
+            
             VStack {
-                Text("Concentric")
-                    .foundation(.padding(.large))
-					.foundation(.background(.dynamic(.fillProminent), in: .concentricShape()))
+				Text("Concentric")
+					.foundation(.padding(.large))
+					.foundation(.background(.dynamic(.fillProminent)))
 					.foundation(.padding(.small.up(.half), concentricShapeStyle: .sharp))
-					.foundation(.background(.primary, in: .concentricShape()))
+					.foundation(.background(.primary))
 					.foundation(.border(.red))
-				Text("Concentric")
+					.foundation(.concentricRoundedRectangle(.xLarge))
+				Text("Concentric Force")
 					.foundation(.padding(.large))
-					.foundation(.background(.dynamic(.fillProminent), in: .concentricShape(padding: .small.up(.half))))
-					.foundation(.background(.primary, in: .concentricShape()))
+					.foundation(.background(.dynamic(.fillProminent), in: .rect))
+					.foundation(.padding(.small.up(.half)))
+					.foundation(.background(.primary, in: .roundedRectangle(.xLarge)))
+					.foundation(.border(.red, in: .roundedRectangle(.xLarge)))
+                Text("Concentric Env")
+                    .foundation(.padding(.large))
+					.foundation(.background(.dynamic(.fillProminent)))
+					.foundation(.padding(.small.up(.half), concentricShapeStyle: .sharp))
+					.foundation(.background(.primary))
 					.foundation(.border(.red))
-				Text("Concentric")
+				Text("Concentric Uneven")
 					.foundation(.padding(.large))
-					.foundation(.background(.dynamic(.fillProminent), in: .concentricShape()))
-					.foundation(.background(.primary, in: .concentricShape(padding: .small.up(.half).negative())))
+					.foundation(.background(.dynamic(.fillProminent)))
+					.foundation(.padding(.small.up(.half), concentricShapeStyle: .sharp))
+					.foundation(.background(.primary))
 					.foundation(.border(.red))
+					.foundation(.concentricRoundedRectangle(topLeading: .xxLarge, bottomTrailing: .xLarge))
+				Text("Concentric Manual")
+					.foundation(.padding(.large))
+					.foundation(.background(.dynamic(.fillProminent), in: .roundedRectangle(.regular, padding: .small.up(.half))))
+					.foundation(.background(.primary, in: .roundedRectangle(.regular)))
+					.foundation(.border(.red))
+				Text("Concentric M Out")
+					.foundation(.padding(.large))
+					.foundation(.background(.dynamic(.fillProminent), in: .roundedRectangle(.regular)))
+					.foundation(.background(.primary, in: .roundedRectangle(.regular, padding: .small.up(.half).negative())))
+					.foundation(.border(.red, in: .roundedRectangle(.regular)))
             }
-            .foundation(.cornerRadius(.xLarge))
+			.foundation(.concentricRoundedRectangle(.large))
             Text("Adj")
                 .border(.blue.opacity(0.5))
                 .foundation(.padding(.regular))
@@ -110,5 +132,6 @@ struct BackgroundModifier_Preview: PreviewProvider {
         .foundation(.tint(.red))
         .padding()
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])
+		.frame(height: 600)
     }
 }

@@ -10,8 +10,7 @@ import SwiftUI
 
 public extension FoundationModifierLibrary {
     struct BorderModifier<Style: ShapeStyle, S: InsettableShape>: ViewModifier {
-        @Environment(\.dynamicCornerRadius) private var dynamicCornerRadius
-        @Environment(\.dynamicCornerRadiusStyle) private var dynamicCornerRadiusStyle
+		@Environment(\.dynamicConcentricRoundedRectangle) private var dynamicConcentricRoundedRectangle
         let style: Style
         let shape: S
         let width: CGFloat
@@ -26,15 +25,20 @@ public extension FoundationModifierLibrary {
                 content.background { border }
             }
         }
+		
+		@InsettableShapeBuilder
+		private var resolvedShape: some InsettableShape {
+			if shape is DynamicConcentricRoundedRectangle {
+				dynamicConcentricRoundedRectangle
+			} else {
+				shape
+			}
+		}
         
         private var border: some View {
-            ShapeBuilder.resolveInsettableShape(
-                shape,
-                inset: padding,
-                strokeWidth: width,
-                dynamicCornerRadius: dynamicCornerRadius,
-                dynamicCornerRadiusStyle: dynamicCornerRadiusStyle
-            ).foregroundStyle(style)
+			resolvedShape
+				.adjusted(inset: padding, strokeWidth: width)
+				.foregroundStyle(style)
         }
         
         private var padding: CGFloat {
@@ -64,7 +68,7 @@ public extension FoundationModifier {
         width: CGFloat = 1,
         placement: FoundationModifierLibrary.BorderPlacement = .center,
         level: FoundationModifierLibrary.BorderLevel = .above,
-        in shape: S = .concentricShape()
+        in shape: S = .dynamicConcentricRoundedRectangle()
     ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Theme.Color, S>> {
         .init(.init(style: color, shape: shape, width: width, placement: placement, level: level))
     }
@@ -74,7 +78,7 @@ public extension FoundationModifier {
         width: CGFloat = 1,
         placement: FoundationModifierLibrary.BorderPlacement = .center,
         level: FoundationModifierLibrary.BorderLevel = .above,
-        in shape: S = .concentricShape()
+        in shape: S = .dynamicConcentricRoundedRectangle()
     ) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Style, S>> {
         .init(.init(style: style, shape: shape, width: width, placement: placement, level: level))
     }
@@ -84,7 +88,7 @@ public extension FoundationModifier {
 		width: CGFloat = 1,
 		placement: FoundationModifierLibrary.BorderPlacement = .center,
 		level: FoundationModifierLibrary.BorderLevel = .above,
-		in shape: S = .concentricShape()
+		in shape: S = .dynamicConcentricRoundedRectangle()
 	) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<SwiftUI.Color, S>> {
 		.init(.init(style: color, shape: shape, width: width, placement: placement, level: level))
 	}
@@ -94,7 +98,7 @@ public extension FoundationModifier {
 		width: CGFloat = 1,
 		placement: FoundationModifierLibrary.BorderPlacement = .center,
 		level: FoundationModifierLibrary.BorderLevel = .above,
-		in shape: S = .concentricShape()
+		in shape: S = .dynamicConcentricRoundedRectangle()
 	) -> FoundationModifier<FoundationModifierLibrary.BorderModifier<Theme.Gradient, S>> {
 		.init(.init(style: gradient, shape: shape, width: width, placement: placement, level: level))
 	}
@@ -118,7 +122,7 @@ struct BorderModifier_Preview: PreviewProvider {
                     .foundation(.border(.from(color: .cyan.opacity(0.5)), width: 4, placement: .inside))
                     .foundation(.border(.from(color: .blue.opacity(0.5)), width: 4, placement: .outside))
                     .foundation(.background(.red))
-                    .foundation(.cornerRadius(.regular))
+                    .foundation(.concentricRoundedRectangle(.regular))
                     .opacity(0.5)
             }
         }

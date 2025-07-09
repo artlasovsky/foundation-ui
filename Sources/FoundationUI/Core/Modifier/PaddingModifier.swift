@@ -16,20 +16,44 @@ public extension FoundationModifierLibrary {
         let concentricShapeStyle: ConcentricShapeStyle?
         
         public func body(content: Content) -> some View {
-			content.padding(edges, padding)
-                .transformEnvironment(\.dynamicCornerRadius) { radius in
-                    if let cornerRadius = radius, let concentricShapeStyle {
-                        var minCornerRadius: CGFloat = 0
-                        switch concentricShapeStyle {
-                        case .minimum(let radius):
-                            minCornerRadius = radius
-                        case .soft:
-                            minCornerRadius = 2
-                        case .sharp:
-                            minCornerRadius = 0
-                        }
-                        radius = max(cornerRadius - padding, minCornerRadius)
-                    }
+			content
+				.padding(edges, padding)
+                .transformEnvironment(\.dynamicConcentricRoundedRectangle) { concentricRect in
+					guard let concentricShapeStyle else { return }
+					
+					var minCornerRadius: CGFloat = 0
+					switch concentricShapeStyle {
+					case .minimum(let radius):
+						minCornerRadius = radius
+					case .soft:
+						minCornerRadius = 2
+					case .sharp:
+						minCornerRadius = 0
+					}
+					
+					if let cornerRadius = concentricRect.cornerRadius.all {
+						let adjustedCornerRadius = max(cornerRadius - padding, minCornerRadius)
+						concentricRect = .init(cornerRadius: adjustedCornerRadius)
+					} else {
+						var unevenCornerRadius = concentricRect.cornerRadius
+						if let cornerRadius = concentricRect.cornerRadius.topLeading {
+							let adjustedCornerRadius = max(cornerRadius - padding, minCornerRadius)
+							unevenCornerRadius.topLeading = adjustedCornerRadius
+						}
+						if let cornerRadius = concentricRect.cornerRadius.topTrailing {
+							let adjustedCornerRadius = max(cornerRadius - padding, minCornerRadius)
+							unevenCornerRadius.topTrailing = adjustedCornerRadius
+						}
+						if let cornerRadius = concentricRect.cornerRadius.bottomLeading {
+							let adjustedCornerRadius = max(cornerRadius - padding, minCornerRadius)
+							unevenCornerRadius.bottomLeading = adjustedCornerRadius
+						}
+						if let cornerRadius = concentricRect.cornerRadius.bottomTrailing {
+							let adjustedCornerRadius = max(cornerRadius - padding, minCornerRadius)
+							unevenCornerRadius.bottomTrailing = adjustedCornerRadius
+						}
+						concentricRect = .init(cornerRadius: unevenCornerRadius)
+					}
                 }
         }
 		
