@@ -93,6 +93,8 @@ extension Theme.Font {
 		}
 		
 		private static func registerFont(_ fontUrl: URL) {
+			if isFontRegistered(at: fontUrl) { return }
+			
 			var error: Unmanaged<CFError>?
 			let success = CTFontManagerRegisterFontsForURL(fontUrl as CFURL, .none, &error)
 			
@@ -106,7 +108,23 @@ extension Theme.Font {
 					.joined(separator: "\n")
 				print(message)
 			}
+		}
+		
+		private static func isFontRegistered(at fontUrl: URL) -> Bool {
+			guard let fontDataProvider = CGDataProvider(url: fontUrl as CFURL),
+				  let font = CGFont(fontDataProvider),
+				  let fontName = font.postScriptName as String?
+			else {
+				return false
+			}
 			
+			let names = CTFontManagerCopyAvailablePostScriptNames()
+			
+			if let names = names as? [String], names.contains(fontName) {
+				return true
+			}
+			
+			return false
 		}
 	}
 }
