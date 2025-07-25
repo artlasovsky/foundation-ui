@@ -23,6 +23,14 @@ public struct DynamicGradient: ShapeStyle, Equatable, Hashable {
         case linear(startPoint: UnitPoint, endPoint: UnitPoint)
         case radial(center: UnitPoint, startRadius: CGFloat, endRadius: CGFloat)
         case angular(center: UnitPoint, startAngle: Angle, endAngle: Angle? = nil)
+		
+		static func linear(_ startPoint: UnitPoint = .top, _ endPoint: UnitPoint = .bottom) -> Self {
+			.linear(startPoint: .top, endPoint: .bottom)
+		}
+		
+		static func radial(startRadius: Theme.Length, endRadius: Theme.Length, center: UnitPoint = .center) -> Self {
+			.radial(center: center, startRadius: startRadius.value, endRadius: endRadius.value)
+		}
     }
     
     let stops: [Stop]

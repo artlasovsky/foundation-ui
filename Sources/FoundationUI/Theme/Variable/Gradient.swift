@@ -86,7 +86,7 @@ private extension Theme.Gradient {
 		)
 		static let radial = Theme.Gradient(
 			stops: [.init(color: .clear, location: 0), .init(color: .orange, location: 0.75)],
-			type: .radial(center: .center, startRadius: 0, endRadius: .foundation(.length(.small)))
+			type: .radial(startRadius: 0, endRadius: .small.up(.quarter))
 		)
 	}
 }
@@ -112,7 +112,7 @@ struct GradientPreview: PreviewProvider {
 			GradientSample(gradient: .Preview.angular)
 			Shape()
 				.foundation(.foreground(.clear))
-				.foundation(.borderGradient(.Preview.angular, width: 3, in: .roundedRectangle()))
+				.foundation(.borderGradient(.Preview.angular, width: 3))
 				.foundation(.backgroundGradient(.Preview.radial.opacity(0.5)))
 			Shape()
 				.foregroundStyle(Theme.Gradient.Preview.linear)
