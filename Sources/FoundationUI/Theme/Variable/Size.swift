@@ -22,7 +22,6 @@ public extension Theme {
 		}
 	}
 	
-	
     @frozen
 	struct Size: FoundationVariableWithValue {
 		public var value: Configuration
@@ -55,4 +54,9 @@ public extension Theme {
 			public static let zero = Self(width: .init(0), height: .init(0))
 		}
     }
+}
+
+
+extension Theme.Length {
+	public static let infinity = Theme.Length(.infinity)
 }

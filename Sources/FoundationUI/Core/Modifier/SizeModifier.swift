@@ -11,35 +11,50 @@ import SwiftUI
 public extension FoundationModifierLibrary {
     struct SizeModifier: ViewModifier {
 		@Environment(\.self) private var environment
-		let widthToken: Theme.Length?
-		let heightToken: Theme.Length?
+		let size: Size
         private let alignment: Alignment
+		
+		enum Size {
+			case dynamic(
+				minWidth: Theme.Length?,
+				idealWidth: Theme.Length?,
+				maxWidth: Theme.Length?,
+				minHeight: Theme.Length?,
+				idealHeight: Theme.Length?,
+				maxHeight: Theme.Length?,
+			)
+			case regular(width: Theme.Length?, height: Theme.Length?)
+			
+			static func from(themeSize: Theme.Size) -> Self {
+				.regular(width: themeSize.value.width, height: themeSize.value.width)
+			}
+		}
         
-		init(width: Theme.Length?, height: Theme.Length?, alignment: Alignment) {
-			self.widthToken = width
-			self.heightToken = height
+		init(size: Size, alignment: Alignment) {
+			self.size = size
             self.alignment = alignment
         }
-		
-		init(size: Theme.Size, alignment: Alignment) {
-			self.init(width: size.value.width, height: size.value.height, alignment: alignment)
-		}
         
         public func body(content: Content) -> some View {
-            if width == .infinity || height == .infinity {
-                content.frame(maxWidth: width, maxHeight: height, alignment: alignment)
-            } else {
-                content.frame(width: width, height: height, alignment: alignment)
-            }
+			switch size {
+			case .dynamic(let minWidth, let idealWidth, let maxWidth, let minHeight, let idealHeight, let maxHeight):
+				content.frame(
+					minWidth: minWidth?.resolve(in: environment),
+					idealWidth: idealWidth?.resolve(in: environment),
+					maxWidth: maxWidth?.resolve(in: environment),
+					minHeight: minHeight?.resolve(in: environment),
+					idealHeight: idealHeight?.resolve(in: environment),
+					maxHeight: idealHeight?.resolve(in: environment),
+					alignment: alignment
+				)
+			case .regular(let width, let height):
+				content.frame(
+					width: width?.resolve(in: environment),
+					height: height?.resolve(in: environment),
+					alignment: alignment
+				)
+			}
         }
-		
-		private var width: CGFloat? {
-			widthToken?.resolve(in: environment)
-		}
-		
-		private var height: CGFloat? {
-			heightToken?.resolve(in: environment)
-		}
     }
 }
 
@@ -49,21 +64,45 @@ public extension FoundationModifier {
 		height: Theme.Length? = nil,
         alignment: Alignment = .center
     ) -> FoundationModifier<FoundationModifierLibrary.SizeModifier> {
-        .init(.init(width: width, height: height, alignment: alignment))
+		.init(.init(size: .regular(width: width, height: height), alignment: alignment))
     }
+	
+	static func size(
+		minWidth: Theme.Length? = nil,
+		idealWidth: Theme.Length? = nil,
+		maxWidth: Theme.Length? = nil,
+		minHeight: Theme.Length? = nil,
+		idealHeight: Theme.Length? = nil,
+		maxHeight: Theme.Length? = nil,
+		alignment: Alignment = .center
+	) -> FoundationModifier<FoundationModifierLibrary.SizeModifier> {
+		.init(
+			.init(
+				size: .dynamic(
+					minWidth: minWidth,
+					idealWidth: idealWidth,
+					maxWidth: maxWidth,
+					minHeight: minHeight,
+					idealHeight: idealHeight,
+					maxHeight: maxHeight
+				),
+				alignment: alignment
+			)
+		)
+	}
     
     static func size(
 		square: Theme.Length,
         alignment: Alignment = .center
     ) -> FoundationModifier<FoundationModifierLibrary.SizeModifier> {
-        .init(.init(width: square, height: square, alignment: alignment))
+		.init(.init(size: .regular(width: square, height: square), alignment: alignment))
     }
 	
 	static func size(
 		_ size: Theme.Size,
 		alignment: Alignment = .center
 	) -> FoundationModifier<FoundationModifierLibrary.SizeModifier> {
-		.init(.init(size: size, alignment: alignment))
+		.init(.init(size: .from(themeSize: size), alignment: alignment))
 	}
 }
 
