@@ -26,7 +26,18 @@ public extension FoundationModifierLibrary {
 			case regular(width: Theme.Length?, height: Theme.Length?)
 			
 			static func from(themeSize: Theme.Size) -> Self {
-				.regular(width: themeSize.value.width, height: themeSize.value.width)
+				var width: Theme.Length = themeSize.value.width
+				width.environmentAdjustment = { variable, environment in
+					let size = themeSize.resolve(in: environment)
+					return .init(size.width)
+				}
+				var height: Theme.Length = themeSize.value.height
+				height.environmentAdjustment = { variable, environment in
+					let size = themeSize.resolve(in: environment)
+					return .init(size.height)
+				}
+				
+				return .regular(width: width, height: height)
 			}
 		}
         
@@ -44,7 +55,7 @@ public extension FoundationModifierLibrary {
 					maxWidth: maxWidth?.resolve(in: environment),
 					minHeight: minHeight?.resolve(in: environment),
 					idealHeight: idealHeight?.resolve(in: environment),
-					maxHeight: idealHeight?.resolve(in: environment),
+					maxHeight: maxHeight?.resolve(in: environment),
 					alignment: alignment
 				)
 			case .regular(let width, let height):
@@ -120,7 +131,23 @@ struct SizeModifierPreview: PreviewProvider {
 			Rectangle().foundation(.size(square: .large))
 			Rectangle().foundation(.size(.cgFloat))
 			Rectangle().foundation(.size(.test))
+			Text("With Env Override")
+				.foundation(.size(.envOverrideTest))
+				.border(.red)
         }
         .padding()
     }
+}
+
+@MainActor
+private extension Theme.Size {
+	static var envOverrideTest: Theme.Size {
+		.init(.init(width: 0, height: 0))
+		.withEnvironmentAdjustment { variable, environment in
+			let width = environment.displayScale * 40
+			let height = environment.displayScale * 20
+			
+			return .init(width: .init(width), height: .init(height))
+		}
+	}
 }
