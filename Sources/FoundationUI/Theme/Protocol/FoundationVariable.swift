@@ -148,17 +148,41 @@ public extension FoundationVariableWithValue where Value: FloatingPoint {
     func negative() -> Self {
         self * -1
     }
+
+	static func +(lhs: Self, rhs: Self) -> Self {
+		var variable = Self(lhs.value + rhs.value)
+		variable.environmentAdjustment = lhs.environmentAdjustment
+		return variable
+	}
 	
 	static func +(lhs: Self, rhs: Value) -> Self {
 		.init(lhs.value + rhs)
 	}
 	
+	static func -(lhs: Self, rhs: Self) -> Self {
+		var variable = Self(lhs.value - rhs.value)
+		variable.environmentAdjustment = lhs.environmentAdjustment
+		return variable
+	}
+
 	static func -(lhs: Self, rhs: Value) -> Self {
-		.init(lhs.value + rhs)
+		.init(lhs.value - rhs)
+	}
+	
+	static func *(lhs: Self, rhs: Self) -> Self {
+		var variable = Self(lhs.value * rhs.value)
+		variable.environmentAdjustment = lhs.environmentAdjustment
+		return variable
 	}
 	
 	static func *(lhs: Self, rhs: Value) -> Self {
 		.init(lhs.value * rhs)
+	}
+	
+	static func /(lhs: Self, rhs: Self) -> Self {
+		var variable = Self(lhs.value * rhs.value)
+		variable.environmentAdjustment = lhs.environmentAdjustment
+		return variable
 	}
 	
 	static func /(lhs: Self, rhs: Value) -> Self {
