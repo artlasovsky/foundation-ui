@@ -189,11 +189,19 @@ extension CGFloat {
 			size.resolve(in: environment).cgSize.height
         }
     }
+	
+	public static func theme(_ variable: FoundationCGFloatVariables, in environment: EnvironmentValues? = nil) -> Self {
+		foundation(variable, in: environment)
+	}
 }
 
 extension CGSize {
 	public static func foundation(_ size: Theme.Size) -> Self {
 		size.cgSize
+	}
+	
+	public static func theme(_ size: Theme.Size) -> Self {
+		foundation(size)
 	}
 }
 
@@ -201,12 +209,20 @@ extension ShapeStyle where Self == Theme.Color {
     public static func foundation(_ color: Theme.Color) -> Self {
        color
     }
+	
+	public static func theme(_ color: Theme.Color) -> Self {
+	   foundation(color)
+	}
 }
 
 @available(macOS 14.0, iOS 17.0, *)
 extension Animation {
 	public static func foundation(_ animation: Theme.Animation) -> Self {
 		animation.value
+	}
+	
+	public static func theme(_ animation: Theme.Animation) -> Self {
+		foundation(animation)
 	}
 }
 
@@ -219,6 +235,15 @@ extension Color {
     public static func foundation(_ color: Theme.Color, in colorScheme: FoundationColorScheme) -> Self {
         color.resolveColor(in: .init(colorScheme: colorScheme))
     }
+	
+	/// Get ``SwiftUI/Color`` from FoundationUI's theme color variables
+	/// - Parameters:
+	///   - color: Theme's color value
+	///   - colorScheme: Color will be resolved in selected color scheme
+	/// - Returns: Returns SwiftUI's Color
+	public static func theme(_ color: Theme.Color, in colorScheme: FoundationColorScheme) -> Self {
+		foundation(color, in: colorScheme)
+	}
 }
 
 extension Font {
@@ -228,4 +253,11 @@ extension Font {
     public static func foundation(_ token: Theme.Font) -> Self {
 		token.value
     }
+	
+	/// Get font from FoundationUI theme font variables
+	/// - Parameter token: Font variable token
+	/// - Returns: Returns SwiftUI's font
+	public static func theme(_ token: Theme.Font) -> Self {
+		foundation(token)
+	}
 }

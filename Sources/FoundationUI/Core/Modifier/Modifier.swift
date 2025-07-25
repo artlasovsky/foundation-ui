@@ -32,4 +32,8 @@ public extension View {
             self.modifier(modifier.value)
         }
     }
+	
+	func theme<M: ViewModifier>(_ modifier: FoundationModifier<M>, bypass: Bool = false) -> some View {
+		foundation(modifier, bypass: bypass)
+	}
 }
