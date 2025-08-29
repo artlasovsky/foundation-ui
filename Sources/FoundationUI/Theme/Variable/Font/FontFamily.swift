@@ -180,6 +180,8 @@ public protocol FontWeight: CaseIterable, Sendable {
 	var url: URL? { get }
 	func resolve() -> Font.Weight
 	
+	
+	static var bundle: Bundle { get }
 	static var defaultWeight: Self { get }
 	static var fileExtension: FontFileExtension { get }
 }
@@ -189,16 +191,10 @@ public enum FontFileExtension: String, Sendable {
 	case ttf = "ttf"
 }
 
-private class EnvironmentBundle {
-	static func get() -> Bundle {
-		Bundle(for: Self.self)
-	}
-}
-
 public extension FontWeight {
 	static var fileExtension: FontFileExtension { .otf }
 	var url: URL? {
-		EnvironmentBundle.get().url(forResource: name, withExtension: Self.fileExtension.rawValue)
+		return Self.bundle.url(forResource: name, withExtension: Self.fileExtension.rawValue)
 	}
 }
 
@@ -218,6 +214,8 @@ public enum FoundationUISystemFontWeight: String, FontWeight {
 	public var name: String {
 		"San Francisco"
 	}
+	
+	public static var bundle: Bundle { .main }
 	
 	public var url: URL? { nil }
 	
