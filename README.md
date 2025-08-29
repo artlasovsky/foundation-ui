@@ -438,7 +438,6 @@ By separating style tokens into Theme extensions and utilizing features like Dyn
 
 # Roadmap
 
-## Q1 '25
 - [ ] Changelog
 - [ ] Tests
 	- [ ] DynamicColor / ColorComponents
