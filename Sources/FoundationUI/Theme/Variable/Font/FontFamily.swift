@@ -189,10 +189,16 @@ public enum FontFileExtension: String, Sendable {
 	case ttf = "ttf"
 }
 
+private class EnvironmentBundle {
+	static func get() -> Bundle {
+		Bundle(for: Self.self)
+	}
+}
+
 public extension FontWeight {
 	static var fileExtension: FontFileExtension { .otf }
 	var url: URL? {
-		Bundle.main.url(forResource: name, withExtension: Self.fileExtension.rawValue)
+		EnvironmentBundle.get().url(forResource: name, withExtension: Self.fileExtension.rawValue)
 	}
 }
 
