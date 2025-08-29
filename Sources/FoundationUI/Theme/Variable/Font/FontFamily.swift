@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
+import OSLog
 
-#warning("Font Style: normal, italic, ...")
+// TODO: Font Style: normal, italic, ...
 
 extension Theme.Font {
 	/// Add font files and set correct "Target Membership" for them
@@ -19,8 +20,8 @@ extension Theme.Font {
 	///		case regular
 	///		case bold
 	///
-	///		public static defaultWeight = Self.regular
-	///		public static fontFileExtension = .otf
+	///		public static var defaultWeight: CustomFontWeight = .regular
+	///		public static var fileExtension: FontFileExtension = .otf
 	///
 	///		// Should reflect file name – "CustonFont-Regular.otf"
 	///		public var name: String {
@@ -106,7 +107,8 @@ extension Theme.Font {
 				let message = ["Failed to register font.", errorDescription]
 					.compactMap({ $0 })
 					.joined(separator: "\n")
-				print(message)
+				
+				Logger.foundationUI(category: .font).error("\(message)")
 			}
 		}
 		
@@ -317,11 +319,6 @@ extension Font.TextStyle {
 #endif
 
 // MARK: - System Font Family
-
-//private extension Theme.Font.Family.Name {
-//	static let system = "San Francisco"
-//}
-
 public extension Theme.Font.Family<FoundationUISystemFontWeight> {
 	static let system = Self()
 }
