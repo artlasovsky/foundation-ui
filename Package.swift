@@ -14,10 +14,13 @@ let package = Package(
             name: "FoundationUI",
             targets: ["FoundationUI"])
     ],
+	dependencies: [
+		.package(url: "https://github.com/F8nUI/font-family.git", .upToNextMajor(from: "0.2.2"))
+	],
     targets: [
-        // Default theme – Native experience
         .target(
             name: "FoundationUI",
+			dependencies: [.product(name: "FontFamily", package: "font-family")],
             path: "Sources/FoundationUI"
         ),
         .testTarget(

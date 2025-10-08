@@ -23,10 +23,6 @@ extension Theme {
         public init(value: SwiftUI.Font) {
             self.value = value
         }
-		
-		public static func family<Weight: FontWeight>(_ name: Theme.Font.Family<Weight>, size: CGFloat, weight: Weight = .defaultWeight, scaling: FontFamilyScaling = .textStyle(.body)) -> Self {
-			.init(value: .foundationFamily(name, size: size, weight: weight, scaling: scaling))
-		}
     }
 }
 
@@ -57,7 +53,7 @@ struct Font_Preview: PreviewProvider {
 				.frame(maxWidth: 200)
 				.padding(.bottom, 16)
 			Text("Font Family")
-				.foundation(.font(.init(.foundationFamily(.system, size: 12, weight: .bold))))
+				.foundation(.font(.family(.system, size: 12, weight: .bold)))
         }
         .padding()
         .previewDisplayName(String(describing: Self.self).components(separatedBy: "_")[0])

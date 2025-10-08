@@ -1,0 +1,15 @@
+{
+  "originHash" : "a9f25da418dd6d6c8369d013bbef2e9c745c45e72d233c5ad9c61aea36627bb9",
+  "pins" : [
+    {
+      "identity" : "font-family",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/F8nUI/font-family.git",
+      "state" : {
+        "revision" : "3ef6d5304edc4b0325f0727913c0dea3c213b78d",
+        "version" : "0.2.2"
+      }
+    }
+  ],
+  "version" : 3
+}
